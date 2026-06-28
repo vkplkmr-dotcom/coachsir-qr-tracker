@@ -1,11 +1,12 @@
 // Firebase Configuration
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyANpygbwjFFu1R7Aw-o36T5SkMmXVEhZOA",
+  authDomain: "qr-tracker-57393.firebaseapp.com",
+  projectId: "qr-tracker-57393",
+  storageBucket: "qr-tracker-57393.firebasestorage.app",
+  messagingSenderId: "617727926623",
+  appId: "1:617727926623:web:36d78ef0a54e6051cbd6ea",
+  measurementId: "G-YX2VLEDZ4H"
 };
 
 // Initialize Firebase
