@@ -12,55 +12,98 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// URL से Student ID प्राप्त करें
+// Google Sheet Web App URL
+const SHEET_URL =
+  "https://script.google.com/macros/s/AKfycbwA6xaTfaX17AR9Bgwxl4bT5H4n4KHYm9LkiUMTu7bxq9LO4OFJ2L6YBWHEfD4v98m4Gw/exec";
+
+// Student ID from URL
 const params = new URLSearchParams(window.location.search);
 const studentId = params.get("id") || "general";
 
-// Student Counter Reference
+// Firestore Document
 const counterRef = db.collection("qrData").doc(studentId);
 
-// Google Apps Script URL
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbwA6xaTfaX17AR9Bgwxl4bT5H4n4KHYm9LkiUMTu7bxq9LO4OFJ2L6YBWHEfD4v98m4Gw/exec";
+// Fixed Expiry Date: 15 August 2026
+const expiryDate = new Date("2026-08-15T23:59:59");
 
-// Counter बढ़ाएँ
-counterRef.get().then((doc) => {
+counterRef.get().then(async (doc) => {
 
-  let count = 1;
+  const now = new Date();
 
+  // Existing Student
   if (doc.exists) {
-    count = doc.data().count + 1;
 
-    counterRef.update({
+    const data = doc.data();
+
+    // Check Active Status
+    if (data.active === false) {
+      document.getElementById("count").innerHTML =
+        "<h2>❌ QR Inactive</h2><p>Please contact COACHsir Academy.</p>";
+      return;
+    }
+
+    // Check Expiry
+    if (now > data.expiryDate.toDate()) {
+
+      await counterRef.update({
+        active: false
+      });
+
+      document.getElementById("count").innerHTML =
+        "<h2>❌ QR Expired</h2><p>Please renew your fees.</p>";
+
+      return;
+    }
+
+    let count = (data.count || 0) + 1;
+
+    await counterRef.update({
       count: count,
-      lastScan: new Date()
+      lastScan: now
     });
 
-  } else {
+    // Save to Google Sheet
+    fetch(SHEET_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        studentId: studentId,
+        scanCount: count
+      })
+    });
 
-    counterRef.set({
+  }
+
+  // New Student (First Scan)
+  else {
+
+    await counterRef.set({
       count: 1,
-      lastScan: new Date()
+      active: true,
+      createdAt: now,
+      expiryDate: expiryDate,
+      lastScan: now
+    });
+
+    // Save to Google Sheet
+    fetch(SHEET_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        studentId: studentId,
+        scanCount: 1
+      })
     });
   }
 
-  // Google Sheet में डेटा भेजें
-  fetch(SHEET_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      studentId: studentId,
-      scanCount: count
-    })
-  });
-
   document.getElementById("count").innerHTML =
-    "Attendance Recorded...<br>Redirecting to CBT Exam...";
+    "✅ Attendance Recorded<br>Redirecting to CBT Exam...";
 
-  // CBT Website पर Redirect
+  // Redirect to CBT Portal
   setTimeout(() => {
-    window.location.href = "https://cbtexam.onlinetestpanel.com/";
+    window.location.href =
+      "https://cbtexam.onlinetestpanel.com/";
   }, 2000);
 
 }).catch((error) => {
-  document.getElementById("count").innerText =
-    "Error: " + error.message;
+  document.getElementById("count").innerHTML =
+    "❌ Error: " + error.message;
 });
