@@ -17,10 +17,9 @@ const db = firebase.firestore();
 const params = new URLSearchParams(window.location.search);
 const studentId = params.get("id") || "general";
 
-// Student के लिए अलग Counter बनाएं
+// Student के लिए अलग Counter
 const counterRef = db.collection("qrData").doc(studentId);
 
-// Counter बढ़ाएँ
 counterRef.get().then((doc) => {
 
   if (doc.exists) {
@@ -31,8 +30,7 @@ counterRef.get().then((doc) => {
       count: count
     });
 
-    document.getElementById("count").innerHTML =
-      `Student ID: ${studentId}<br>Total QR Scans: ${count}`;
+    showPage(count);
 
   } else {
 
@@ -40,12 +38,35 @@ counterRef.get().then((doc) => {
       count: 1
     });
 
-    document.getElementById("count").innerHTML =
-      `Student ID: ${studentId}<br>Total QR Scans: 1`;
+    showPage(1);
   }
 
 }).catch((error) => {
-  console.log("Error:", error);
   document.getElementById("count").innerText =
     "Error: " + error.message;
 });
+
+// Page Display Function
+function showPage(count) {
+
+  document.getElementById("count").innerHTML = `
+    <h2>Student ID: ${studentId}</h2>
+    <h3>Total QR Scans: ${count}</h3>
+
+    <br>
+
+    <a href="https://cbtexam.onlinetestpanel.com/" target="_blank">
+      <button style="padding:15px; font-size:18px; margin:10px;">
+        Open CBT Exam
+      </button>
+    </a>
+
+    <br>
+
+    <a href="https://vkplkmr-dotcom.github.io/coachsir--website/" target="_blank">
+      <button style="padding:15px; font-size:18px; margin:10px;">
+        Open COACHsir Website
+      </button>
+    </a>
+  `;
+}
