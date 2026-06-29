@@ -16,15 +16,15 @@ const db = firebase.firestore();
 const SHEET_URL =
   "https://script.google.com/macros/s/AKfycbwA6xaTfaX17AR9Bgwxl4bT5H4n4KHYm9LkiUMTu7bxq9LO4OFJ2L6YBWHEfD4v98m4Gw/exec";
 
-// Student ID from URL
+// Get Student ID from URL
 const params = new URLSearchParams(window.location.search);
 const studentId = params.get("id") || "general";
 
-// Firestore Document
+// Firestore Reference
 const counterRef = db.collection("qrData").doc(studentId);
 
-// Fixed Expiry Date: 15 August 2026
-const expiryDate = new Date("2026-08-15T23:59:59");
+// Fixed Expiry Date
+const defaultExpiryDate = new Date("2026-08-15T23:59:59");
 
 counterRef.get().then(async (doc) => {
 
@@ -42,23 +42,16 @@ counterRef.get().then(async (doc) => {
       return;
     }
 
+    // Safe Expiry Check
+    let studentExpiry = defaultExpiryDate;
+
+    if (data.expiryDate &&
+        typeof data.expiryDate.toDate === "function") {
+      studentExpiry = data.expiryDate.toDate();
+    }
+
     // Check Expiry
-    const studentExpiry = data.expiryDate
-  ? data.expiryDate.toDate()
-  : expiryDate;
-
-// Check Expiry
-if (now > studentExpiry) {
-
-  await counterRef.update({
-    active: false
-  });
-
-  document.getElementById("count").innerHTML =
-    "<h2>❌ QR Expired</h2><p>Please renew your fees.</p>";
-
-  return;
-}
+    if (now > studentExpiry) {
 
       await counterRef.update({
         active: false
@@ -70,6 +63,7 @@ if (now > studentExpiry) {
       return;
     }
 
+    // Increase Count
     let count = (data.count || 0) + 1;
 
     await counterRef.update({
@@ -95,7 +89,7 @@ if (now > studentExpiry) {
       count: 1,
       active: true,
       createdAt: now,
-      expiryDate: expiryDate,
+      expiryDate: defaultExpiryDate,
       lastScan: now
     });
 
@@ -109,6 +103,7 @@ if (now > studentExpiry) {
     });
   }
 
+  // Success Message
   document.getElementById("count").innerHTML =
     "✅ Attendance Recorded<br>Redirecting to CBT Exam...";
 
@@ -119,6 +114,10 @@ if (now > studentExpiry) {
   }, 2000);
 
 }).catch((error) => {
+
+  console.error(error);
+
   document.getElementById("count").innerHTML =
     "❌ Error: " + error.message;
+
 });
