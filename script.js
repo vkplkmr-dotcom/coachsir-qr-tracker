@@ -38,20 +38,3 @@ counterRef.get().then((doc) => {
 }).catch((error) => {
   console.log("Error:", error);
 });
-    counterRef.update({
-      count: count
-    });
-
-    document.getElementById("count").innerText =
-      "Total QR Scans: " + count;
-  } else {
-    counterRef.set({
-      count: 1
-    });
-
-    document.getElementById("count").innerText =
-      "Total QR Scans: 1";
-  }
-}).catch((error) => {
-  console.log("Error:", error);
-});
