@@ -43,7 +43,22 @@ counterRef.get().then(async (doc) => {
     }
 
     // Check Expiry
-    if (now > data.expiryDate.toDate()) {
+    const studentExpiry = data.expiryDate
+  ? data.expiryDate.toDate()
+  : expiryDate;
+
+// Check Expiry
+if (now > studentExpiry) {
+
+  await counterRef.update({
+    active: false
+  });
+
+  document.getElementById("count").innerHTML =
+    "<h2>❌ QR Expired</h2><p>Please renew your fees.</p>";
+
+  return;
+}
 
       await counterRef.update({
         active: false
