@@ -117,7 +117,7 @@ counterRef.get().then(async (doc) => {
   }
 
   document.getElementById("count").innerHTML =
-    "🚀 NEW SCRIPT WORKING";
+  "✅ Attendance Recorded<br>Redirecting to CBT Exam...";
 
   setTimeout(() => {
     window.location.href =
