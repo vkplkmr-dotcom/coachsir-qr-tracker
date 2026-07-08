@@ -15,6 +15,7 @@ const db = firebase.firestore();
 function addStudent() {
 
   const id = document.getElementById("studentId").value.trim();
+  const name = document.getElementById("studentName").value.trim();
   const limit = Number(document.getElementById("scanLimit").value);
 
   if (id === "") {
@@ -23,12 +24,13 @@ function addStudent() {
   }
 
   db.collection("qrData").doc(id).set({
+    studentName: name,
     count: 0,
     active: true,
     scanLimit: limit,
     unlimited: false,
     createdAt: new Date()
-  }).then(() => {
+}).then(() => {
     alert("Student Added Successfully");
     loadStudents();
   });
