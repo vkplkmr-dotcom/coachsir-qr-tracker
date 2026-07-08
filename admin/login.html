@@ -1,1 +1,36 @@
 <!-- Admin Login Page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>COACHsir Admin Login</title>
+
+<link rel="stylesheet" href="admin.css">
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+</head>
+
+<body>
+
+<div class="login-box">
+
+<h1>COACHsir Admin</h1>
+
+<input type="email" id="email" placeholder="Admin Email">
+
+<input type="password" id="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p id="msg"></p>
+
+</div>
+
+<script src="auth.js"></script>
+
+</body>
+</html>
