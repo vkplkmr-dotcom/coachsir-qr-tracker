@@ -49,12 +49,13 @@ function loadStudents() {
       const d = doc.data();
 
       html += `
-      <hr>
-      <b>${doc.id}</b><br>
-      Count : ${d.count}<br>
-      Limit : ${d.scanLimit}<br>
-      Active : ${d.active}<br>
-      `;
+<hr>
+<b>ID :</b> ${doc.id}<br>
+<b>Name :</b> ${d.studentName || "-"}<br>
+<b>Count :</b> ${d.count}<br>
+<b>Limit :</b> ${d.scanLimit}<br>
+<b>Active :</b> ${d.active ? "✅ Yes" : "❌ No"}<br>
+`;
 
     });
 
