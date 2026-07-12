@@ -40,10 +40,7 @@ const defaultExpiryDate = new Date("2026-08-15T23:59:59");
 function showPaymentPage(message = "Subscription Payment Required") {
 
  const upiLink =
-  `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
-  `&pn=${encodeURIComponent("COACHsir Academy")}` +
-  `&am=${encodeURIComponent(PAYMENT_AMOUNT)}` +
-  `&cu=INR`;
+  `upi://pay?pa=${UPI_ID}&am=${PAYMENT_AMOUNT}&cu=INR`;
   document.getElementById("count").innerHTML = `
     <div class="payment-box">
 
