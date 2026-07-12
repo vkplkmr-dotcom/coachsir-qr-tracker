@@ -204,3 +204,12 @@ await counterRef.set({
     "❌ Error: " + error.message;
 
 });
+function copyUPI() {
+  navigator.clipboard.writeText("vkplkmr-1@oksbi")
+    .then(() => {
+      alert("✅ UPI ID Copied: vkplkmr-1@oksbi");
+    })
+    .catch(() => {
+      alert("UPI ID: vkplkmr-1@oksbi");
+    });
+}
