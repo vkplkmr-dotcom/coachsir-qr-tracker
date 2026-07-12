@@ -38,12 +38,15 @@ const defaultExpiryDate = new Date("2026-08-15T23:59:59");
 
 function showPaymentPage(message = "Subscription Payment Required") {
 
- const upiLink =
-  `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
-  `&pn=${encodeURIComponent("COACHsir Academy")}` +
-  `&am=${encodeURIComponent(PAYMENT_AMOUNT)}` +
-  `&cu=INR` +
-  `&tn=${encodeURIComponent("Student Subscription Fee")}`;
+  const upiLink =
+    `upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
+    `&pn=${encodeURIComponent("COACHsir Academy")}` +
+    `&am=${encodeURIComponent(PAYMENT_AMOUNT)}` +
+    `&cu=INR` +
+    `&tn=${encodeURIComponent("Student Subscription Fee")}`;
+
+  document.getElementById("count").innerHTML = `
+    <div class="payment-box">
 
       <h2>💳 ${message}</h2>
 
@@ -51,21 +54,23 @@ function showPaymentPage(message = "Subscription Payment Required") {
 
       <h1>₹${PAYMENT_AMOUNT}</h1>
 
-      <p>
-        <strong>UPI ID:</strong><br>
-        ${UPI_ID}
-      </p>
+      <p><strong>UPI ID:</strong></p>
+      <p id="upiIdText">${UPI_ID}</p>
 
-      <br>
+      <button onclick="copyUpiId()">
+        📋 Copy UPI ID
+      </button>
+
+      <br><br>
 
       <a href="${upiLink}" class="pay-btn">
-        Pay ₹${PAYMENT_AMOUNT} Now
+        💳 Pay ₹${PAYMENT_AMOUNT} Now
       </a>
 
       <br><br>
 
       <p>
-        Payment करने के बाद screenshot upload करें।
+        Payment करने के बाद payment screenshot upload करें।
       </p>
 
       <input
@@ -80,7 +85,7 @@ function showPaymentPage(message = "Subscription Payment Required") {
         id="submitPaymentBtn"
         onclick="submitPaymentProof()"
       >
-        Submit Payment Screenshot
+        📤 Submit Payment Screenshot
       </button>
 
       <p id="uploadStatus"></p>
@@ -88,6 +93,17 @@ function showPaymentPage(message = "Subscription Payment Required") {
     </div>
   `;
 }
+
+
+// COPY UPI ID
+async function copyUpiId() {
+  try {
+    await navigator.clipboard.writeText(UPI_ID);
+    alert("UPI ID copied: " + UPI_ID);
+  } catch (error) {
+    alert("UPI ID: " + UPI_ID);
+  }
+}}
 
 
 // ===============================
