@@ -41,6 +41,58 @@ counterRef.get().then(async (doc) => {
       return;
     }
 
+    // Payment Check
+
+if(data.paymentStatus !== "approved"){
+
+document.getElementById("count").innerHTML = `
+
+<h2>💳 Payment Required</h2>
+
+<p>
+CBT Exam Access के लिए पहले फीस जमा करें
+</p>
+
+<h3>
+Fees: ₹${data.paymentAmount || 1}
+</h3>
+
+
+<a href="upi://pay?pa=YOURUPIID@upi&pn=COACHsir%20Academy&am=${data.paymentAmount || 1}">
+
+<button style="
+padding:12px 20px;
+background:#0066ff;
+color:white;
+border:none;
+border-radius:8px;
+font-size:18px;
+">
+Pay Now
+</button>
+
+</a>
+
+<br><br>
+
+
+<button onclick="paymentDone()"
+style="
+padding:10px 20px;
+background:green;
+color:white;
+border:none;
+border-radius:8px;
+">
+I Have Paid
+</button>
+
+`;
+
+return;
+
+}
+
     // Expiry Check
     let expiry = defaultExpiryDate;
 
