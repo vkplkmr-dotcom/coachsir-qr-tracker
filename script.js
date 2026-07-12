@@ -1,7 +1,4 @@
-// ===============================
 // Firebase Configuration
-// ===============================
-
 const firebaseConfig = {
   apiKey: "AIzaSyANpygbwjFFu1R7Aw-o36T5SkMmXVEhZOA",
   authDomain: "qr-tracker-57393.firebaseapp.com",
@@ -11,676 +8,127 @@ const firebaseConfig = {
   appId: "1:617727926623:web:36d78ef0a54e6051cbd6ea"
 };
 
-
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
-
 const db = firebase.firestore();
-const storage = firebase.storage();
 
-
-// ===============================
 // Google Sheet Web App URL
-// ===============================
-
 const SHEET_URL =
-"https://script.google.com/macros/s/AKfycbwA6xaTfaX17AR9Bgwxl4bT5H4n4KHYm9LkiUMTu7bxq9LO4OFJ2L6YBWHEfD4v98m4Gw/exec";
+  "https://script.google.com/macros/s/AKfycbwA6xaTfaX17AR9Bgwxl4bT5H4n4KHYm9LkiUMTu7bxq9LO4OFJ2L6YBWHEfD4v98m4Gw/exec";
 
+// Get Student ID
+const params = new URLSearchParams(window.location.search);
+const studentId = params.get("id") || "general";
 
-// ===============================
-// Payment Details
-// ===============================
-
-const UPI_ID = "vkplkmr-1@oksbi";
-const PAYMENT_AMOUNT = "30";
-
-
-// ===============================
-// Student ID
-// ===============================
-
-const params =
-new URLSearchParams(window.location.search);
-
-
-const studentId =
-params.get("id") || "general";
-
-
-// ===============================
 // Firestore Reference
-// ===============================
+const counterRef = db.collection("qrData").doc(studentId);
 
-const counterRef =
-db.collection("qrData").doc(studentId);
-
-
-// ===============================
 // Default Expiry Date
-// ===============================
+const defaultExpiryDate = new Date("2026-08-15T23:59:59");
+
+counterRef.get().then(async (doc) => {
 
-const defaultExpiryDate =
-new Date("2026-08-15T23:59:59");
+  const now = new Date();
 
+  if (doc.exists) {
 
+    const data = doc.data();
 
-// ===============================
-// SHOW PAYMENT PAGE
-// ===============================
+    // Active Check
+    if (data.active === false) {
+      document.getElementById("count").innerHTML =
+        "<h2>❌ QR Inactive</h2><p>Please contact COACHsir Academy.</p>";
+      return;
+    }
 
-function showPaymentPage(
-message = "Subscription Payment Required"
-){
+    // Expiry Check
+    let expiry = defaultExpiryDate;
 
+    if (data.expiryDate && typeof data.expiryDate.toDate === "function") {
+      expiry = data.expiryDate.toDate();
+    }
 
-const upiLink =
-`upi://pay?pa=${encodeURIComponent(UPI_ID)}` +
-`&pn=${encodeURIComponent("COACHsir Academy")}` +
-`&am=${encodeURIComponent(PAYMENT_AMOUNT)}` +
-`&cu=INR` +
-`&tn=${encodeURIComponent("Student Subscription Fee")}`;
+    if (now > expiry) {
 
+      await counterRef.update({
+        active: false
+      });
 
+      document.getElementById("count").innerHTML =
+        "<h2>❌ QR Expired</h2><p>Please renew your fees.</p>";
 
-document.getElementById("count").innerHTML = `
+      return;
+    }
 
+    // Scan Limit Check
+    const currentCount = data.count || 0;
+    const scanLimit = Number(data.scanLimit ?? Infinity);
+    const unlimited = data.unlimited === true;
 
-<div class="payment-box">
+    if (!unlimited && currentCount >= scanLimit) {
 
+      await counterRef.update({
+        active: false
+      });
 
-<h2>💳 ${message}</h2>
+      document.getElementById("count").innerHTML =
+        "<h2>❌ Scan Limit Reached</h2><p>Please contact COACHsir Academy.</p>";
 
+      return;
+    }
 
-<p>
-<strong>Student ID:</strong>
-${studentId}
-</p>
+    // Increase Count
+    const newCount = currentCount + 1;
 
+    await counterRef.update({
+      count: newCount,
+      lastScan: now
+    });
 
-<h1>
-₹${PAYMENT_AMOUNT}
-</h1>
+    // Google Sheet
+    fetch(SHEET_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        studentId: studentId,
+        scanCount: newCount
+      })
+    });
 
+  } else {
 
-<p>
-<strong>UPI ID</strong>
-</p>
+    // New Student
+    await counterRef.set({
+      count: 1,
+      active: true,
+      scanLimit: 100,
+      unlimited: false,
+      createdAt: now,
+      expiryDate: defaultExpiryDate,
+      lastScan: now
+    });
 
+    fetch(SHEET_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        studentId: studentId,
+        scanCount: 1
+      })
+    });
+  }
 
-<p id="upiIdText">
-${UPI_ID}
-</p>
+  document.getElementById("count").innerHTML =
+    "✅ Attendance Recorded<br>Redirecting to CBT Exam...";
 
+  setTimeout(() => {
+    window.location.href =
+      "https://cbtexam.onlinetestpanel.com/";
+  }, 2000);
 
-<button onclick="copyUpiId()">
-📋 Copy UPI ID
-</button>
+}).catch((error) => {
 
+  console.error(error);
 
-<br><br>
-
-
-<a href="${upiLink}" class="pay-btn">
-💳 Pay ₹${PAYMENT_AMOUNT} Now
-</a>
-
-
-<br><br>
-
-
-<p>
-Payment करने के बाद screenshot upload करें।
-</p>
-
-
-<input
-type="file"
-id="paymentProof"
-accept="image/*"
->
-
-
-<br><br>
-
-
-<button
-id="submitPaymentBtn"
-onclick="submitPaymentProof()">
-
-📤 Submit Payment Screenshot
-
-</button>
-
-
-<p id="uploadStatus"></p>
-
-
-</div>
-
-
-`;
-
-}
-
-
-
-// ===============================
-// COPY UPI ID
-// ===============================
-
-async function copyUpiId(){
-
-
-try{
-
-
-await navigator.clipboard.writeText(UPI_ID);
-
-
-alert(
-"UPI ID Copied: " + UPI_ID
-);
-
-
-}
-
-catch(error){
-
-
-alert(
-"UPI ID: " + UPI_ID
-);
-
-
-}
-
-
-}
-// ===============================
-// UPLOAD PAYMENT SCREENSHOT
-// ===============================
-
-async function submitPaymentProof(){
-
-
-const fileInput =
-document.getElementById("paymentProof");
-
-
-const status =
-document.getElementById("uploadStatus");
-
-
-const button =
-document.getElementById("submitPaymentBtn");
-
-
-
-if(!fileInput.files.length){
-
-status.innerHTML =
-"❌ Please select payment screenshot.";
-
-return;
-
-}
-
-
-
-const file =
-fileInput.files[0];
-
-
-
-if(!file.type.startsWith("image/")){
-
-status.innerHTML =
-"❌ Please upload image file.";
-
-return;
-
-}
-
-
-
-try{
-
-
-button.disabled = true;
-
-
-status.innerHTML =
-"⏳ Uploading screenshot...";
-
-
-
-// File Name
-
-const fileName =
-`payment_proofs/${studentId}_${Date.now()}_${file.name}`;
-
-
-
-const storageRef =
-storage.ref().child(fileName);
-
-
-
-// Upload
-
-await storageRef.put(file);
-
-
-
-// Get URL
-
-const screenshotURL =
-await storageRef.getDownloadURL();
-
-
-
-
-// Save Firebase Data
-
-await counterRef.set({
-
-studentId: studentId,
-
-active:false,
-
-paymentStatus:"pending",
-
-paymentAmount:Number(PAYMENT_AMOUNT),
-
-paymentProofURL:screenshotURL,
-
-paymentSubmittedAt:
-firebase.firestore.FieldValue.serverTimestamp()
-
-
-},{merge:true});
-
-
-
-
-// Save Google Sheet
-
-fetch(SHEET_URL,{
-
-method:"POST",
-
-body:JSON.stringify({
-
-action:"payment",
-
-studentId:studentId,
-
-amount:Number(PAYMENT_AMOUNT),
-
-paymentStatus:"pending",
-
-paymentProofURL:screenshotURL
-
-
-})
-
-});
-
-
-
-
-
-document.getElementById("count").innerHTML = `
-
-
-<div class="payment-box">
-
-
-<h2>✅ Payment Submitted</h2>
-
-
-<p>
-Your payment is under verification.
-</p>
-
-
-<p>
-Verification के बाद आपका QR activate किया जाएगा।
-</p>
-
-
-<p>
-<strong>Student ID:</strong>
-${studentId}
-</p>
-
-
-</div>
-
-
-`;
-
-
-
-}
-
-catch(error){
-
-
-console.error(error);
-
-
-button.disabled=false;
-
-
-status.innerHTML =
-"❌ Upload Failed: " + error.message;
-
-
-}
-
-
-}
-// ===============================
-// CHECK QR STATUS
-// ===============================
-
-counterRef.get().then(async (doc)=>{
-
-
-const now = new Date();
-
-
-// ===============================
-// NEW STUDENT
-// ===============================
-
-if(!doc.exists){
-
-
-await counterRef.set({
-
-count:0,
-
-active:false,
-
-paymentStatus:"unpaid",
-
-scanLimit:100,
-
-unlimited:false,
-
-createdAt:now,
-
-expiryDate:defaultExpiryDate
-
-
-});
-
-
-
-showPaymentPage(
-"First Subscription Payment"
-);
-
-
-return;
-
-
-}
-
-
-
-
-const data = doc.data();
-
-
-
-// ===============================
-// PAYMENT PENDING
-// ===============================
-
-if(data.paymentStatus === "pending"){
-
-
-document.getElementById("count").innerHTML = `
-
-
-<div class="payment-box">
-
-
-<h2>⏳ Payment Under Verification</h2>
-
-
-<p>
-आपका payment screenshot प्राप्त हो गया है।
-</p>
-
-
-<p>
-Verification के बाद आपका QR activate किया जाएगा।
-</p>
-
-
-<p>
-<strong>Student ID:</strong>
-${studentId}
-</p>
-
-
-</div>
-
-
-`;
-
-
-return;
-
-
-}
-
-
-
-// ===============================
-// INACTIVE / PAYMENT REQUIRED
-// ===============================
-
-if(data.active === false){
-
-
-showPaymentPage(
-"Subscription Payment Required"
-);
-
-
-return;
-
-
-}
-
-
-
-// ===============================
-// EXPIRY CHECK
-// ===============================
-
-let expiry =
-defaultExpiryDate;
-
-
-
-if(
-data.expiryDate &&
-typeof data.expiryDate.toDate === "function"
-){
-
-
-expiry =
-data.expiryDate.toDate();
-
-
-}
-
-
-
-if(now > expiry){
-
-
-
-await counterRef.update({
-
-active:false,
-
-paymentStatus:"unpaid"
-
-});
-
-
-
-showPaymentPage(
-"Subscription Expired - Renew Now"
-);
-
-
-
-return;
-
-
-}
-
-
-
-
-// ===============================
-// SCAN LIMIT
-// ===============================
-
-const currentCount =
-data.count || 0;
-
-
-const scanLimit =
-Number(data.scanLimit ?? Infinity);
-
-
-const unlimited =
-data.unlimited === true;
-
-
-
-if(!unlimited && currentCount >= scanLimit){
-
-
-await counterRef.update({
-
-active:false
-
-});
-
-
-
-document.getElementById("count").innerHTML = `
-
-
-<h2>❌ Scan Limit Reached</h2>
-
-<p>
-Please contact COACHsir Academy.
-</p>
-
-
-`;
-
-return;
-
-
-}
-
-
-
-
-// ===============================
-// ACTIVE STUDENT
-// ===============================
-
-
-const newCount =
-currentCount + 1;
-
-
-
-await counterRef.update({
-
-count:newCount,
-
-lastScan:now
-
-});
-
-
-
-
-
-// Google Sheet Attendance
-
-fetch(SHEET_URL,{
-
-method:"POST",
-
-body:JSON.stringify({
-
-studentId:studentId,
-
-scanCount:newCount
-
-})
-
-});
-
-
-
-
-
-document.getElementById("count").innerHTML = `
-
-
-<h2>✅ Attendance Recorded</h2>
-
-<p>
-Redirecting to CBT Exam...
-</p>
-
-
-`;
-
-
-
-
-
-setTimeout(()=>{
-
-
-window.location.href =
-"https://cbtexam.onlinetestpanel.com/";
-
-
-},2000);
-
-
-
-
-
-}).catch((error)=>{
-
-
-console.error(error);
-
-
-document.getElementById("count").innerHTML =
-
-"❌ Error: " + error.message;
-
-
+  document.getElementById("count").innerHTML =
+    "❌ Error: " + error.message;
 
 });
