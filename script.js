@@ -40,56 +40,75 @@ counterRef.get().then(async (doc) => {
         "<h2>❌ QR Inactive</h2><p>Please contact COACHsir Academy.</p>";
       return;
     }
+// Payment Check
+if (data.paymentStatus !== "approved") {
 
-    // Payment Check
+  const amount = data.paymentAmount || 1;
+  const upiId = "vkplkmr-1@oksbi";
 
-if(data.paymentStatus !== "approved"){
+  document.getElementById("count").innerHTML = `
 
-document.getElementById("count").innerHTML = `
+    <h2>💳 Payment Required</h2>
 
-<h2>💳 Payment Required</h2>
+    <p>CBT Exam Access के लिए पहले फीस जमा करें</p>
 
-<p>
-CBT Exam Access के लिए पहले फीस जमा करें
-</p>
+    <h3>Fees: ₹${amount}</h3>
 
-<h3>
-Fees: ₹${data.paymentAmount || 1}
-</h3>
+    <a href="upi://pay?pa=${upiId}&am=${amount}&cu=INR">
+      <button style="
+        padding:12px 20px;
+        background:#0066ff;
+        color:white;
+        border:none;
+        border-radius:8px;
+        font-size:18px;
+        margin:5px;
+      ">
+        💳 Pay Now
+      </button>
+    </a>
 
+    <br><br>
 
-<a href="upi://pay?pa=vkplkmr-1@oksbi&am=1&cu=INR">
-<button style="
-padding:12px 20px;
-background:#0066ff;
-color:white;
-border:none;
-border-radius:8px;
-font-size:18px;
-">
-Pay Now
-</button>
+    <p><strong>UPI ID:</strong></p>
 
-</a>
+    <div style="
+      padding:10px;
+      background:#f2f2f2;
+      border-radius:8px;
+      margin:10px;
+      font-size:17px;
+    ">
+      ${upiId}
+    </div>
 
-<br><br>
+    <button onclick="copyUPI()" style="
+      padding:10px 20px;
+      background:#333;
+      color:white;
+      border:none;
+      border-radius:8px;
+      font-size:16px;
+    ">
+      📋 Copy UPI ID
+    </button>
 
+    <br><br>
 
-<button onclick="paymentDone()"
-style="
-padding:10px 20px;
-background:green;
-color:white;
-border:none;
-border-radius:8px;
-">
-I Have Paid
-</button>
+    <button onclick="paymentDone()" style="
+      padding:12px 20px;
+      background:green;
+      color:white;
+      border:none;
+      border-radius:8px;
+      font-size:17px;
+    ">
+      ✅ I Have Paid
+    </button>
 
-`;
+  `;
 
-return;
-
+  return;
 }
 
     // Expiry Check
