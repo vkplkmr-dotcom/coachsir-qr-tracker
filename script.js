@@ -19,7 +19,7 @@ const SHEET_URL =
   "https://script.google.com/macros/s/AKfycbwA6xaTfaX17AR9Bgwxl4bT5H4n4KHYm9LkiUMTu7bxq9LO4OFJ2L6YBWHEfD4v98m4Gw/exec";
 
 // Payment Details
-const UPI_ID = "vkplmmr-1@oksbi";
+const UPI_ID = "vkplkmr-1@oksbi";
 const PAYMENT_AMOUNT = "30";
 // Get Student ID
 const params = new URLSearchParams(window.location.search);
