@@ -8,208 +8,449 @@ const firebaseConfig = {
   appId: "1:617727926623:web:36d78ef0a54e6051cbd6ea"
 };
 
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
 const db = firebase.firestore();
 
-// Google Sheet Web App URL
-const SHEET_URL =
-  "https://script.google.com/macros/s/AKfycbwA6xaTfaX17AR9Bgwxl4bT5H4n4KHYm9LkiUMTu7bxq9LO4OFJ2L6YBWHEfD4v98m4Gw/exec";
 
-// Get Student ID
+// Google Sheet URL
+const SHEET_URL =
+"https://script.google.com/macros/s/AKfycbwA6xaTfaX17AR9Bgwxl4bT5H4n4KHYm9LkiUMTu7bxq9LO4OFJ2L6YBWHEfD4v98m4Gw/exec";
+
+
+// Student ID
 const params = new URLSearchParams(window.location.search);
+
 const studentId = params.get("id") || "general";
 
+
 // Firestore Reference
-const counterRef = db.collection("qrData").doc(studentId);
+const counterRef =
+db.collection("qrData").doc(studentId);
 
-// Default Expiry Date
-const defaultExpiryDate = new Date("2026-08-15T23:59:59");
 
-counterRef.get().then(async (doc) => {
+// Expiry Date
+const defaultExpiryDate =
+new Date("2026-08-15T23:59:59");
 
-  const now = new Date();
 
-  if (doc.exists) {
 
-    const data = doc.data();
+counterRef.get().then(async(doc)=>{
 
-    // Active Check
-    if (data.active === false) {
-      document.getElementById("count").innerHTML =
-        "<h2>❌ QR Inactive</h2><p>Please contact COACHsir Academy.</p>";
-      return;
-    }
-// Payment Check
-if (data.paymentStatus !== "approved") {
 
-  const amount = data.paymentAmount || 1;
-  const upiId = "vkplkmr-1@oksbi";
+const now = new Date();
 
-  document.getElementById("count").innerHTML = `
 
-    <h2>💳 Payment Required</h2>
 
-    <p>CBT Exam Access के लिए पहले फीस जमा करें</p>
+if(doc.exists){
 
-    <h3>Fees: ₹${amount}</h3>
 
-    <a href="upi://pay?pa=${upiId}&am=${amount}&cu=INR">
-      <button style="
-        padding:12px 20px;
-        background:#0066ff;
-        color:white;
-        border:none;
-        border-radius:8px;
-        font-size:18px;
-        margin:5px;
-      ">
-        💳 Pay Now
-      </button>
-    </a>
+const data = doc.data();
 
-    <br><br>
 
-    <p><strong>UPI ID:</strong></p>
 
-    <div style="
-      padding:10px;
-      background:#f2f2f2;
-      border-radius:8px;
-      margin:10px;
-      font-size:17px;
-    ">
-      ${upiId}
-    </div>
+// QR Active Check
 
-    <button onclick="copyUPI()" style="
-      padding:10px 20px;
-      background:#333;
-      color:white;
-      border:none;
-      border-radius:8px;
-      font-size:16px;
-    ">
-      📋 Copy UPI ID
-    </button>
+if(data.active === false){
 
-    <br><br>
+document.getElementById("count").innerHTML =
+`
+<h2>❌ QR Inactive</h2>
+<p>Please contact COACHsir Academy</p>
+`;
 
-    <button onclick="paymentDone()" style="
-      padding:12px 20px;
-      background:green;
-      color:white;
-      border:none;
-      border-radius:8px;
-      font-size:17px;
-    ">
-      ✅ I Have Paid
-    </button>
+return;
 
-  `;
-
-  return;
 }
 
-    // Expiry Check
-    let expiry = defaultExpiryDate;
 
-    if (data.expiryDate && typeof data.expiryDate.toDate === "function") {
-      expiry = data.expiryDate.toDate();
-    }
 
-    if (now > expiry) {
 
-      await counterRef.update({
-        active: false
-      });
+// PAYMENT CHECK
 
-      document.getElementById("count").innerHTML =
-        "<h2>❌ QR Expired</h2><p>Please renew your fees.</p>";
+if(data.paymentStatus !== "approved"){
 
-      return;
-    }
 
-    // Scan Limit Check
-    const currentCount = data.count || 0;
-    const scanLimit = Number(data.scanLimit ?? Infinity);
-    const unlimited = data.unlimited === true;
+const amount = data.paymentAmount || 1;
 
-    if (!unlimited && currentCount >= scanLimit) {
+const upiId = "vkplkmr-1@oksbi";
 
-      await counterRef.update({
-        active: false
-      });
 
-      document.getElementById("count").innerHTML =
-        "<h2>❌ Scan Limit Reached</h2><p>Please contact COACHsir Academy.</p>";
+document.getElementById("count").innerHTML =
 
-      return;
-    }
+`
 
-    // Increase Count
-    const newCount = currentCount + 1;
+<h2>💳 Payment Required</h2>
 
-    await counterRef.update({
-      count: newCount,
-      lastScan: now
-    });
 
-    // Google Sheet
-    fetch(SHEET_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        studentId: studentId,
-        scanCount: newCount
-      })
-    });
+<p>
+CBT Exam Access के लिए पहले Payment करें
+</p>
 
-  } else {
 
-   // New Student
+<h3>
+Fees ₹${amount}
+</h3>
+
+
+
+<a href="upi://pay?pa=${upiId}&am=${amount}&cu=INR">
+
+
+<button style="
+padding:12px 20px;
+background:#0066ff;
+color:white;
+border:none;
+border-radius:8px;
+font-size:18px;
+">
+
+💳 Pay Now
+
+</button>
+
+
+</a>
+
+
+<br><br>
+
+
+
+<p>
+UPI ID
+</p>
+
+
+<div style="
+background:#eee;
+padding:10px;
+border-radius:8px;
+font-size:17px;
+">
+
+${upiId}
+
+</div>
+
+
+
+<br>
+
+
+<button onclick="copyUPI()" style="
+padding:10px 20px;
+background:#333;
+color:white;
+border:none;
+border-radius:8px;
+">
+
+📋 Copy UPI ID
+
+</button>
+
+
+
+<br><br>
+
+
+
+<button onclick="paymentDone()" style="
+padding:12px 20px;
+background:green;
+color:white;
+border:none;
+border-radius:8px;
+">
+
+✅ I Have Paid
+
+</button>
+
+
+`;
+
+return;
+
+
+}
+
+
+
+
+
+// Expiry Check
+
+
+let expiry = defaultExpiryDate;
+
+
+if(data.expiryDate &&
+typeof data.expiryDate.toDate === "function"){
+
+expiry = data.expiryDate.toDate();
+
+}
+
+
+
+if(now > expiry){
+
+
+await counterRef.update({
+
+active:false
+
+});
+
+
+document.getElementById("count").innerHTML =
+`
+<h2>❌ QR Expired</h2>
+<p>Please renew fees</p>
+`;
+
+return;
+
+}
+
+
+
+
+// Scan Limit Check
+
+
+const currentCount = data.count || 0;
+
+
+const scanLimit =
+Number(data.scanLimit ?? Infinity);
+
+
+const unlimited =
+data.unlimited === true;
+
+
+
+if(!unlimited && currentCount >= scanLimit){
+
+
+await counterRef.update({
+
+active:false
+
+});
+
+
+
+document.getElementById("count").innerHTML =
+`
+<h2>❌ Scan Limit Reached</h2>
+`;
+
+return;
+
+
+}
+
+
+
+
+// Increase Scan Count
+
+
+const newCount = currentCount + 1;
+
+
+await counterRef.update({
+
+count:newCount,
+
+lastScan:now
+
+});
+
+
+
+
+// Google Sheet
+
+fetch(SHEET_URL,{
+
+method:"POST",
+
+body:JSON.stringify({
+
+studentId:studentId,
+
+scanCount:newCount
+
+})
+
+});
+
+
+
+}
+
+else{
+
+
+// New Student Create
+
+
 await counterRef.set({
-  count: 1,
-  active: true,
-  scanLimit: 100,
-  unlimited: false,
-  paymentStatus: "pending",
-  paymentAmount: 1,
-  createdAt: now,
-  expiryDate: defaultExpiryDate,
-  lastScan: now
-});
 
-    fetch(SHEET_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        studentId: studentId,
-        scanCount: 1
-      })
-    });
-  }
+count:1,
 
-  document.getElementById("count").innerHTML =
-    "✅ Attendance Recorded<br>Redirecting to CBT Exam...";
+active:true,
 
-  setTimeout(() => {
-    window.location.href =
-      "https://cbtexam.onlinetestpanel.com/";
-  }, 2000);
+scanLimit:100,
 
-}).catch((error) => {
+unlimited:false,
 
-  console.error(error);
 
-  document.getElementById("count").innerHTML =
-    "❌ Error: " + error.message;
+paymentStatus:"pending",
+
+paymentAmount:1,
+
+
+createdAt:now,
+
+expiryDate:defaultExpiryDate,
+
+lastScan:now
 
 });
-function copyUPI() {
-  navigator.clipboard.writeText("vkplkmr-1@oksbi")
-    .then(() => {
-      alert("✅ UPI ID Copied: vkplkmr-1@oksbi");
-    })
-    .catch(() => {
-      alert("UPI ID: vkplkmr-1@oksbi");
-    });
+
+
+}
+
+
+
+
+
+document.getElementById("count").innerHTML =
+
+`
+✅ Attendance Recorded
+<br>
+Redirecting to CBT Exam...
+`;
+
+
+
+setTimeout(()=>{
+
+
+window.location.href =
+"https://cbtexam.onlinetestpanel.com/";
+
+
+},2000);
+
+
+
+})
+
+.catch(error=>{
+
+
+console.error(error);
+
+
+document.getElementById("count").innerHTML =
+"❌ Error: "+error.message;
+
+
+});
+
+
+
+
+
+// COPY UPI FUNCTION
+
+
+function copyUPI(){
+
+
+navigator.clipboard.writeText(
+"vkplkmr-1@oksbi"
+)
+
+
+.then(()=>{
+
+
+alert(
+"✅ UPI ID Copied"
+);
+
+
+})
+
+
+.catch(()=>{
+
+
+alert(
+"UPI ID: vkplkmr-1@oksbi"
+);
+
+
+});
+
+
+}
+
+
+
+
+
+// PAYMENT DONE BUTTON
+
+
+function paymentDone(){
+
+
+db.collection("qrData")
+.doc(studentId)
+.update({
+
+paymentStatus:"verification_pending"
+
+})
+
+
+.then(()=>{
+
+
+document.getElementById("count").innerHTML =
+
+`
+<h2>✅ Payment Submitted</h2>
+
+<p>
+Admin verification के बाद CBT Access मिलेगा.
+</p>
+`;
+
+
+})
+
+
+.catch(error=>{
+
+
+alert(error.message);
+
+
+});
+
+
 }
