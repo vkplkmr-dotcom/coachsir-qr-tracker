@@ -148,16 +148,18 @@ return;
 
   } else {
 
-    // New Student
-    await counterRef.set({
-      count: 1,
-      active: true,
-      scanLimit: 100,
-      unlimited: false,
-      createdAt: now,
-      expiryDate: defaultExpiryDate,
-      lastScan: now
-    });
+   // New Student
+await counterRef.set({
+  count: 1,
+  active: true,
+  scanLimit: 100,
+  unlimited: false,
+  paymentStatus: "pending",
+  paymentAmount: 1,
+  createdAt: now,
+  expiryDate: defaultExpiryDate,
+  lastScan: now
+});
 
     fetch(SHEET_URL, {
       method: "POST",
