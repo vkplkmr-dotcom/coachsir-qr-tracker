@@ -58,8 +58,7 @@ Fees: ₹${data.paymentAmount || 1}
 </h3>
 
 
-<a href="upi://pay?pa=YOURUPIID@upi&pn=COACHsir%20Academy&am=${data.paymentAmount || 1}">
-
+<a href="upi://pay?pa=vkplkmr-1@oksbi&pn=COACHsir%20Academy&am=${data.paymentAmount || 1}&cu=INR">
 <button style="
 padding:12px 20px;
 background:#0066ff;
