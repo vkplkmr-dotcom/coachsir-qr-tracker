@@ -10,6 +10,7 @@ const firebaseConfig = {
 
 
 // Initialize Firebase
+alert("NEW SCRIPT RUNNING");
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
