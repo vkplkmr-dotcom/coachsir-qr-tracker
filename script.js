@@ -74,9 +74,6 @@ return;
 const now = new Date();
 
 
-const now = new Date();
-
-
 
 if(doc.exists){
 
