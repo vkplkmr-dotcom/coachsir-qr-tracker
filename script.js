@@ -431,13 +431,7 @@ alert(
 
 
 
-
-// PAYMENT DONE BUTTON
-
-
-function paymentDone(){
-
-  function approvePayment(id){
+function approvePayment(id){
 
 db.collection("qrData")
 .doc(id)
@@ -455,6 +449,12 @@ location.reload();
 });
 
 }
+// PAYMENT DONE BUTTON
+
+
+function paymentDone(){
+
+  
 
 
 db.collection("qrData")
