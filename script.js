@@ -40,7 +40,6 @@ new Date("2026-08-15T23:59:59");
 
 
 counterRef.get().then(async(doc)=>{
-  counterRef.get().then(async(doc)=>{
 
 if(isAdmin){
 
