@@ -437,6 +437,25 @@ alert(
 
 function paymentDone(){
 
+  function approvePayment(id){
+
+db.collection("qrData")
+.doc(id)
+.update({
+
+paymentStatus:"approved"
+
+})
+.then(()=>{
+
+alert("Payment Approved");
+
+location.reload();
+
+});
+
+}
+
 
 db.collection("qrData")
 .doc(studentId)
