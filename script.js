@@ -56,7 +56,8 @@ html += `
 <b>${d.id}</b><br>
 Status : ${data.paymentStatus || "pending"}<br><br>
 
-<button onclick="approvePayment('${d.id}')">
+<button style="cursor:pointer; padding:10px; position:relative; z-index:9999;"
+onclick="window.approvePayment('${d.id}')">
 ✅ Approve
 </button>
 
@@ -429,7 +430,26 @@ alert(
 }
 
 
+window.approvePayment = function(id){
 
+alert("Clicked : " + id);
+
+db.collection("qrData")
+.doc(id)
+.update({
+paymentStatus:"approved"
+})
+.then(()=>{
+
+alert("✅ Payment Approved");
+location.reload();
+
+})
+.catch(error=>{
+alert(error.message);
+});
+
+}
 
 function approvePayment(id){
 
