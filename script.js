@@ -69,81 +69,68 @@ return;
 
 
 
-// PAYMENT CHECK
-
 if(data.paymentStatus !== "approved"){
-
 
 const amount = data.paymentAmount || 1;
 
 const upiId = "vkplkmr-1@oksbi";
 
+const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent("COACHsir Academy")}&am=${amount}&cu=INR`;
 
-document.getElementById("count").innerHTML =
+document.getElementById("count").innerHTML = `
 
-`
+<div style="max-width:400px;margin:auto;background:#fff;padding:20px;border-radius:15px;box-shadow:0 0 15px rgba(0,0,0,.2);text-align:center;">
 
-<h2>💳 Payment Required</h2>
+<h2 style="color:#0066ff;">💳 Payment Required</h2>
 
+<p>CBT Exam Access के लिए पहले Payment करें</p>
 
-<p>
-CBT Exam Access के लिए पहले Payment करें
-</p>
+<h1 style="color:green;">₹${amount}</h1>
 
+<img src="assets/upi-qr.png"
+style="width:220px;border-radius:12px;margin:15px 0;">
 
-<h3>
-Fees ₹${amount}
-</h3>
+<br>
 
-
-
-<a href="upi://pay?pa=${upiId}&am=${amount}&cu=INR">
-
+<a href="${upiLink}">
 
 <button style="
-padding:12px 20px;
+width:100%;
+padding:14px;
 background:#0066ff;
 color:white;
 border:none;
-border-radius:8px;
+border-radius:10px;
 font-size:18px;
 ">
 
-💳 Pay Now
+💳 Pay with Any UPI App
 
 </button>
 
-
 </a>
-
 
 <br><br>
 
-
-
-<p>
-UPI ID
-</p>
-
+<p><b>UPI ID</b></p>
 
 <div style="
-background:#eee;
-padding:10px;
+background:#f1f1f1;
+padding:12px;
 border-radius:8px;
 font-size:17px;
+font-weight:bold;
 ">
 
 ${upiId}
 
 </div>
 
-
-
 <br>
 
-
 <button onclick="copyUPI()" style="
-padding:10px 20px;
+width:100%;
+padding:12px;
 background:#333;
 color:white;
 border:none;
@@ -154,29 +141,31 @@ border-radius:8px;
 
 </button>
 
-
-
 <br><br>
 
-
-
 <button onclick="paymentDone()" style="
-padding:12px 20px;
+width:100%;
+padding:14px;
 background:green;
 color:white;
 border:none;
-border-radius:8px;
+border-radius:10px;
+font-size:18px;
 ">
 
 ✅ I Have Paid
 
 </button>
 
+<p style="margin-top:15px;color:#666;font-size:14px;">
+Payment verification के बाद CBT Exam Access मिलेगा।
+</p>
+
+</div>
 
 `;
 
 return;
-
 
 }
 
