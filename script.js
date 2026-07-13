@@ -25,6 +25,7 @@ const SHEET_URL =
 const params = new URLSearchParams(window.location.search);
 
 const studentId = params.get("id") || "general";
+const isAdmin = params.get("admin") === "1234";
 
 
 // Firestore Reference
@@ -39,6 +40,39 @@ new Date("2026-08-15T23:59:59");
 
 
 counterRef.get().then(async(doc)=>{
+  counterRef.get().then(async(doc)=>{
+
+if(isAdmin){
+
+const snapshot = await db.collection("qrData").get();
+
+let html = "<h2>🔐 Admin Panel</h2>";
+
+snapshot.forEach(d=>{
+
+const data = d.data();
+
+html += `
+<div style="border:1px solid #ccc;padding:10px;margin:10px;border-radius:8px">
+<b>${d.id}</b><br>
+Status : ${data.paymentStatus || "pending"}<br><br>
+
+<button onclick="approvePayment('${d.id}')">
+✅ Approve
+</button>
+
+</div>
+`;
+
+});
+
+document.getElementById("count").innerHTML = html;
+
+return;
+
+}
+
+const now = new Date();
 
 
 const now = new Date();
