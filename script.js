@@ -482,21 +482,19 @@ function paymentDone(){
   })
   .then(()=>{
 
-    return fetch(SHEET_URL,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        action:"payment",
-        studentId:studentId,
-        amount:1,
-        paymentStatus:"verification_pending",
-        paymentProofURL:""
-      })
-    });
-
+return fetch(SHEET_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    action: "payment",
+    studentId: studentId,
+    amount: 1,
+    paymentStatus: "verification_pending",
+    paymentProofURL: ""
   })
+});
   .then(response => response.text())
   .then(result => {
 
