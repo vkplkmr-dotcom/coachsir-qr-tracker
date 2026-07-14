@@ -482,33 +482,44 @@ function paymentDone(){
   })
   .then(()=>{
 
-return fetch(SHEET_URL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    action: "payment",
-    studentId: studentId,
-    amount: 1,
-    paymentStatus: "verification_pending",
-    paymentProofURL: ""
-  })
-});
-  .then(response => response.text())
-  .then(result => {
+function paymentDone() {
 
-    alert(result);
+  db.collection("qrData")
+    .doc(studentId)
+    .update({
+      paymentStatus: "verification_pending"
+    })
+    .then(() => {
 
-    document.getElementById("count").innerHTML = `
-      <h2>✅ Payment Submitted</h2>
-      <p>Admin verification के बाद CBT Access मिलेगा.</p>
-    `;
+      return fetch(SHEET_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          action: "payment",
+          studentId: studentId,
+          amount: 1,
+          paymentStatus: "verification_pending",
+          paymentProofURL: ""
+        })
+      });
 
-  })
-  .catch(error=>{
-    alert("Error: " + error.message);
-    console.error(error);
-  });
+    })
+    .then(response => response.text())
+    .then(result => {
+
+      alert(result);
+
+      document.getElementById("count").innerHTML = `
+        <h2>✅ Payment Submitted</h2>
+        <p>Admin verification के बाद CBT Access मिलेगा.</p>
+      `;
+
+    })
+    .catch(error => {
+      alert("Error: " + error.message);
+      console.error(error);
+    });
 
 }
