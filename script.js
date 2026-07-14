@@ -474,6 +474,42 @@ location.reload();
 
 function paymentDone(){
 
+  db.collection("qrData")
+  .doc(studentId)
+  .update({
+    paymentStatus:"verification_pending"
+  })
+
+  .then(()=>{
+
+    // Google Sheet में Payment Data भेजें
+    fetch(SHEET_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        action:"payment",
+        studentId:studentId,
+        amount:1,
+        paymentStatus:"verification_pending",
+        paymentProofURL:""
+      })
+    });
+
+    document.getElementById("count").innerHTML = `
+      <h2>✅ Payment Submitted</h2>
+      <p>Admin verification के बाद CBT Access मिलेगा.</p>
+    `;
+
+  })
+
+  .catch(error=>{
+    alert(error.message);
+  });
+
+}
+
   
 
 
