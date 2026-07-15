@@ -86,9 +86,7 @@ async function paymentDone() {
     // Send data to Google Sheet
     const response = await fetch(SHEET_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      
       body: JSON.stringify({
         action: "payment",
         studentId: studentId,
