@@ -472,16 +472,7 @@ location.reload();
 // PAYMENT DONE BUTTON
 
 
-function paymentDone(){
-
-
-  db.collection("qrData")
-  .doc(studentId)
-  .update({
-    paymentStatus:"verification_pending"
-  })
-  .then(()=>{
-
+// PAYMENT DONE BUTTON
 function paymentDone() {
 
   db.collection("qrData")
@@ -490,7 +481,6 @@ function paymentDone() {
       paymentStatus: "verification_pending"
     })
     .then(() => {
-
       return fetch(SHEET_URL, {
         method: "POST",
         headers: {
@@ -504,7 +494,6 @@ function paymentDone() {
           paymentProofURL: ""
         })
       });
-
     })
     .then(response => response.text())
     .then(result => {
