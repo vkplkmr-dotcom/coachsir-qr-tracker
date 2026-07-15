@@ -1,7 +1,5 @@
 // Firebase Configuration
-// IMPORTANT: Ensure Firebase SDKs are loaded in your HTML before this script, e.g.:
-// <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-// <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+// Firebase SDKs are loaded in index.html using v8.10.1
 
 const firebaseConfig = {
   apiKey: "AIzaSyANpygbwjFFu1R7Aw-o36T5SkMmXVEhZOA",
@@ -12,7 +10,7 @@ const firebaseConfig = {
   appId: "1:617727926623:web:36d78ef0a54e6051cbd6ea"
 };
 
-// Initialize Firebase
+// Initialize Firebase (using v8 syntax)
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
@@ -68,6 +66,7 @@ function copyUPI() {
 
 // Function for payment done button
 async function paymentDone() {
+  alert("\"I Have Paid\" button clicked!"); // Added for debugging
   console.log("paymentDone function called.");
   let currentPaymentAmount = 1; // Default value
   const amountElement = document.getElementById("paymentAmountDisplay");
@@ -77,6 +76,7 @@ async function paymentDone() {
   console.log("Payment amount detected:", currentPaymentAmount);
 
   try {
+    // Update Firebase payment status
     await db.collection("qrData")
       .doc(studentId)
       .update({
@@ -84,6 +84,7 @@ async function paymentDone() {
       });
     console.log("Firebase payment status updated to verification_pending.");
 
+    // Send data to Google Sheet
     const response = await fetch(SHEET_URL, {
       method: "POST",
       headers: {
@@ -94,7 +95,7 @@ async function paymentDone() {
         studentId: studentId,
         amount: currentPaymentAmount,
         paymentStatus: "verification_pending",
-        paymentProofURL: ""
+        paymentProofURL: "" // Assuming no proof URL is uploaded for now
       })
     });
 
@@ -120,6 +121,11 @@ async function paymentDone() {
     `;
   }
 }
+
+// Expose functions to global scope for HTML onclick attributes
+// Moved these assignments up to ensure they are available when the DOM is rendered
+window.copyUPI = copyUPI;
+window.paymentDone = paymentDone;
 
 // Main logic
 counterRef.get().then(async (doc) => {
@@ -324,7 +330,3 @@ counterRef.get().then(async (doc) => {
   document.getElementById("count").innerHTML =
     "❌ Error: " + error.message;
 });
-
-// Expose functions to global scope for HTML onclick attributes
-window.copyUPI = copyUPI;
-window.paymentDone = paymentDone;
