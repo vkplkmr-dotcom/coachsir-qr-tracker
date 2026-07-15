@@ -18,7 +18,8 @@ const db = firebase.firestore();
 // Google Sheet URL
 const SHEET_URL =
 const SHEET_URL =
-"https://script.google.com/macros/s/AKfycbyEggFHzMTuN4Ajxwk52ET7R_kRCkExk5gLW-52oY0I7dKwlxCu-Iu9zztHUOTkhhF3Gg/exec"
+const SHEET_URL =
+"https://script.google.com/macros/s/AKfycbyEggFHzMTuN4Ajxwk52ET7R_kRCkExk5gLW-52oY0I7dKwlxCu-Iu9zztHUOTkhhF3Gg/exec";
 // Student ID
 const params = new URLSearchParams(window.location.search);
 
