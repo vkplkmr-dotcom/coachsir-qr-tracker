@@ -48,7 +48,8 @@ window.approvePayment = function(id) {
       location.reload();
     })
     .catch(error => {
-      alert(error.message);
+      alert("Error approving payment: " + error.message);
+      console.error("Error approving payment:", error);
     });
 };
 
@@ -66,52 +67,58 @@ function copyUPI() {
 }
 
 // Function for payment done button
-  alert("Payment button clicked");
-function paymentDone() {
-  // Get the current payment amount from the displayed HTML or a global variable if available
-  // For now, using a default of 1, but ideally this should be dynamic based on the QR data
+async function paymentDone() {
+  console.log("paymentDone function called.");
   let currentPaymentAmount = 1; // Default value
   const amountElement = document.getElementById("paymentAmountDisplay");
   if (amountElement) {
-    currentPaymentAmount = parseFloat(amountElement.innerText.replace('₹', '')) || 1;
+    currentPaymentAmount = parseFloat(amountElement.innerText.replace("₹", "")) || 1;
   }
+  console.log("Payment amount detected:", currentPaymentAmount);
 
-  db.collection("qrData")
-    .doc(studentId)
-    .update({
-      paymentStatus: "verification_pending"
-    })
-    .then(() => {
-      return fetch(SHEET_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          action: "payment",
-          studentId: studentId,
-          amount: currentPaymentAmount, // Use dynamic amount
-          paymentStatus: "verification_pending",
-          paymentProofURL: ""
-        })
+  try {
+    await db.collection("qrData")
+      .doc(studentId)
+      .update({
+        paymentStatus: "verification_pending"
       });
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.text();
-    })
-    .then(result => {
-      document.getElementById("count").innerHTML = `
-        <h2>✅ Payment Submitted</h2>
-        <p>Admin verification के बाद CBT Access मिलेगा.</p>
-      `;
-    })
-    .catch(error => {
-      alert("Error submitting payment for verification: " + error.message);
-      console.error("Payment verification fetch error:", error);
+    console.log("Firebase payment status updated to verification_pending.");
+
+    const response = await fetch(SHEET_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        action: "payment",
+        studentId: studentId,
+        amount: currentPaymentAmount,
+        paymentStatus: "verification_pending",
+        paymentProofURL: ""
+      })
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+    }
+
+    const result = await response.text();
+    console.log("Google Sheet fetch successful:", result);
+
+    document.getElementById("count").innerHTML = `
+      <h2>✅ Payment Submitted</h2>
+      <p>Admin verification के बाद CBT Access मिलेगा.</p>
+    `;
+  } catch (error) {
+    alert("Error submitting payment for verification: " + error.message);
+    console.error("Payment verification process error:", error);
+    document.getElementById("count").innerHTML = `
+      <h2>❌ Error</h2>
+      <p>Payment submission failed. Please try again or contact support.</p>
+      <p>Error details: ${error.message}</p>
+    `;
+  }
 }
 
 // Main logic
@@ -128,7 +135,7 @@ counterRef.get().then(async (doc) => {
           <b>${d.id}</b><br>
           Status : ${data.paymentStatus || "pending"}<br><br>
           <button style="cursor:pointer; padding:10px; position:relative; z-index:9999;"
-            onclick="window.approvePayment('${d.id}')">
+            onclick="window.approvePayment(\'${d.id}\')">
             ✅ Approve
           </button>
         </div>
@@ -280,7 +287,7 @@ counterRef.get().then(async (doc) => {
       return response.text();
     })
     .catch(error => {
-      console.error("Google Sheet fetch error:", error);
+      console.error("Google Sheet fetch error for scan logging:", error);
       // Optionally, inform the user or log this error more prominently
     });
 
