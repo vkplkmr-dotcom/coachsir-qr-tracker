@@ -66,6 +66,7 @@ function copyUPI() {
 }
 
 // Function for payment done button
+  alert("Payment button clicked");
 function paymentDone() {
   // Get the current payment amount from the displayed HTML or a global variable if available
   // For now, using a default of 1, but ideally this should be dynamic based on the QR data
