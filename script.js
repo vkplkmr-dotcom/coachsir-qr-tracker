@@ -16,8 +16,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // Google Sheet URL - FIXED syntax error here
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbyEggFHzMTuN4Ajxwk52ET7R_kRCkExk5gLW-52oY0I7dKwlxCu-Iu9zztHUOTkhhF3Gg/exec";
-
+const SHEET_URL = "https://script.google.com/macros/s/AKfycby5inXpjWD10lIzHkOku21RwhVlMh9htuDOxwkb3mFwxR6BooQ0L-f6YArf8sNv4WbE/exec";
 // Student ID
 const params = new URLSearchParams(window.location.search);
 const studentId = params.get("id") || "general";
