@@ -157,6 +157,16 @@ async function runMainLogic() {
       }
 
       // 2. Payment Check
+      if (data.paymentStatus === "verification_pending") {
+  document.getElementById("count").innerHTML = `
+    <div style="text-align:center;padding:20px;">
+      <h2>⏳ Payment Verification Pending</h2>
+      <p>Your payment has already been submitted.</p>
+      <p>Please wait for admin approval.</p>
+    </div>
+  `;
+  return;
+}
       if (data.paymentStatus !== "approved") {
         const amount = data.paymentAmount || 1;
         const upiId = "vkplkmr-1@oksbi";
