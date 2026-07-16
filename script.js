@@ -61,6 +61,7 @@ window.approvePayment = function(id) {
 
 // Function for payment done button
 window.paymentDone = async function() {
+  alert("paymentDone called");
   console.log("paymentDone function called.");
   let currentPaymentAmount = 1; // Default value
   const amountElement = document.getElementById("paymentAmountDisplay");
