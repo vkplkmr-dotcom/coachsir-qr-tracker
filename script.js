@@ -275,14 +275,3 @@ async function runMainLogic() {
 
 // Run the logic
 runMainLogic();
-function testPost() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Payments");
-  
-  sheet.appendRow([
-    new Date(),
-    "TEST001",
-    1,
-    "verification_pending",
-    ""
-  ]);
-}
