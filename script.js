@@ -284,7 +284,7 @@ if (latestDoc.exists && latestDoc.data().paymentStatus === "approved") {
   `;
 
   setTimeout(() => {
-    window.location.href = "https://cbtexam.onlinetestpanel.com/";
+    window.location.href = CONFIG.EXAM_URL;
   }, 2000);
 
 } else {
