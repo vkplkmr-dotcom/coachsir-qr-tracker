@@ -72,13 +72,20 @@ window.paymentDone = async function() {
 
   try {
     // Update Firebase payment status
-    await db.collection("qrData")
-      .doc(studentId)
-      .update({
-        paymentStatus: "verification_pending"
-      });
-    console.log("Firebase payment status updated to verification_pending.");
+const doc = await db.collection("qrData").doc(studentId).get();
 
+if (doc.exists && doc.data().paymentStatus === "approved") {
+  alert("✅ Payment is already approved.");
+  return;
+}
+
+await db.collection("qrData")
+  .doc(studentId)
+  .update({
+    paymentStatus: "verification_pending"
+  });
+
+console.log("Firebase payment status updated to verification_pending.");
     // Send data to Google Sheet
     const response = await fetch(SHEET_URL, {
       method: "POST",
