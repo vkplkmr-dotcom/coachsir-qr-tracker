@@ -33,7 +33,7 @@ const defaultExpiryDate = new Date("2026-08-15T23:59:59");
 
 // Function to copy UPI ID
 window.copyUPI = function() {
-  navigator.clipboard.writeText("vkplkmr-1@oksbi")
+  navigator.clipboard.writeText(CONFIG.UPI_ID)
   .then(() => {
     alert("✅ UPI ID Copied");
   })
@@ -174,7 +174,7 @@ async function runMainLogic() {
 }
       if (data.paymentStatus !== "approved") {
         const amount = data.paymentAmount || 1;
-        const upiId = "vkplkmr-1@oksbi";
+       const upiId = CONFIG.UPI_ID;
         const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent("COACHsir Academy")}&am=${amount}&cu=INR`;
 
         document.getElementById("count").innerHTML = `
