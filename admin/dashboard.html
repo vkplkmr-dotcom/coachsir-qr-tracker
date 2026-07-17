@@ -20,62 +20,49 @@
 <body>
 
 
-<div class="app">
+<div class="dashboard">
 
 
 <!-- Sidebar -->
 
 <aside class="sidebar">
 
+<div class="logo">
 
-<div class="brand">
-
-<h2>COACHsir</h2>
-
-<span>ACADEMY ERP</span>
+<h1>COACHsir</h1>
+<p>ACADEMY ERP</p>
 
 </div>
 
 
+<nav>
 
-<ul>
+<a class="active">📊 Dashboard</a>
 
-<li class="active">
-📊 Dashboard
-</li>
+<a>👨‍🎓 Students</a>
 
+<a>💳 Payments</a>
 
-<li>
-👨‍🎓 Students
-</li>
+<a>📷 Attendance</a>
 
+<a>🎓 CBT Access</a>
 
-<li>
-💳 Payments
-</li>
+<a>⚙ Settings</a>
 
-
-<li>
-📷 Attendance
-</li>
+</nav>
 
 
-<li>
-🎓 CBT Access
-</li>
+<div class="admin-box">
 
+<div class="avatar">
+KS
+</div>
 
-<li>
-⚙ Settings
-</li>
-
-
-</ul>
-
-
-<div class="logout" onclick="logout()">
-
-🚪 Logout
+<div>
+<b>Kapil Soni</b>
+<br>
+<span>Administrator</span>
+</div>
 
 </div>
 
@@ -86,45 +73,64 @@
 
 
 
-<!-- Main Area -->
+<!-- Main Content -->
 
-<section class="content">
+<main class="main">
 
 
 
-<header>
+<!-- Hero Header -->
+
+<section class="hero">
+
+
+<div class="hero-text">
+
+<h1>
+Welcome Back, Kapil Soni 👋
+</h1>
+
+<h2>
+COACHsir Academy Management System
+</h2>
+
+<p>
+Manage Students • Payments • Attendance • CBT Examination
+</p>
+
+
+<button>
+🚀 Open Dashboard
+</button>
+
+
+</div>
+
+
+
+
+<div class="hero-card">
 
 
 <div>
+<h3>Today's Overview</h3>
 
-<h1>Good Morning, Admin 👋</h1>
-
-<p>COACHsir Academy Management Dashboard</p>
-
-</div>
-
-
-<div class="profile">
-
-<div class="avatar">
-KS
-</div>
-
-<div>
-
-<b>Kapil Soni</b>
-
-<br>
-
-<span>Administrator</span>
-
-</div>
+<p>Active Learning Platform</p>
 
 </div>
 
 
-</header>
+<div class="hero-number">
 
+100%
+
+</div>
+
+
+</div>
+
+
+</section>
 
 
 
@@ -132,13 +138,12 @@ KS
 
 <!-- Stats -->
 
+<section class="stats">
 
-<div class="stats">
 
+<div class="stat-card">
 
-<div class="stat-card blue">
-
-<div class="icon">
+<div class="icon blue">
 👨‍🎓
 </div>
 
@@ -158,9 +163,9 @@ KS
 
 
 
-<div class="stat-card gold">
+<div class="stat-card">
 
-<div class="icon">
+<div class="icon gold">
 💳
 </div>
 
@@ -180,15 +185,15 @@ KS
 
 
 
-<div class="stat-card green">
+<div class="stat-card">
 
-<div class="icon">
+<div class="icon green">
 ✅
 </div>
 
 <div>
 
-<p>Approved</p>
+<p>Approved Payments</p>
 
 <h2 id="approvedPayments">
 0
@@ -202,9 +207,9 @@ KS
 
 
 
-<div class="stat-card purple">
+<div class="stat-card">
 
-<div class="icon">
+<div class="icon purple">
 📅
 </div>
 
@@ -221,24 +226,21 @@ KS
 </div>
 
 
-
-</div>
-
+</section>
 
 
 
 
 
-<div class="grid">
+
+<section class="content-grid">
 
 
+<div class="panel">
 
-<div class="box">
-
-
-<h3>
+<h2>
 💳 Recent Payments
-</h3>
+</h2>
 
 
 <div id="paymentList">
@@ -254,12 +256,12 @@ Loading...
 
 
 
-<div class="box">
+<div class="panel">
 
 
-<h3>
+<h2>
 📈 Activity
-</h3>
+</h2>
 
 
 <div id="activity">
@@ -272,14 +274,11 @@ No activity
 </div>
 
 
-
-</div>
-
-
-
-
-
 </section>
+
+
+
+</main>
 
 
 </div>
