@@ -24,12 +24,16 @@ function addStudent() {
   }
 
   db.collection("qrData").doc(id).set({
-    studentName: name,
-    count: 0,
-    active: true,
-    scanLimit: limit,
-    unlimited: false,
-    createdAt: new Date()
+  studentName: name,
+  count: 0,
+  active: true,
+  scanLimit: limit,
+  unlimited: false,
+  paymentAmount: 1,
+  paymentStatus: "pending",
+  expiryDate: new Date("2026-08-15T23:59:59"),
+  createdAt: new Date(),
+  lastScan: null
 }).then(() => {
     alert("Student Added Successfully");
     loadStudents();
