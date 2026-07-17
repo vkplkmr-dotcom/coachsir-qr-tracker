@@ -20,8 +20,7 @@ body{
 /* SIDEBAR */
 
 .sidebar{
-
-    width:280px;
+    width:220px;
     background:linear-gradient(180deg,#061a40,#003b8f);
     color:white;
     padding:30px 22px;
@@ -41,7 +40,7 @@ body{
 
 .logo h1{
 
-    font-size:34px;
+    font-size:26px;
     letter-spacing:1px;
 
 }
@@ -50,8 +49,8 @@ body{
 .logo p{
 
     color:#ffd700;
-    letter-spacing:4px;
-    font-size:12px;
+    letter-spacing:2px;
+    font-size:11px;
 
 }
 
@@ -62,8 +61,8 @@ nav a{
     display:block;
     color:white;
     text-decoration:none;
-    padding:16px;
-    margin:10px 0;
+    padding:12px;
+    margin:6px 0;
     border-radius:15px;
     font-size:16px;
     transition:.3s;
@@ -95,7 +94,7 @@ nav a.active{
     gap:15px;
 
     background:rgba(255,255,255,.12);
-    padding:15px;
+    padding:10px;
     border-radius:18px;
 
 }
@@ -134,8 +133,7 @@ nav a.active{
 /* MAIN */
 
 .main{
-
-    margin-left:280px;
+    margin-left:220px;
     width:100%;
     padding:35px;
 
