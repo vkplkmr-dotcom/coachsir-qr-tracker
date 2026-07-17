@@ -1,3 +1,5 @@
+// Firebase Configuration
+
 const firebaseConfig = {
   apiKey: "AIzaSyANpygbwjFFu1R7Aw-o36T5SkMmXVEhZOA",
   authDomain: "qr-tracker-57393.firebaseapp.com",
@@ -7,71 +9,173 @@ const firebaseConfig = {
   appId: "1:617727926623:web:36d78ef0a54e6051cbd6ea"
 };
 
-firebase.initializeApp(firebaseConfig);
+
+// Initialize Firebase
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
 
 const db = firebase.firestore();
 
-// Add Student
-function addStudent() {
 
-  const id = document.getElementById("studentId").value.trim();
-  const name = document.getElementById("studentName").value.trim();
-  const limit = Number(document.getElementById("scanLimit").value);
 
-  if (id === "") {
-    alert("Student ID Required");
-    return;
-  }
+// Load Dashboard Data
 
-  db.collection("qrData").doc(id).set({
-  studentName: name,
-  count: 0,
-  active: true,
-  scanLimit: limit,
-  unlimited: false,
-  paymentAmount: 1,
-  paymentStatus: "pending",
-  expiryDate: new Date("2026-08-15T23:59:59"),
-  createdAt: new Date(),
-  lastScan: null
-}).then(() => {
-    alert("Student Added Successfully");
-    loadStudents();
-  });
+async function loadDashboard(){
+
+
+try{
+
+
+const snapshot = await db.collection("qrData").get();
+
+
+
+let totalStudents = 0;
+let pendingPayments = 0;
+let approvedPayments = 0;
+let todayScan = 0;
+
+
+
+const today = new Date();
+today.setHours(0,0,0,0);
+
+
+
+let paymentHTML = "";
+
+
+
+snapshot.forEach(doc=>{
+
+
+const data = doc.data();
+
+totalStudents++;
+
+
+// Payment Status
+
+if(data.paymentStatus === "verification_pending"){
+
+    pendingPayments++;
 
 }
 
-// Load Students
-function loadStudents() {
 
-  db.collection("qrData").get().then(snapshot => {
+if(data.paymentStatus === "approved"){
 
-    let html = "";
+    approvedPayments++;
 
-    snapshot.forEach(doc => {
+}
 
-      const d = doc.data();
 
-      html += `
+
+// Today's Scan
+
+if(data.lastScan){
+
+    let scanDate;
+
+    if(typeof data.lastScan.toDate === "function"){
+
+        scanDate = data.lastScan.toDate();
+
+    }else{
+
+        scanDate = new Date(data.lastScan);
+
+    }
+
+
+    if(scanDate >= today){
+
+        todayScan++;
+
+    }
+
+}
+
+
+
+// Payment List
+
+if(data.paymentStatus){
+
+paymentHTML += `
+
+<div class="payment-item">
+
+<b>${doc.id}</b>
+
+<br>
+
+Status:
+${data.paymentStatus}
+
+<br>
+
+Amount:
+₹${data.paymentAmount || 0}
+
+</div>
+
 <hr>
-<b>ID :</b> ${doc.id}<br>
-<b>Name :</b> ${d.studentName || "-"}<br>
-<b>Count :</b> ${d.count}<br>
-<b>Limit :</b> ${d.scanLimit}<br>
-<b>Active :</b> ${d.active ? "✅ Yes" : "❌ No"}<br>
+
 `;
 
-    });
+}
 
-    document.getElementById("studentList").innerHTML = html;
 
-  });
+});
+
+
+
+
+// Update Cards
+
+
+document.getElementById("totalStudents").innerHTML =
+totalStudents;
+
+
+document.getElementById("pendingPayments").innerHTML =
+pendingPayments;
+
+
+document.getElementById("approvedPayments").innerHTML =
+approvedPayments;
+
+
+document.getElementById("todayScan").innerHTML =
+todayScan;
+
+
+
+
+// Payment Section
+
+document.getElementById("paymentList").innerHTML =
+paymentHTML || "No Payments";
+
+
 
 }
 
-// Logout
-function logout() {
-  location.href = "login.html";
+catch(error){
+
+console.error(error);
+
 }
 
-loadStudents();
+}
+
+
+
+
+// Run
+
+loadDashboard();
