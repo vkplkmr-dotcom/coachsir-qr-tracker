@@ -29,7 +29,6 @@ window.copyUPI = function() {
 
 // Global function for admin approval
 window.approvePayment = function(id) {
-  alert("Clicked : " + id);
   db.collection("qrData")
     .doc(id)
     .update({
@@ -47,8 +46,6 @@ window.approvePayment = function(id) {
 
 // Function for payment done button
 window.paymentDone = async function() {
-  alert("paymentDone called");
-  console.log("paymentDone function called.");
   let currentPaymentAmount = 1; // Default value
   const amountElement = document.getElementById("paymentAmountDisplay");
   if (amountElement) {
@@ -140,10 +137,7 @@ async function runMainLogic() {
 
     if (doc.exists) {
       const data = doc.data();
-      alert("Student ID: " + studentId);
-alert("Payment Status: " + data.paymentStatus);
-
-      // 1. QR Active Check
+    // 1. QR Active Check
       if (data.active === false) {
         document.getElementById("count").innerHTML = `
           <h2>❌ QR Inactive</h2>
