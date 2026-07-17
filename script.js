@@ -1,20 +1,6 @@
 // Firebase Configuration
 // Firebase SDKs are loaded in index.html using v8.10.1
 
-const firebaseConfig = {
-  apiKey: "AIzaSyANpygbwjFFu1R7Aw-o36T5SkMmXVEhZOA",
-  authDomain: "qr-tracker-57393.firebaseapp.com",
-  projectId: "qr-tracker-57393",
-  storageBucket: "qr-tracker-57393.firebasestorage.app",
-  messagingSenderId: "617727926623",
-  appId: "1:617727926623:web:36d78ef0a54e6051cbd6ea"
-};
-
-// Initialize Firebase (using v8 syntax)
-firebase.initializeApp(firebaseConfig);
-
-const db = firebase.firestore();
-
 // Google Sheet URL - FIXED syntax error here
 const SHEET_URL = "https://script.google.com/macros/s/AKfycby5inXpjWD10lIzHkOku21RwhVlMh9htuDOxwkb3mFwxR6BooQ0L-f6YArf8sNv4WbE/exec";
 // Student ID
