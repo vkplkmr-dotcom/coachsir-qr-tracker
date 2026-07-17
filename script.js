@@ -27,7 +27,7 @@ const isAdmin = params.get("admin") === "1234";
 const counterRef = db.collection("qrData").doc(studentId);
 
 // Expiry Date
-
+const defaultExpiryDate = new Date("2026-08-15T23:59:59");
 
 // --- Global Functions ---
 
@@ -211,7 +211,7 @@ async function runMainLogic() {
       }
 
       // 3. Expiry Check
-      let expiry = CONFIG.EXPIRY_DATE;
+      let expiry = defaultExpiryDate;
       if (data.expiryDate && typeof data.expiryDate.toDate === "function") {
         expiry = data.expiryDate.toDate();
       }
@@ -265,7 +265,7 @@ async function runMainLogic() {
         paymentStatus: "pending",
         paymentAmount: 1,
         createdAt: now,
-       expiryDate: CONFIG.EXPIRY_DATE,
+       expiryDate: defaultExpiryDate,
         lastScan: now
       });
     }
