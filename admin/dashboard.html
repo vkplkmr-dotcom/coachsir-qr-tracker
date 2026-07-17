@@ -1,120 +1,295 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>COACHsir Admin Dashboard</title>
+<title>COACHsir Academy Admin</title>
 
 <link rel="stylesheet" href="admin.css">
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 </head>
 
+
 <body>
 
-<div class="layout">
+
+<div class="app">
+
 
 <!-- Sidebar -->
+
 <aside class="sidebar">
 
-<h2>🚀 COACHsir</h2>
-<p class="admin-text">Admin Panel</p>
 
-<nav>
+<div class="brand">
 
-<a class="active">📊 Dashboard</a>
+<h2>COACHsir</h2>
 
-<a href="#">👨 Students</a>
+<span>ACADEMY ERP</span>
 
-<a href="#">💳 Payments</a>
+</div>
 
-<a href="#">📷 Attendance</a>
 
-<a href="#">🎓 CBT Cards</a>
 
-<a href="#">⚙ Settings</a>
+<ul>
 
-</nav>
+<li class="active">
+📊 Dashboard
+</li>
 
-<button class="logout" onclick="logout()">
+
+<li>
+👨‍🎓 Students
+</li>
+
+
+<li>
+💳 Payments
+</li>
+
+
+<li>
+📷 Attendance
+</li>
+
+
+<li>
+🎓 CBT Access
+</li>
+
+
+<li>
+⚙ Settings
+</li>
+
+
+</ul>
+
+
+<div class="logout" onclick="logout()">
+
 🚪 Logout
-</button>
+
+</div>
+
 
 </aside>
 
 
-<!-- Main -->
-<main class="main">
+
+
+
+<!-- Main Area -->
+
+<section class="content">
+
 
 
 <header>
 
-<h1>Dashboard</h1>
+
+<div>
+
+<h1>Good Morning, Admin 👋</h1>
+
+<p>COACHsir Academy Management Dashboard</p>
+
+</div>
+
 
 <div class="profile">
-👤 Admin
+
+<div class="avatar">
+KS
 </div>
+
+<div>
+
+<b>Kapil Soni</b>
+
+<br>
+
+<span>Administrator</span>
+
+</div>
+
+</div>
+
 
 </header>
 
 
 
-<section class="cards">
 
 
-<div class="card">
-<h3>👨 Students</h3>
-<h1 id="totalStudents">0</h1>
+
+<!-- Stats -->
+
+
+<div class="stats">
+
+
+<div class="stat-card blue">
+
+<div class="icon">
+👨‍🎓
+</div>
+
+<div>
+
+<p>Total Students</p>
+
+<h2 id="totalStudents">
+0
+</h2>
+
+</div>
+
 </div>
 
 
-<div class="card">
-<h3>⏳ Pending Payments</h3>
-<h1 id="pendingPayments">0</h1>
+
+
+
+<div class="stat-card gold">
+
+<div class="icon">
+💳
+</div>
+
+<div>
+
+<p>Pending Payments</p>
+
+<h2 id="pendingPayments">
+0
+</h2>
+
+</div>
+
 </div>
 
 
-<div class="card">
-<h3>✅ Approved</h3>
-<h1 id="approvedPayments">0</h1>
+
+
+
+<div class="stat-card green">
+
+<div class="icon">
+✅
+</div>
+
+<div>
+
+<p>Approved</p>
+
+<h2 id="approvedPayments">
+0
+</h2>
+
+</div>
+
 </div>
 
 
-<div class="card">
-<h3>📅 Today's Scan</h3>
-<h1 id="todayScan">0</h1>
+
+
+
+<div class="stat-card purple">
+
+<div class="icon">
+📅
+</div>
+
+<div>
+
+<p>Today's Scan</p>
+
+<h2 id="todayScan">
+0
+</h2>
+
+</div>
+
 </div>
 
 
-</section>
+
+</div>
 
 
 
-<section class="panel">
 
-<h2>Recent Activity</h2>
+
+
+<div class="grid">
+
+
+
+<div class="box">
+
+
+<h3>
+💳 Recent Payments
+</h3>
+
+
+<div id="paymentList">
+
+Loading...
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="box">
+
+
+<h3>
+📈 Activity
+</h3>
+
 
 <div id="activity">
 
-Loading data...
+No activity
 
 </div>
+
+
+</div>
+
+
+
+</div>
+
+
+
 
 
 </section>
 
 
-</main>
-
 </div>
+
+
 
 
 <script src="dashboard.js"></script>
 
+
 </body>
+
 </html>
