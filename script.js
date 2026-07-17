@@ -154,6 +154,8 @@ async function runMainLogic() {
 
     if (doc.exists) {
       const data = doc.data();
+      alert("Student ID: " + studentId);
+alert("Payment Status: " + data.paymentStatus);
 
       // 1. QR Active Check
       if (data.active === false) {
