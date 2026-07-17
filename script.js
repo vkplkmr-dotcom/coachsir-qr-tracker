@@ -1,817 +1,106 @@
-// ===============================
-// COACHsir QR TRACKER - script.js
-// Modular Version Step 3
-// ===============================
+// Firebase Configuration
+// Firebase SDKs are loaded in index.html using v8.10.1
 
-
-// ===============================
-// CONFIG
-// ===============================
-
+// Google Sheet URL - FIXED syntax error here
 const SHEET_URL = "https://script.google.com/macros/s/AKfycby5inXpjWD10lIzHkOku21RwhVlMh9htuDOxwkb3mFwxR6BooQ0L-f6YArf8sNv4WbE/exec";
-
-const UPI_ID = "vkplkmr-1@oksbi";
-
-const EXAM_URL = "https://cbtexam.onlinetestpanel.com/";
-
-const DEFAULT_EXPIRY = new Date("2026-08-15T23:59:59");
-
-
-// ===============================
-// USER DATA
-// ===============================
-
+// Student ID
 const params = new URLSearchParams(window.location.search);
-
 const studentId = params.get("id") || "general";
-
 const isAdmin = params.get("admin") === "1234";
 
-
 // Firestore Reference
+const counterRef = db.collection("qrData").doc(studentId);
 
-const studentRef = db.collection("qrData").doc(studentId);
+// Expiry Date
+const defaultExpiryDate = new Date("2026-08-15T23:59:59");
 
+// --- Global Functions ---
 
-// ===============================
-// COMMON FUNCTIONS
-// ===============================
+// Function to copy UPI ID
+window.copyUPI = function() {
+  navigator.clipboard.writeText("vkplkmr-1@oksbi")
+  .then(() => {
+    alert("✅ UPI ID Copied");
+  })
+  .catch(() => {
+    alert("UPI ID: vkplkmr-1@oksbi");
+  });
+};
 
-
-// Copy UPI
-
-window.copyUPI = function(){
-
-    navigator.clipboard.writeText(UPI_ID)
-    .then(()=>{
-        alert("✅ UPI ID Copied");
+// Global function for admin approval
+window.approvePayment = function(id) {
+  alert("Clicked : " + id);
+  db.collection("qrData")
+    .doc(id)
+    .update({
+      paymentStatus: "approved"
     })
-    .catch(()=>{
-        alert("UPI ID : " + UPI_ID);
+    .then(() => {
+      alert("✅ Payment Approved");
+      location.reload();
+    })
+    .catch(error => {
+      alert("Error approving payment: " + error.message);
+      console.error("Error approving payment:", error);
     });
-
 };
 
+// Function for payment done button
+window.paymentDone = async function() {
+  alert("paymentDone called");
+  console.log("paymentDone function called.");
+  let currentPaymentAmount = 1; // Default value
+  const amountElement = document.getElementById("paymentAmountDisplay");
+  if (amountElement) {
+    currentPaymentAmount = parseFloat(amountElement.innerText.replace("₹", "")) || 1;
+  }
+  console.log("Payment amount detected:", currentPaymentAmount);
 
+  try {
+    // Update Firebase payment status
+const doc = await db.collection("qrData").doc(studentId).get();
 
-// Show message
-
-function showMessage(html){
-
-    const box = document.getElementById("count");
-
-    if(box){
-        box.innerHTML = html;
-    }
-
+if (doc.exists && doc.data().paymentStatus === "approved") {
+  alert("✅ Payment is already approved.");
+  return;
 }
-
-
-
-// ===============================
-// FIREBASE FUNCTIONS
-// ===============================
-
-
-async function getStudentData(){
-
-    const doc = await studentRef.get();
-
-    if(doc.exists){
-        return doc.data();
-    }
-
-    return null;
-
-}
-
-
-
-async function createStudent(){
-
-    const now = new Date();
-
-    await studentRef.set({
-
-        count:0,
-
-        active:true,
-
-        scanLimit:100,
-
-        unlimited:false,
-
-        paymentStatus:"pending",
-
-        paymentAmount:1,
-
-        createdAt:now,
-
-        expiryDate:DEFAULT_EXPIRY,
-
-        lastScan:null
-
-    });
-
-}
-
-
-
-async function updatePayment(status){
-
-    await studentRef.update({
-
-        paymentStatus:status
-
-    });
-
-}
-
-
-
-// ===============================
-// PAYMENT SYSTEM
-// ===============================
-
-
-function showPaymentPage(amount){
-
-const upiLink =
-`upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent("COACHsir Academy")}&am=${amount}&cu=INR`;
-
-
-showMessage(`
-
-<div style="
-max-width:400px;
-margin:auto;
-background:white;
-padding:20px;
-border-radius:15px;
-text-align:center;
-box-shadow:0 0 15px #ccc;">
-
-
-<h2 style="color:#0066ff;">
-💳 Payment Required
-</h2>
-
-
-<p>
-CBT Exam Access के लिए Payment करें
-</p>
-
-
-<h1 id="paymentAmountDisplay">
-₹${amount}
-</h1>
-
-
-<img src="assets/upi-qr.png"
-style="width:220px;border-radius:12px;">
-
-
-<br><br>
-
-
-<a href="${upiLink}">
-
-<button style="
-width:100%;
-padding:14px;
-background:#0066ff;
-color:white;
-border:0;
-border-radius:10px;">
-
-💳 Pay Now
-
-</button>
-
-</a>
-
-
-<br><br>
-
-
-<b>UPI ID</b>
-
-<div style="
-padding:10px;
-background:#eee;
-border-radius:8px;">
-
-${UPI_ID}
-
-</div>
-
-
-<br>
-
-
-<button onclick="copyUPI()"
-style="
-width:100%;
-padding:12px;
-background:#333;
-color:white;
-border:0;
-border-radius:8px;">
-
-📋 Copy UPI
-
-</button>
-
-
-<br><br>
-
-
-<button onclick="paymentDone()"
-style="
-width:100%;
-padding:14px;
-background:green;
-color:white;
-border:0;
-border-radius:10px;">
-
-✅ I Have Paid
-
-</button>
-
-
-</div>
-
-`);
-
-}
-
-
-
-
-
-window.paymentDone = async function(){
-
-try{
-
-
-await updatePayment("verification_pending");
-
-
-// Google Sheet
-
-fetch(SHEET_URL,{
-
-method:"POST",
-
-mode:"no-cors",
-
-body:JSON.stringify({
-
-action:"payment",
-
-studentId:studentId,
-
-paymentStatus:"verification_pending",
-
-amount:1
-
-})
-
-});
-
-
-showMessage(`
-
-<div style="text-align:center;padding:20px;">
-
-<h2 style="color:green;">
-✅ Payment Submitted
-</h2>
-
-
-<p>
-Admin verification के बाद CBT Access मिलेगा।
-</p>
-
-
-</div>
-
-`);
-
-
-}catch(error){
-
-alert(error.message);
-
-}
-
-
-};
-
-
-
-
-// ===============================
-// ADMIN APPROVAL
-// ===============================
-
-
-window.approvePayment = async function(id){
-
-
-try{
-
 
 await db.collection("qrData")
-.doc(id)
-.update({
-
-paymentStatus:"approved"
-
-});
-
-
-alert("✅ Payment Approved");
-
-
-location.reload();
-
-
-}
-
-catch(error){
-
-alert(error.message);
-
-}
-
-
-};
-
-
-
-
-// ===============================
-// MAIN START
-// ===============================
-
-
-async function init(){
-
-
-try{
-
-
-// Admin
-
-if(isAdmin){
-
-console.log("Admin Mode");
-
-return;
-
-}
-
-
-// Get data
-
-let data = await getStudentData();
-
-
-// New Student
-
-if(!data){
-
-await createStudent();
-
-data = await getStudentData();
-
-}
-
-
-
-// Payment Check
-
-
-if(data.paymentStatus !== "approved"){
-
-
-if(data.paymentStatus==="verification_pending"){
-
-
-showMessage(`
-
-<h2>
-⏳ Payment Verification Pending
-</h2>
-
-<p>
-Please wait for admin approval.
-</p>
-
-`);
-
-
-return;
-
-
-}
-
-
-showPaymentPage(data.paymentAmount || 1);
-
-return;
-
-
-}
-
-
-console.log("Payment Approved");
-
-
-// आगे Step 3 Part 2 में:
-// Expiry Check
-// Scan Limit
-// Attendance Record
-// CBT Redirect
-
-
-}
-
-catch(error){
-
-console.error(error);
-
-showMessage(
-"❌ Error : "+error.message
-);
-
-}
-
-
-}
-
-
-
-// Start
-
-init();        paymentStatus:"pending",
-
-        paymentAmount:1,
-
-        createdAt:now,
-
-        expiryDate:DEFAULT_EXPIRY,
-
-        lastScan:null
-
+  .doc(studentId)
+  .update({
+    paymentStatus: "verification_pending"
+  });
+
+console.log("Firebase payment status updated to verification_pending.");
+    // Send data to Google Sheet
+    const response = await fetch(SHEET_URL, {
+      method: "POST",
+      mode: "no-cors", // Use no-cors to avoid Failed to fetch if the server doesn't support CORS
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        action: "payment",
+        studentId: studentId,
+        amount: currentPaymentAmount,
+        paymentStatus: "verification_pending",
+        paymentProofURL: "" 
+      })
     });
 
-}
-
-
-
-async function updatePayment(status){
-
-    await studentRef.update({
-
-        paymentStatus:status
-
-    });
-
-}
-
-
-
-// ===============================
-// PAYMENT SYSTEM
-// ===============================
-
-
-function showPaymentPage(amount){
-
-const upiLink =
-`upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent("COACHsir Academy")}&am=${amount}&cu=INR`;
-
-
-showMessage(`
-
-<div style="
-max-width:400px;
-margin:auto;
-background:white;
-padding:20px;
-border-radius:15px;
-text-align:center;
-box-shadow:0 0 15px #ccc;">
-
-
-<h2 style="color:#0066ff;">
-💳 Payment Required
-</h2>
-
-
-<p>
-CBT Exam Access के लिए Payment करें
-</p>
-
-
-<h1 id="paymentAmountDisplay">
-₹${amount}
-</h1>
-
-
-<img src="assets/upi-qr.png"
-style="width:220px;border-radius:12px;">
-
-
-<br><br>
-
-
-<a href="${upiLink}">
-
-<button style="
-width:100%;
-padding:14px;
-background:#0066ff;
-color:white;
-border:0;
-border-radius:10px;">
-
-💳 Pay Now
-
-</button>
-
-</a>
-
-
-<br><br>
-
-
-<b>UPI ID</b>
-
-<div style="
-padding:10px;
-background:#eee;
-border-radius:8px;">
-
-${UPI_ID}
-
-</div>
-
-
-<br>
-
-
-<button onclick="copyUPI()"
-style="
-width:100%;
-padding:12px;
-background:#333;
-color:white;
-border:0;
-border-radius:8px;">
-
-📋 Copy UPI
-
-</button>
-
-
-<br><br>
-
-
-<button onclick="paymentDone()"
-style="
-width:100%;
-padding:14px;
-background:green;
-color:white;
-border:0;
-border-radius:10px;">
-
-✅ I Have Paid
-
-</button>
-
-
-</div>
-
-`);
-
-}
-
-
-
-
-
-window.paymentDone = async function(){
-
-try{
-
-
-await updatePayment("verification_pending");
-
-
-// Google Sheet
-
-fetch(SHEET_URL,{
-
-method:"POST",
-
-mode:"no-cors",
-
-body:JSON.stringify({
-
-action:"payment",
-
-studentId:studentId,
-
-paymentStatus:"verification_pending",
-
-amount:1
-
-})
-
-});
-
-
-showMessage(`
-
-<div style="text-align:center;padding:20px;">
-
-<h2 style="color:green;">
-✅ Payment Submitted
-</h2>
-
-
-<p>
-Admin verification के बाद CBT Access मिलेगा।
-</p>
-
-
-</div>
-
-`);
-
-
-}catch(error){
-
-alert(error.message);
-
-}
-
-
-};
-
-
-
-
-// ===============================
-// ADMIN APPROVAL
-// ===============================
-
-
-window.approvePayment = async function(id){
-
-
-try{
-
-
-await db.collection("qrData")
-.doc(id)
-.update({
-
-paymentStatus:"approved"
-
-});
-
-
-alert("✅ Payment Approved");
-
-
-location.reload();
-
-
-}
-
-catch(error){
-
-alert(error.message);
-
-}
-
-
-};
-
-
-
-
-// ===============================
-// MAIN START
-// ===============================
-
-
-async function init(){
-
-
-try{
-
-
-// Admin
-
-if(isAdmin){
-
-console.log("Admin Mode");
-
-return;
-
-}
-
-
-// Get data
-
-let data = await getStudentData();
-
-
-// New Student
-
-if(!data){
-
-await createStudent();
-
-data = await getStudentData();
-
-}
-
-
-
-// Payment Check
-
-
-if(data.paymentStatus !== "approved"){
-
-
-if(data.paymentStatus==="verification_pending"){
-
-
-showMessage(`
-
-<h2>
-⏳ Payment Verification Pending
-</h2>
-
-<p>
-Please wait for admin approval.
-</p>
-
-`);
-
-
-return;
-
-
-}
-
-
-showPaymentPage(data || 1);
-
-return;
-
-
-}
-
-
-console.log("Payment Approved");
-
-
-// आगे Step 3 Part 2 में:
-// Expiry Check
-// Scan Limit
-// Attendance Record
-// CBT Redirect
-
-
-}
-
-catch(error){
-
-console.error(error);
-
-showMessage(
-"❌ Error : "+error.message
-);
-
-}
-
-
-}
-
-
-
-// Start
-
-init();    console.error("Payment submission error:", error);
+    // Note: With mode: 'no-cors', we cannot read the response body or status.
+    console.log("Google Sheet request sent (no-cors mode).");
+
+    document.getElementById("count").innerHTML = `
+      <div style="text-align:center; padding:20px;">
+        <h2 style="color:green;">✅ Payment Submitted</h2>
+        <p>Admin verification के बाद CBT Access मिलेगा.</p>
+        <button onclick="location.reload()" style="padding:10px; margin-top:10px;">Refresh Page</button>
+      </div>
+    `;
+  } catch (error) {
+    alert("Error submitting payment: " + error.message);
+    console.error("Payment submission error:", error);
     document.getElementById("count").innerHTML = `
       <h2>❌ Error</h2>
       <p>Submission failed. Error: ${error.message}</p>
