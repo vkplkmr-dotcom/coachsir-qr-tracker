@@ -142,7 +142,8 @@ Approve
 
 :
 
-`<button class="view-btn">
+`<button class="view-btn"
+onclick="viewPayment('${doc.id}')">
 View
 </button>`
 
@@ -233,5 +234,39 @@ alert(error.message);
 
 }
 
+
+}
+window.viewPayment = function(id){
+
+    db.collection("qrData")
+    .doc(id)
+    .get()
+    .then((doc)=>{
+
+        if(doc.exists){
+
+            const data = doc.data();
+
+            alert(
+`Student ID: ${id}
+
+Amount: ₹${data.paymentAmount || 0}
+
+Status: ${data.paymentStatus}
+
+Scan Limit: ${data.scanLimit || 0}
+
+Created:
+${data.createdAt ? data.createdAt.toDate() : "N/A"}`
+            );
+
+        }
+
+    })
+    .catch(error=>{
+
+        alert(error.message);
+
+    });
 
 }
