@@ -7,7 +7,35 @@
 // ===============================
 
 const CONFIG = {
+async function getPaymentAmount(){
 
+  try{
+
+    const doc = await db.collection("settings")
+    .doc("payment")
+    .get();
+
+
+    if(doc.exists){
+
+      return Number(doc.data().amount) || 30;
+
+    }else{
+
+      return 30;
+
+    }
+
+
+  }catch(error){
+
+    console.error("Fee Load Error:", error);
+
+    return 30;
+
+  }
+
+}
   
 
   UPI_ID: "vkplkmr-1@oksbi",
@@ -61,7 +89,7 @@ window.approvePayment = function(id) {
 
 // Function for payment done button
 window.paymentDone = async function() {
-  let currentPaymentAmount = 1; // Default value
+  let currentPaymentAmount = await getPaymentAmount(); // Default value
   const amountElement = document.getElementById("paymentAmountDisplay");
   if (amountElement) {
     currentPaymentAmount = parseFloat(amountElement.innerText.replace("₹", "")) || 1;
@@ -173,7 +201,7 @@ async function runMainLogic() {
   return;
 }
       if (data.paymentStatus !== "approved") {
-        const amount = data.paymentAmount || 1;
+        const amount = data.paymentAmount || await getPaymentAmount();
        const upiId = CONFIG.UPI_ID;
         const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent("COACHsir Academy")}&am=${amount}&cu=INR`;
 
@@ -263,7 +291,7 @@ async function runMainLogic() {
         scanLimit: 100,
         unlimited: false,
         paymentStatus: "pending",
-        paymentAmount: 1,
+        paymentAmount: await getPaymentAmount(),
         createdAt: now,
        expiryDate: defaultExpiryDate,
         lastScan: now
