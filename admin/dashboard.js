@@ -107,26 +107,53 @@ if(data.paymentStatus){
 
 paymentHTML += `
 
-<div class="payment-item">
+<tr>
 
+<td>
 <b>${doc.id}</b>
+</td>
 
-<br>
 
-Status:
-${data.paymentStatus}
-
-<br>
-
-Amount:
+<td>
 ₹${data.paymentAmount || 0}
+</td>
 
-</div>
 
-<hr>
+<td>
+
+<span class="status ${data.paymentStatus}">
+${data.paymentStatus || "pending"}
+</span>
+
+</td>
+
+
+<td>
+
+${
+data.paymentStatus === "verification_pending"
+
+?
+
+`<button class="approve-btn"
+onclick="approvePayment('${doc.id}')">
+Approve
+</button>`
+
+:
+
+`<button class="view-btn">
+View
+</button>`
+
+}
+
+</td>
+
+
+</tr>
 
 `;
-
 }
 
 
@@ -179,3 +206,32 @@ console.error(error);
 // Run
 
 loadDashboard();
+window.approvePayment = async function(id){
+
+try{
+
+await db.collection("qrData")
+.doc(id)
+.update({
+
+paymentStatus:"approved"
+
+});
+
+
+alert("Payment Approved ✅");
+
+
+location.reload();
+
+
+}
+
+catch(error){
+
+alert(error.message);
+
+}
+
+
+}
