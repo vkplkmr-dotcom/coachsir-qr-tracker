@@ -255,18 +255,33 @@ async function runMainLogic() {
       });
     }
 
-    // Redirect to Exam
-    document.getElementById("count").innerHTML = `
-      <div style="text-align:center; padding:20px;">
-        <h2 style="color:green;">✅ Attendance Recorded</h2>
-        <p>Redirecting to CBT Exam...</p>
-      </div>
-    `;
+   // Secure CBT Redirect
 
-    setTimeout(() => {
-      window.location.href = "https://cbtexam.onlinetestpanel.com/";
-    }, 2000);
+const latestDoc = await counterRef.get();
 
+if (latestDoc.exists && latestDoc.data().paymentStatus === "approved") {
+
+  document.getElementById("count").innerHTML = `
+    <div style="text-align:center; padding:20px;">
+      <h2 style="color:green;">✅ Access Granted</h2>
+      <p>Opening CBT Exam...</p>
+    </div>
+  `;
+
+  setTimeout(() => {
+    window.location.href = "https://cbtexam.onlinetestpanel.com/";
+  }, 2000);
+
+} else {
+
+  document.getElementById("count").innerHTML = `
+    <div style="text-align:center; padding:20px;">
+      <h2>⏳ Payment Verification Required</h2>
+      <p>Please wait for approval.</p>
+    </div>
+  `;
+
+}
   } catch (error) {
     console.error("Main logic error:", error);
     document.getElementById("count").innerHTML = "❌ Error: " + error.message;
