@@ -8,7 +8,7 @@
 
 const CONFIG = {
 
-  SHEET_URL: "https://script.google.com/macros/s/AKfycby5inXpjWD10lIzHkOku21RwhVlMh9htuDOxwkb3mFwxR6BooQ0L-f6YArf8sNv4WbE/exec",
+  
 
   UPI_ID: "vkplkmr-1@oksbi",
 
@@ -17,7 +17,7 @@ const CONFIG = {
   EXPIRY_DATE: new Date("2026-08-15T23:59:59")
 
 };
-const SHEET_URL = "https://script.google.com/macros/s/AKfycby5inXpjWD10lIzHkOku21RwhVlMh9htuDOxwkb3mFwxR6BooQ0L-f6YArf8sNv4WbE/exec";
+CONFIG.SHEET_URL= "https://script.google.com/macros/s/AKfycby5inXpjWD10lIzHkOku21RwhVlMh9htuDOxwkb3mFwxR6BooQ0L-f6YArf8sNv4WbE/exec";
 // Student ID
 const params = new URLSearchParams(window.location.search);
 const studentId = params.get("id") || "general";
@@ -85,7 +85,7 @@ await db.collection("qrData")
 
 console.log("Firebase payment status updated to verification_pending.");
     // Send data to Google Sheet
-    const response = await fetch(SHEET_URL, {
+    const response = await fetch(CONFIG.SHEET_URL, {
       method: "POST",
       mode: "no-cors", // Use no-cors to avoid Failed to fetch if the server doesn't support CORS
       headers: {
@@ -246,7 +246,7 @@ async function runMainLogic() {
       });
 
       // Log to Google Sheet (Fire and forget)
-      fetch(SHEET_URL, {
+      fetch(CONFIG.SHEET_URL, {
         method: "POST",
         mode: "no-cors",
         body: JSON.stringify({
