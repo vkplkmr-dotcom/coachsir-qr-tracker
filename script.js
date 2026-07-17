@@ -211,7 +211,7 @@ async function runMainLogic() {
       }
 
       // 3. Expiry Check
-      let expiry = CONFIG.EXPIRY_DATE
+      let expiry = CONFIG.EXPIRY_DATE;
       if (data.expiryDate && typeof data.expiryDate.toDate === "function") {
         expiry = data.expiryDate.toDate();
       }
@@ -265,7 +265,7 @@ async function runMainLogic() {
         paymentStatus: "pending",
         paymentAmount: 1,
         createdAt: now,
-        expiryDate: CONFIG.EXPIRY_DATE
+       expiryDate: CONFIG.EXPIRY_DATE,
         lastScan: now
       });
     }
