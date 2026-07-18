@@ -83,7 +83,7 @@ window.paymentDone = async function() {
 const doc = await db.collection("qrData").doc(studentId).get();
 
 if (doc.exists && doc.data().paymentStatus === "approved") {
-  alert("тЬЕ Payment is already approved.");
+  alert("✅ Payment is already approved.");
   return;
 }
 
