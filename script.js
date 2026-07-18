@@ -115,7 +115,7 @@ console.log("Firebase payment status updated to verification_pending.");
 
     document.getElementById("count").innerHTML = `
       <div style="text-align:center; padding:20px;">
-        <h2 style="color:green;">тЬЕ Payment Submitted</h2>
+        <h2 style="color:green;">✅ Payment Submitted</h2>
        <p>Your payment has been submitted successfully.</p>
 <p>After admin verification, CBT Exam access will be activated.</p>
         <button onclick="location.reload()" style="padding:10px; margin-top:10px;">Refresh Page</button>
