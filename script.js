@@ -70,6 +70,103 @@ window.approvePayment = function(id) {
 };
 
 // Function for payment done button
+window.uploadPaymentProof = async function(){
+
+const file = document.getElementById("paymentScreenshot").files[0];
+
+
+if(!file){
+
+alert("Please upload payment screenshot");
+return;
+
+}
+
+
+const reader = new FileReader();
+
+
+reader.onload = async function(){
+
+const base64 = reader.result.split(",")[1];
+
+
+try{
+
+
+await fetch(CONFIG.SHEET_URL,{
+
+method:"POST",
+
+mode:"no-cors",
+
+body:JSON.stringify({
+
+action:"payment",
+
+studentId:studentId,
+
+amount:await getPaymentAmount(),
+
+paymentStatus:"verification_pending",
+
+fileName:file.name,
+
+mimeType:file.type,
+
+image:base64
+
+})
+
+});
+
+
+await db.collection("qrData")
+.doc(studentId)
+.update({
+
+paymentStatus:"verification_pending"
+
+});
+
+
+document.getElementById("count").innerHTML=`
+
+<div style="text-align:center;padding:20px;">
+
+<h2 style="color:green;">
+✅ Payment Submitted
+</h2>
+
+<p>
+Screenshot received successfully.
+</p>
+
+<p>
+Admin verification के बाद CBT Access मिलेगा।
+</p>
+
+</div>
+
+`;
+
+
+}
+
+catch(error){
+
+alert(error.message);
+
+}
+
+
+};
+
+
+reader.readAsDataURL(file);
+
+
+}
 window.paymentDone = async function() {
   let currentPaymentAmount = await getPaymentAmount(); // Default value
   const amountElement = document.getElementById("paymentAmountDisplay");
@@ -213,9 +310,15 @@ async function runMainLogic() {
               📋 Copy UPI ID
             </button>
             <br><br>
-            <button onclick="window.paymentDone()" style="width:100%; padding:14px; background:green; color:white; border:none; border-radius:10px; font-size:18px;">
-              ✅ I Have Paid
-            </button>
+            <input type="file" id="paymentScreenshot" accept="image/*"
+style="width:100%;padding:10px;margin-top:15px;">
+
+<br><br>
+
+<button onclick="window.uploadPaymentProof()" 
+style="width:100%;padding:14px;background:green;color:white;border:none;border-radius:10px;font-size:18px;">
+📤 Submit Payment Proof
+</button>
            <p style="margin-top:15px;color:#666;font-size:14px;">
 After successful payment verification by the Admin, your CBT Exam Access will be activated.
 </p>
