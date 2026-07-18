@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Students | COACHsir Academy</title>
+
+<link rel="stylesheet" href="admin.css">
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎓 Student Management</h1>
+
+
+<div class="card">
+
+<h2>Add Student</h2>
+
+<input 
+type="text" 
+id="studentId" 
+placeholder="Student ID (S001)">
+
+
+<input 
+type="text" 
+id="studentName" 
+placeholder="Student Name">
+
+
+<input 
+type="number" 
+id="scanLimit" 
+placeholder="Scan Limit"
+value="100">
+
+
+<button onclick="addStudent()">
+➕ Add Student
+</button>
+
+</div>
+
+
+
+<div class="card">
+
+<h2>Student List</h2>
+
+
+<table border="1" width="100%">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+<th>Name</th>
+<th>Status</th>
+<th>Scan Limit</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="studentList">
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+// Firebase Configuration
+
+const firebaseConfig = {
+
+apiKey: "YOUR_API_KEY",
+
+authDomain: "YOUR_PROJECT.firebaseapp.com",
+
+projectId: "YOUR_PROJECT_ID"
+
+};
+
+
+firebase.initializeApp(firebaseConfig);
+
+
+const db = firebase.firestore();
+
+
+</script>
+
+
+<script src="students.js"></script>
+
+
+</body>
+</html>
