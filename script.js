@@ -25,7 +25,17 @@ const isAdmin = params.get("admin") === "1234";
 
 // Firestore Reference
 const counterRef = db.collection("qrData").doc(studentId);
-
+async function getPaymentAmount() {
+  try {
+    const doc = await db.collection("settings").doc("payment").get();
+    if (doc.exists) {
+      return Number(doc.data().amount) || 30;
+    }
+    return 30;
+  } catch (e) {
+    return 30;
+  }
+}
 // Expiry Date
 const defaultExpiryDate = new Date("2026-08-15T23:59:59");
 
@@ -50,7 +60,7 @@ window.approvePayment = function(id) {
       paymentStatus: "approved"
     })
     .then(() => {
-      alert("тЬЕ Payment Approved");
+     alert("✅ Payment Approved");
       location.reload();
     })
     .catch(error => {
@@ -61,7 +71,7 @@ window.approvePayment = function(id) {
 
 // Function for payment done button
 window.paymentDone = async function() {
-  let currentPaymentAmount = 1; // Default value
+  let currentPaymentAmount = await getPaymentAmount(); // Default value
   const amountElement = document.getElementById("paymentAmountDisplay");
   if (amountElement) {
     currentPaymentAmount = parseFloat(amountElement.innerText.replace("тВ╣", "")) || 1;
@@ -106,7 +116,8 @@ console.log("Firebase payment status updated to verification_pending.");
     document.getElementById("count").innerHTML = `
       <div style="text-align:center; padding:20px;">
         <h2 style="color:green;">тЬЕ Payment Submitted</h2>
-        <p>Admin verification рдХреЗ рдмрд╛рдж CBT Access рдорд┐рд▓реЗрдЧрд╛.</p>
+       <p>Your payment has been submitted successfully.</p>
+<p>After admin verification, CBT Exam access will be activated.</p>
         <button onclick="location.reload()" style="padding:10px; margin-top:10px;">Refresh Page</button>
       </div>
     `;
@@ -128,7 +139,7 @@ async function runMainLogic() {
 
     if (isAdmin) {
       const snapshot = await db.collection("qrData").get();
-      let html = "<h2>ЁЯФР Admin Panel</h2>";
+     let html = "<h2>🔐 Admin Panel</h2>";
 
       snapshot.forEach(d => {
         const data = d.data();
@@ -155,7 +166,7 @@ async function runMainLogic() {
     // 1. QR Active Check
       if (data.active === false) {
         document.getElementById("count").innerHTML = `
-          <h2>тЭМ QR Inactive</h2>
+         <h2>❌ QR Inactive</h2>
           <p>Please contact COACHsir Academy</p>
         `;
         return;
@@ -165,7 +176,7 @@ async function runMainLogic() {
       if (data.paymentStatus === "verification_pending") {
   document.getElementById("count").innerHTML = `
     <div style="text-align:center;padding:20px;">
-      <h2>тП│ Payment Verification Pending</h2>
+     <h2>⏳ Payment Verification Pending</h2>
       <p>Your payment has already been submitted.</p>
       <p>Please wait for admin approval.</p>
     </div>
@@ -173,20 +184,23 @@ async function runMainLogic() {
   return;
 }
       if (data.paymentStatus !== "approved") {
-        const amount = data.paymentAmount || 1;
+       const amount = data.paymentAmount || await getPaymentAmount();
        const upiId = CONFIG.UPI_ID;
         const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent("COACHsir Academy")}&am=${amount}&cu=INR`;
 
         document.getElementById("count").innerHTML = `
           <div style="max-width:400px;margin:auto;background:#fff;padding:20px;border-radius:15px;box-shadow:0 0 15px rgba(0,0,0,.2);text-align:center;">
-            <h2 style="color:#0066ff;">ЁЯТ│ Payment Required</h2>
-            <p>CBT Exam Access рдХреЗ рд▓рд┐рдП рдкрд╣рд▓реЗ Payment рдХрд░реЗрдВ</p>
-            <h1 style="color:green;" id="paymentAmountDisplay">тВ╣${amount}</h1>
+           <h2 style="color:#0066ff;">💳 Payment Required</h2>
+
+<p>CBT Exam Access के लिए पहले Payment करें।</p>
+           <h1 style="color:#16a34a;font-size:42px;font-weight:bold;" id="paymentAmountDisplay">
+₹${amount}
+</h1>
             <img src="assets/upi-qr.png" style="width:220px;border-radius:12px;margin:15px 0;">
             <br>
             <a href="${upiLink}">
               <button style="width:100%; padding:14px; background:#0066ff; color:white; border:none; border-radius:10px; font-size:18px;">
-                ЁЯТ│ Pay with Any UPI App
+               💳 Pay with Any UPI App
               </button>
             </a>
             <br><br>
@@ -196,14 +210,15 @@ async function runMainLogic() {
             </div>
             <br>
             <button onclick="window.copyUPI()" style="width:100%; padding:12px; background:#333; color:white; border:none; border-radius:8px;">
-              ЁЯУЛ Copy UPI ID
+              📋 Copy UPI ID
             </button>
             <br><br>
             <button onclick="window.paymentDone()" style="width:100%; padding:14px; background:green; color:white; border:none; border-radius:10px; font-size:18px;">
-              тЬЕ I Have Paid
+              ✅ I Have Paid
             </button>
-            <p style="margin-top:15px;color:#666;font-size:14px;">
-              Payment verification рдХреЗ рдмрд╛рдж CBT Exam Access рдорд┐рд▓реЗрдЧрд╛ред
+           <p style="margin-top:15px;color:#666;font-size:14px;">
+After successful payment verification by the Admin, your CBT Exam Access will be activated.
+</p>
             </p>
           </div>
         `;
@@ -219,7 +234,7 @@ async function runMainLogic() {
       if (now > expiry) {
         await counterRef.update({ active: false });
         document.getElementById("count").innerHTML = `
-          <h2>тЭМ QR Expired</h2>
+         <h2>❌ QR Expired</h2>
           <p>Please renew fees</p>
         `;
         return;
@@ -233,7 +248,7 @@ async function runMainLogic() {
       if (!unlimited && currentCount >= scanLimit) {
         await counterRef.update({ active: false });
         document.getElementById("count").innerHTML = `
-          <h2>тЭМ Scan Limit Reached</h2>
+         <h2>❌ Scan Limit Reached</h2>
         `;
         return;
       }
@@ -263,7 +278,7 @@ async function runMainLogic() {
         scanLimit: 100,
         unlimited: false,
         paymentStatus: "pending",
-        paymentAmount: 1,
+       paymentAmount: await getPaymentAmount(),
         createdAt: now,
        expiryDate: defaultExpiryDate,
         lastScan: now
@@ -278,7 +293,7 @@ if (latestDoc.exists && latestDoc.data().paymentStatus === "approved") {
 
   document.getElementById("count").innerHTML = `
     <div style="text-align:center; padding:20px;">
-      <h2 style="color:green;">тЬЕ Access Granted</h2>
+      <h2 style="color:green;">✅ Access Granted</h2>
       <p>Opening CBT Exam...</p>
     </div>
   `;
@@ -291,7 +306,7 @@ if (latestDoc.exists && latestDoc.data().paymentStatus === "approved") {
 
   document.getElementById("count").innerHTML = `
     <div style="text-align:center; padding:20px;">
-      <h2>тП│ Payment Verification Required</h2>
+      <h2>⏳ Payment Verification Required</h2>
       <p>Please wait for approval.</p>
     </div>
   `;
@@ -299,7 +314,8 @@ if (latestDoc.exists && latestDoc.data().paymentStatus === "approved") {
 }
   } catch (error) {
     console.error("Main logic error:", error);
-    document.getElementById("count").innerHTML = "тЭМ Error: " + error.message;
+   document.getElementById("count").innerHTML =
+"❌ Error: " + error.message;
   }
 }
 
