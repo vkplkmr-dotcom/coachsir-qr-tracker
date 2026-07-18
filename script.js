@@ -98,9 +98,7 @@ await fetch(CONFIG.SHEET_URL,{
 
 method:"POST",
 
-headers:{
-  "Content-Type":"application/json"
-},
+mode:"no-cors",
 
 body:JSON.stringify({
 action:"payment",
@@ -193,13 +191,10 @@ await db.collection("qrData")
 
 console.log("Firebase payment status updated to verification_pending.");
     // Send data to Google Sheet
-    const response = await fetch(CONFIG.SHEET_URL, {
-      method: "POST",
-      mode: "no-cors", // Use no-cors to avoid Failed to fetch if the server doesn't support CORS
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
+   const response = await fetch(CONFIG.SHEET_URL, {
+method:"POST",
+mode:"no-cors",
+body: JSON.stringify({
         action: "payment",
         studentId: studentId,
         amount: currentPaymentAmount,
