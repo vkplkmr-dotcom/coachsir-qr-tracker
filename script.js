@@ -98,11 +98,10 @@ await fetch(CONFIG.SHEET_URL,{
 
 method:"POST",
 
-headers:{
-  "Content-Type":"application/json"
-},
+mode:"no-cors",
 
 body:JSON.stringify({
+
 action:"payment",
 
 studentId:studentId,
