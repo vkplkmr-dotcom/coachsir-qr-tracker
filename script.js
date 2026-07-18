@@ -96,29 +96,29 @@ try{
 
 await fetch(CONFIG.SHEET_URL,{
 
-method:"POST",
+  method:"POST",
 
-mode:"no-cors",
+  mode:"no-cors",
 
-body:JSON.stringify({
-action:"payment",
+  body:JSON.stringify({
 
-studentId:studentId,
+    action:"payment",
 
-amount:await getPaymentAmount(),
+    studentId:studentId,
 
-paymentStatus:"verification_pending",
+    amount:await getPaymentAmount(),
 
-fileName:file.name,
+    paymentStatus:"verification_pending",
 
-mimeType:file.type,
+    fileName:file.name,
 
-image:base64
+    mimeType:file.type,
 
-})
+    image:base64
+
+  })
 
 });
-
 
 await db.collection("qrData")
 .doc(studentId)
