@@ -214,7 +214,7 @@ console.log("Firebase payment status updated to verification_pending.");
 });
 
     // Note: With mode: 'no-cors', we cannot read the response body or status.
-    console.log("Google Sheet request sent (no-cors mode).");
+    console.log("Google Sheet request sent");
 
     document.getElementById("count").innerHTML = `
       <div style="text-align:center; padding:20px;">
