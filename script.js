@@ -101,30 +101,21 @@ console.log("Sending Data", {
   mimeType: file.type,
   imageLength: base64.length
 });
-await fetch(CONFIG.SHEET_URL,{
+const payload = {
+  action: "payment",
+  studentId: studentId,
+  amount: await getPaymentAmount(),
+  paymentStatus: "verification_pending",
+  fileName: file.name,
+  mimeType: file.type,
+  image: base64
+};
 
-  method:"POST",
+console.log(payload);
 
-  mode:"no-cors",
-
-  body:JSON.stringify({
-
-    action:"payment",
-
-    studentId:studentId,
-
-    amount:await getPaymentAmount(),
-
-    paymentStatus:"verification_pending",
-
-    fileName:file.name,
-
-    mimeType:file.type,
-
-    image:base64
-
-  })
-
+await fetch(CONFIG.SHEET_URL, {
+  method: "POST",
+  body: JSON.stringify(payload)
 });
 
 await db.collection("qrData")
@@ -200,7 +191,7 @@ console.log("Firebase payment status updated to verification_pending.");
     // Send data to Google Sheet
    const response = await fetch(CONFIG.SHEET_URL, {
 method:"POST",
-mode:"no-cors",
+
 body: JSON.stringify({
         action: "payment",
         studentId: studentId,
