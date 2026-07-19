@@ -93,7 +93,14 @@ const base64 = reader.result.split(",")[1];
 
 try{
 
-
+console.log("Sending Data", {
+  studentId: studentId,
+  amount: await getPaymentAmount(),
+  paymentStatus: "verification_pending",
+  fileName: file.name,
+  mimeType: file.type,
+  imageLength: base64.length
+});
 await fetch(CONFIG.SHEET_URL,{
 
   method:"POST",
