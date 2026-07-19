@@ -358,10 +358,15 @@ After successful payment verification by the Admin, your CBT Exam Access will be
       });
 
       // Log to Google Sheet (Fire and forget)
-      fetch(CONFIG.SHEET_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify({
+     fetch(CONFIG.SHEET_URL, {
+
+  method: "POST",
+
+  headers: {
+    "Content-Type": "application/json"
+  },
+
+  body: JSON.stringify({
           studentId: studentId,
           scanCount: newCount
         })
