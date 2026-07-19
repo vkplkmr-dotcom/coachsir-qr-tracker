@@ -189,7 +189,26 @@ await db.collection("qrData")
 
 console.log("Firebase payment status updated to verification_pending.");
     // Send data to Google Sheet
-  const response = await fetch(CONFIG.SHEET_URL, {
+ // Send data to Google Sheet
+
+const payload = {
+
+  action: "payment",
+
+  studentId: studentId,
+
+  amount: currentPaymentAmount,
+
+  paymentStatus: "verification_pending",
+
+  paymentProofURL: ""
+
+};
+
+console.log("Sending Payment Data:", payload);
+
+
+const response = await fetch(CONFIG.SHEET_URL, {
 
   method: "POST",
 
@@ -197,22 +216,9 @@ console.log("Firebase payment status updated to verification_pending.");
     "Content-Type": "application/json"
   },
 
-  body: JSON.stringify({
-
-    action: "payment",
-
-    studentId: studentId,
-
-    amount: currentPaymentAmount,
-
-    paymentStatus: "verification_pending",
-
-    paymentProofURL: ""
-
-  })
+  body: JSON.stringify(payload)
 
 });
-
     // Note: With mode: 'no-cors', we cannot read the response body or status.
     console.log("Google Sheet request sent");
 
