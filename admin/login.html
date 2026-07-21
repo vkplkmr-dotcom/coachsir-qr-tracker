@@ -15,166 +15,234 @@
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
+
+<!-- Firebase SDK -->
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
 
 </head>
 
+
 <body>
+
 
 <div class="bg"></div>
 
+
 <div class="wrapper">
 
-    <!-- LEFT PANEL -->
 
-    <div class="left">
+<!-- LEFT PANEL -->
 
-        <div class="brand">
+<div class="left">
 
-          <img src="../assets/logo.png" class="logo" alt="COACHsir Logo">
-            <h1>COACHsir</h1>
 
-            <h2>ONLINE ACADEMY ERP</h2>
+<div class="brand">
 
-            <p>
-                Smart Student Management System
-            </p>
 
-        </div>
+<img src="../assets/logo.png"
+class="logo"
+alt="COACHsir Logo">
 
-        <div class="menu">
 
-            <div class="item">
+<h1>COACHsir</h1>
 
-                <i class="fa-solid fa-user-graduate"></i>
 
-                Student Management
+<h2>ONLINE ACADEMY ERP</h2>
 
-            </div>
 
-            <div class="item">
+<p>
+Smart Student Management System
+</p>
 
-                <i class="fa-solid fa-qrcode"></i>
-
-                QR Attendance
-
-            </div>
-
-            <div class="item">
-
-                <i class="fa-solid fa-money-check-dollar"></i>
-
-                Payment Verification
-
-            </div>
-
-            <div class="item">
-
-                <i class="fa-solid fa-laptop"></i>
-
-                CBT Examination
-
-            </div>
-
-            <div class="item">
-
-                <i class="fa-solid fa-chart-line"></i>
-
-                Analytics Dashboard
-
-            </div>
-
-            <div class="item">
-
-                <i class="fa-solid fa-shield-halved"></i>
-
-                Secure ERP
-
-            </div>
-
-        </div>
-
-        <div class="copyright">
-
-            © 2026 COACHsir Academy
-
-        </div>
-
-    </div>
-
-    <!-- RIGHT PANEL -->
-
-    <div class="right">
-
-        <div class="card">
-
-            <div class="avatar">
-
-                <i class="fa-solid fa-user-shield"></i>
-
-            </div>
-
-            <h3>Administrator Login</h3>
-
-            <p class="welcome">
-
-                Welcome Back
-
-            </p>
-
-            <div class="input">
-
-                <i class="fa-solid fa-envelope"></i>
-
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="Admin Email">
-
-            </div>
-
-            <div class="input password-box">
-
-    <i class="fa-solid fa-lock"></i>
-
-    <input
-        type="password"
-        id="password"
-        placeholder="Password">
-
-    <i class="fa-solid fa-eye"
-       id="eye"
-       onclick="togglePassword()">
-    </i>
 
 </div>
-            <button id="loginBtn" onclick="login()">
+
+
+
+<div class="menu">
+
+
+<div class="item">
+<i class="fa-solid fa-user-graduate"></i>
+Student Management
+</div>
+
+
+<div class="item">
+<i class="fa-solid fa-qrcode"></i>
+QR Attendance
+</div>
+
+
+<div class="item">
+<i class="fa-solid fa-money-check-dollar"></i>
+Payment Verification
+</div>
+
+
+<div class="item">
+<i class="fa-solid fa-laptop"></i>
+CBT Examination
+</div>
+
+
+<div class="item">
+<i class="fa-solid fa-chart-line"></i>
+Analytics Dashboard
+</div>
+
+
+<div class="item">
+<i class="fa-solid fa-shield-halved"></i>
+Secure ERP
+</div>
+
+
+</div>
+
+
+<div class="copyright">
+
+© 2026 COACHsir Academy
+
+</div>
+
+
+</div>
+
+
+
+
+<!-- RIGHT PANEL -->
+
+
+<div class="right">
+
+
+<div class="card">
+
+
+<div class="avatar">
+
+<i class="fa-solid fa-user-shield"></i>
+
+</div>
+
+
+
+<h3>
+Administrator Login
+</h3>
+
+
+<p class="welcome">
+Welcome Back
+</p>
+
+
+
+
+<div class="input">
+
+<i class="fa-solid fa-envelope"></i>
+
+
+<input
+type="email"
+id="email"
+placeholder="Admin Email">
+
+</div>
+
+
+
+
+
+<div class="input password-box">
+
+
+<i class="fa-solid fa-lock"></i>
+
+
+<input
+type="password"
+id="password"
+placeholder="Password">
+
+
+
+<i class="fa-solid fa-eye"
+id="eye"
+onclick="togglePassword()">
+</i>
+
+
+</div>
+
+
+
+
+
+<button id="loginBtn"
+onclick="login()">
+
 
 <span id="btnText">
 LOGIN TO DASHBOARD
 </span>
 
-<span id="loader" class="loader"></span>
+
+<span id="loader"
+class="loader">
+</span>
+
 
 </button>
-            <p id="msg"></p>
 
-            <div class="footer">
 
-                <i class="fa-solid fa-lock"></i>
 
-                Secure Firebase Authentication
+<p id="msg"></p>
 
-            </div>
 
-        </div>
 
-    </div>
+
+<div class="footer">
+
+<i class="fa-solid fa-lock"></i>
+
+Secure Firebase Authentication
 
 </div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+<!-- Firebase Config + Login -->
+
 <script src="../firebase/config.js"></script>
+
 <script src="login.js"></script>
+
+
 </body>
 
 </html>
