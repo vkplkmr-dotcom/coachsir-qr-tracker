@@ -1,32 +1,98 @@
-<!-- Admin Login Page -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>COACHsir Admin Login</title>
+<title>COACHsir ERP Login</title>
 
-<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="login.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
 </head>
 
 <body>
 
-<div class="login-box">
+<div class="bg-circle c1"></div>
+<div class="bg-circle c2"></div>
+<div class="bg-circle c3"></div>
 
-<h1>COACHsir Admin</h1>
+<div class="container">
 
-<input type="email" id="email" placeholder="Admin Email">
+    <!-- Left Side -->
+    <div class="left-panel">
 
-<input type="password" id="password" placeholder="Password">
+        <div class="logo-box">
+            🎓
+        </div>
 
-<button onclick="login()">Login</button>
+        <h1>COACHsir</h1>
 
-<p id="msg"></p>
+        <h2>ONLINE ACADEMY ERP</h2>
+
+        <p class="tagline">
+            Smart Student Management System
+        </p>
+
+        <div class="features">
+
+            <div class="feature">📚 Student Management</div>
+
+            <div class="feature">📝 QR Attendance</div>
+
+            <div class="feature">💳 Payment Verification</div>
+
+            <div class="feature">💻 CBT Examination</div>
+
+            <div class="feature">📊 Analytics Dashboard</div>
+
+            <div class="feature">🔒 Secure Login</div>
+
+        </div>
+
+        <div class="footer">
+            © 2026 COACHsir Academy
+        </div>
+
+    </div>
+
+    <!-- Login -->
+    <div class="right-panel">
+
+        <div class="login-box">
+
+            <div class="login-icon">🔐</div>
+
+            <h3>Administrator Login</h3>
+
+            <p>Welcome Back</p>
+
+            <div class="input-box">
+                <span>📧</span>
+                <input type="email" id="email" placeholder="Admin Email">
+            </div>
+
+            <div class="input-box">
+                <span>🔒</span>
+                <input type="password" id="password" placeholder="Password">
+            </div>
+
+            <button onclick="login()">
+                LOGIN TO DASHBOARD →
+            </button>
+
+            <p id="msg"></p>
+
+            <div class="secure">
+                Firebase Secure Authentication
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
