@@ -1,93 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>COACHsir ERP Login</title>
+<title>COACHsir ERP | Admin Login</title>
 
 <link rel="stylesheet" href="login.css">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
 </head>
 
 <body>
 
-<div class="bg-circle c1"></div>
-<div class="bg-circle c2"></div>
-<div class="bg-circle c3"></div>
+<div class="bg"></div>
 
-<div class="container">
+<div class="wrapper">
 
-    <!-- Left Side -->
-    <div class="left-panel">
+    <!-- LEFT PANEL -->
 
-        <div class="logo-box">
-            🎓
-        </div>
+    <div class="left">
 
-        <h1>COACHsir</h1>
+        <div class="brand">
 
-        <h2>ONLINE ACADEMY ERP</h2>
+            <img src="../logo.png" class="logo">
 
-        <p class="tagline">
-            Smart Student Management System
-        </p>
+            <h1>COACHsir</h1>
 
-        <div class="features">
+            <h2>ONLINE ACADEMY ERP</h2>
 
-            <div class="feature">📚 Student Management</div>
-
-            <div class="feature">📝 QR Attendance</div>
-
-            <div class="feature">💳 Payment Verification</div>
-
-            <div class="feature">💻 CBT Examination</div>
-
-            <div class="feature">📊 Analytics Dashboard</div>
-
-            <div class="feature">🔒 Secure Login</div>
+            <p>
+                Smart Student Management System
+            </p>
 
         </div>
 
-        <div class="footer">
+        <div class="menu">
+
+            <div class="item">
+
+                <i class="fa-solid fa-user-graduate"></i>
+
+                Student Management
+
+            </div>
+
+            <div class="item">
+
+                <i class="fa-solid fa-qrcode"></i>
+
+                QR Attendance
+
+            </div>
+
+            <div class="item">
+
+                <i class="fa-solid fa-money-check-dollar"></i>
+
+                Payment Verification
+
+            </div>
+
+            <div class="item">
+
+                <i class="fa-solid fa-laptop"></i>
+
+                CBT Examination
+
+            </div>
+
+            <div class="item">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                Analytics Dashboard
+
+            </div>
+
+            <div class="item">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+                Secure ERP
+
+            </div>
+
+        </div>
+
+        <div class="copyright">
+
             © 2026 COACHsir Academy
+
         </div>
 
     </div>
 
-    <!-- Login -->
-    <div class="right-panel">
+    <!-- RIGHT PANEL -->
 
-        <div class="login-box">
+    <div class="right">
 
-            <div class="login-icon">🔐</div>
+        <div class="card">
+
+            <div class="avatar">
+
+                <i class="fa-solid fa-user-shield"></i>
+
+            </div>
 
             <h3>Administrator Login</h3>
 
-            <p>Welcome Back</p>
+            <p class="welcome">
 
-            <div class="input-box">
-                <span>📧</span>
-                <input type="email" id="email" placeholder="Admin Email">
+                Welcome Back
+
+            </p>
+
+            <div class="input">
+
+                <i class="fa-solid fa-envelope"></i>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Admin Email">
+
             </div>
 
-            <div class="input-box">
-                <span>🔒</span>
-                <input type="password" id="password" placeholder="Password">
+            <div class="input">
+
+                <i class="fa-solid fa-lock"></i>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Password">
+
             </div>
 
             <button onclick="login()">
-                LOGIN TO DASHBOARD →
+
+                LOGIN TO DASHBOARD
+
             </button>
 
             <p id="msg"></p>
 
-            <div class="secure">
-                Firebase Secure Authentication
+            <div class="footer">
+
+                <i class="fa-solid fa-lock"></i>
+
+                Secure Firebase Authentication
+
             </div>
 
         </div>
@@ -99,4 +171,5 @@
 <script src="auth.js"></script>
 
 </body>
+
 </html>
