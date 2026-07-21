@@ -135,23 +135,30 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
 
             </div>
 
-            <div class="input">
+            <div class="input password-box">
 
-                <i class="fa-solid fa-lock"></i>
+    <i class="fa-solid fa-lock"></i>
 
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Password">
+    <input
+        type="password"
+        id="password"
+        placeholder="Password">
 
-            </div>
+    <i class="fa-solid fa-eye"
+       id="eye"
+       onclick="togglePassword()">
+    </i>
 
-            <button onclick="login()">
+</div>
+            <button id="loginBtn" onclick="login()">
 
-                LOGIN TO DASHBOARD
+<span id="btnText">
+LOGIN TO DASHBOARD
+</span>
 
-            </button>
+<span id="loader" class="loader"></span>
 
+</button>
             <p id="msg"></p>
 
             <div class="footer">
