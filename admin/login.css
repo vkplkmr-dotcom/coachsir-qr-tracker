@@ -285,6 +285,82 @@ body{
     }
 
 }
+/* Password Eye */
+
+.password-box i:last-child{
+
+    cursor:pointer;
+
+    color:#64748b;
+
+}
+
+
+.password-box i:last-child:hover{
+
+    color:#2563eb;
+
+}
+
+
+
+/* Loading Animation */
+
+
+.loader{
+
+    display:none;
+
+    width:18px;
+
+    height:18px;
+
+    border:3px solid white;
+
+    border-top-color:transparent;
+
+    border-radius:50%;
+
+    margin-left:10px;
+
+    animation:spin .8s linear infinite;
+
+}
+
+
+@keyframes spin{
+
+    from{
+
+        transform:rotate(0deg);
+
+    }
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+
+
+button.loading{
+
+    opacity:.8;
+
+    cursor:not-allowed;
+
+}
+
+
+
+button.loading .loader{
+
+    display:inline-block;
+
+}
 
 
 
