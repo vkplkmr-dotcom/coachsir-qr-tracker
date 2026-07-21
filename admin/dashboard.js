@@ -307,3 +307,18 @@ ${data.createdAt ? data.createdAt.toDate() : "N/A"}`
 
 // Run Dashboard
 loadDashboard();
+function logout(){
+
+    firebase.auth().signOut()
+    .then(()=>{
+
+        window.location.href="login.html";
+
+    })
+    .catch((error)=>{
+
+        alert(error.message);
+
+    });
+
+}
