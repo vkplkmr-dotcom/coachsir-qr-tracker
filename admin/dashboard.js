@@ -307,7 +307,7 @@ ${data.createdAt ? data.createdAt.toDate() : "N/A"}`
 
 // Run Dashboard
 loadDashboard();
-function logout(){
+window.logout = function(){
 
     firebase.auth().signOut()
     .then(()=>{
@@ -321,4 +321,4 @@ function logout(){
 
     });
 
-}
+};
