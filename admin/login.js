@@ -5,22 +5,44 @@
 
 // Firebase Configuration
 
-const firebaseConfig = {
+// Firebase already initialized from config.js
 
-  apiKey: "AIzaSyANpygbwjFFu1R7Aw-u36T5SkMmXVEhZOA",
+function login(){
 
-  authDomain: "qr-tracker-57393.firebaseapp.com",
+    const email =
+    document.getElementById("email").value.trim();
 
-  projectId: "qr-tracker-57393",
+    const password =
+    document.getElementById("password").value;
 
-  storageBucket: "qr-tracker-57393.firebasestorage.app",
+    const msg =
+    document.getElementById("msg");
 
-  messagingSenderId: "617727926623",
 
-  appId: "1:617727926623:web:36d78ef0a54e6051cbd6ea"
+    firebase.auth()
+    .signInWithEmailAndPassword(email,password)
 
-};
+    .then(()=>{
 
+        msg.innerHTML="✅ Login Successful";
+        msg.style.color="green";
+
+        setTimeout(()=>{
+
+            window.location.href="dashboard.html";
+
+        },1000);
+
+    })
+
+    .catch((error)=>{
+
+        msg.innerHTML="❌ "+error.message;
+        msg.style.color="red";
+
+    });
+
+}
 
 // Initialize Firebase
 
