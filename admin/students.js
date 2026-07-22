@@ -169,6 +169,12 @@ window.onload = function(){
 };
 function addNewStudent(){
 
-alert("Button Working");
+    document.getElementById("studentId").value =
+    document.getElementById("newStudentId").value;
+
+    document.getElementById("studentName").value =
+    document.getElementById("newStudentName").value;
+
+    addStudent();
 
 }
