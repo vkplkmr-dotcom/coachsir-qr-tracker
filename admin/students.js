@@ -11,10 +11,9 @@ async function addStudent() {
   ) || 100;
   const mobile = document.getElementById("studentMobile")?.value.trim() || "";
 
-const program = document.getElementById("studentProgram")?.value || "";
+const program = document.getElementById("newStudentProgram")?.value || "";
 
-const studentClass = document.getElementById("studentClass")?.value || "";
-
+const studentClass = document.getElementById("newStudentClass")?.value || "";
 
   if (!studentId || !studentName) {
 
