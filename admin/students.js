@@ -219,3 +219,10 @@ window.onload=function(){
  loadStudents();
 
 };
+console.log("students.js loaded");
+
+window.addNewStudent = function(){
+
+    alert("New Student Button Working");
+
+};
