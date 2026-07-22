@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -8,89 +10,213 @@
 
 <link rel="stylesheet" href="admin.css">
 
+
 <!-- Firebase -->
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 
 </head>
 
+
 <body>
+
 
 <div class="container">
 
+
 <h1>🎓 Student Management</h1>
 
+
+
+<!-- OLD ADD STUDENT -->
 
 <div class="card">
 
 <h2>Add Student</h2>
 
+
 <input 
-type="text" 
-id="studentId" 
+type="text"
+id="studentId"
 placeholder="Student ID (S001)">
 
 
+
 <input 
-type="text" 
-id="studentName" 
+type="text"
+id="studentName"
 placeholder="Student Name">
 
 
+
 <input 
-type="number" 
-id="scanLimit" 
+type="number"
+id="scanLimit"
 placeholder="Scan Limit"
 value="100">
 
 
+
 <button onclick="addStudent()">
+
 ➕ Add Student
+
 </button>
+
 
 </div>
 
 
 
+
+
+<!-- NEW STUDENT FORM -->
+
 <div class="card">
+
+
+<h2>New Student Add</h2>
+
+
+<input 
+id="newStudentId"
+placeholder="Student ID">
+
+
+
+<input 
+id="newStudentName"
+placeholder="Student Name">
+
+
+
+<input 
+id="newStudentMobile"
+placeholder="Mobile Number">
+
+
+
+<select id="newStudentProgram">
+
+
+<option value="NEET Biology">
+NEET Biology
+</option>
+
+
+<option value="Class 11 Biology">
+Class 11 Biology
+</option>
+
+
+<option value="Class 12 Biology">
+Class 12 Biology
+</option>
+
+
+<option value="SSC">
+SSC
+</option>
+
+
+<option value="CTET">
+CTET
+</option>
+
+
+</select>
+
+
+
+
+<input 
+id="newStudentClass"
+placeholder="Class">
+
+
+
+
+
+<button onclick="addNewStudent()">
+
+➕ Add Student
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- STUDENT LIST -->
+
+
+<div class="card">
+
 
 <h2>Student List</h2>
 
 
+
 <table border="1" width="100%">
+
 
 <thead>
 
 <tr>
 
 <th>ID</th>
+
 <th>Name</th>
+
 <th>Status</th>
+
 <th>Scan Limit</th>
+
 
 </tr>
 
 </thead>
 
 
+
 <tbody id="studentList">
 
+
 </tbody>
+
 
 
 </table>
 
 
+
 </div>
 
 
+
+
+
 </div>
+
+
+
 
 
 
 <script>
 
+
 // Firebase Configuration
+// यहां अपना REAL Firebase config रखें
+
 
 const firebaseConfig = {
 
@@ -103,44 +229,25 @@ projectId: "YOUR_PROJECT_ID"
 };
 
 
+
 firebase.initializeApp(firebaseConfig);
+
 
 
 const db = firebase.firestore();
 
 
+
 </script>
+
+
+
 
 
 <script src="students.js"></script>
 
 
+
 </body>
+
 </html>
-<div class="card">
-
-<h2>New Student Add</h2>
-
-<input id="newStudentId" placeholder="Student ID">
-
-<input id="newStudentName" placeholder="Student Name">
-
-<input id="newStudentMobile" placeholder="Mobile Number">
-
-<select id="newStudentProgram">
-
-<option value="NEET Biology">NEET Biology</option>
-<option value="Class 11 Biology">Class 11 Biology</option>
-<option value="Class 12 Biology">Class 12 Biology</option>
-<option value="SSC">SSC</option>
-<option value="CTET">CTET</option>
-
-</select>
-
-
-<input id="newStudentClass" placeholder="Class">
-
-
-<button onclick="addNewStudent()">
-➕ Add Student
-</button>
