@@ -154,3 +154,8 @@ window.onload = function(){
   loadStudents();
 
 };
+function addNewStudent(){
+
+// नया code यहां रहेगा
+
+}
