@@ -4,104 +4,156 @@
 
 async function addStudent() {
 
-
-const studentId =
-document.getElementById("studentId").value.trim();
-
-
-const studentName =
-document.getElementById("studentName").value.trim();
+  const studentId = document.getElementById("studentId").value.trim();
+  const studentName = document.getElementById("studentName").value.trim();
+  const scanLimit = Number(
+    document.getElementById("scanLimit").value
+  ) || 100;
 
 
-const mobile =
-document.getElementById("studentMobile").value.trim();
+  if (!studentId || !studentName) {
+
+    alert("Please enter Student ID and Name");
+    return;
+
+  }
 
 
-const program =
-document.getElementById("studentProgram").value;
+  try {
+
+    await db.collection("qrData")
+    .doc(studentId)
+    .set({
+
+      studentId: studentId,
+
+      studentName: studentName,
+
+      count: 0,
+
+      active: true,
+
+      scanLimit: scanLimit,
+
+      unlimited: false,
+
+      paymentStatus: "pending",
+
+      paymentAmount: 30,
+
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+
+    });
 
 
-const studentClass =
-document.getElementById("studentClass").value.trim();
+    alert("✅ Student Added Successfully");
 
 
-const scanLimit =
-Number(document.getElementById("scanLimit").value) || 100;
+    // Clear fields
+
+    document.getElementById("studentId").value = "";
+    document.getElementById("studentName").value = "";
+    document.getElementById("scanLimit").value = "100";
 
 
+    loadStudents();
 
-if(!studentId || !studentName){
 
-alert("Enter Student ID and Name");
-return;
+  } catch(error) {
+
+    console.error(error);
+
+    alert(
+      "Error: " + error.message
+    );
+
+  }
 
 }
 
 
 
-try{
 
 
-await db.collection("qrData")
-.doc(studentId)
-.set({
+// Load Student List
+
+async function loadStudents(){
 
 
-studentId: studentId,
-
-studentName: studentName,
-
-name: studentName,
-
-mobile: mobile,
-
-program: program,
-
-studentClass: studentClass,
+  const list = document.getElementById("studentList");
 
 
-count:0,
-
-active:true,
+  list.innerHTML = "";
 
 
-scanLimit:scanLimit,
-
-unlimited:false,
+  try {
 
 
-paymentAmount:30,
-
-paymentStatus:"pending",
+    const snapshot = await db.collection("qrData")
+    .get();
 
 
 
-expiryDate:
-firebase.firestore.Timestamp.fromDate(
-new Date("2026-08-23T23:59:59")
-),
+    snapshot.forEach(doc=>{
+
+
+      const data = doc.data();
 
 
 
-lastScan:
-firebase.firestore.FieldValue.serverTimestamp(),
+      list.innerHTML += `
+
+      <tr>
+
+      <td>${doc.id}</td>
+
+      <td>${data.studentName || ""}</td>
+
+      <td>
+      ${data.paymentStatus || "pending"}
+      </td>
+
+      <td>
+      ${data.scanLimit || 0}
+      </td>
+
+
+      </tr>
+
+      `;
+
+
+    });
 
 
 
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
+  } catch(error){
+
+    console.error(error);
+
+    list.innerHTML =
+    `
+    <tr>
+    <td colspan="4">
+    Error loading students
+    </td>
+    </tr>
+    `;
+
+  }
+
+
+}
 
 
 
-});
+// Auto Load
 
+window.onload = function(){
 
+  loadStudents();
 
-alert("✅ Student Added Successfully");
-
-
-
-loadStudents();
+};loadStudents();
 
 
 
