@@ -9,6 +9,11 @@ async function addStudent() {
   const scanLimit = Number(
     document.getElementById("scanLimit").value
   ) || 100;
+  const mobile = document.getElementById("studentMobile")?.value.trim() || "";
+
+const program = document.getElementById("studentProgram")?.value || "";
+
+const studentClass = document.getElementById("studentClass")?.value || "";
 
 
   if (!studentId || !studentName) {
