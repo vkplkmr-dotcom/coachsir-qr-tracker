@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,97 +8,115 @@
 
 <link rel="stylesheet" href="admin.css">
 
-
 <!-- Firebase -->
-
-<!-- Firebase -->
-
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-
 
 </head>
 
-
 <body>
 
-
 <div class="container">
-
 
 <h1>🎓 Student Management</h1>
 
 
-
-
-
-
-
-
-<!-- NEW STUDENT FORM -->
-
 <div class="card">
 
+<h2>Add Student</h2>
 
-<h2>New Student Add</h2>
+<input 
+type="text" 
+id="studentId" 
+placeholder="Student ID (S001)">
 
 
 <input 
-id="newStudentId"
-placeholder="Student ID">
-
-
-
-<input 
-id="newStudentName"
+type="text" 
+id="studentName" 
 placeholder="Student Name">
 
 
-
 <input 
-id="newStudentMobile"
-placeholder="Mobile Number">
+type="number" 
+id="scanLimit" 
+placeholder="Scan Limit"
+value="100">
+
+
+<button onclick="addStudent()">
+➕ Add Student
+</button>
+
+</div>
 
 
 
-<select id="newStudentProgram">
+<div class="card">
+
+<h2>Student List</h2>
 
 
-<option value="NEET Biology">
-NEET Biology
-</option>
+<table border="1" width="100%">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+<th>Name</th>
+<th>Status</th>
+<th>Scan Limit</th>
+
+</tr>
+
+</thead>
 
 
-<option value="Class 11 Biology">
-Class 11 Biology
-</option>
+<tbody id="studentList">
+
+</tbody>
 
 
-<option value="Class 12 Biology">
-Class 12 Biology
-</option>
+</table>
 
 
-<option value="SSC">
-SSC
-</option>
+</div>
 
 
-<option value="CTET">
-CTET
-</option>
-
-
-</select>
+</div>
 
 
 
+<script>
 
-<input 
-id="newStudentClass"
+// Firebase Configuration
+
+const firebaseConfig = {
+
+apiKey: "YOUR_API_KEY",
+
+authDomain: "YOUR_PROJECT.firebaseapp.com",
+
+projectId: "YOUR_PROJECT_ID"
+
+};
+
+
+firebase.initializeApp(firebaseConfig);
+
+
+const db = firebase.firestore();
+
+
+</script>
+
+
+<script src="students.js"></script>
+
+
+</body>
+</html>id="newStudentClass"
 placeholder="Class">
 
 
