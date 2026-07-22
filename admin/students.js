@@ -1,4 +1,3 @@
-console.log("UPDATED STUDENTS JS RUNNING");
 // students.js
 
 // Add Student
