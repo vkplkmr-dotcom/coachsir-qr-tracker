@@ -1,19 +1,33 @@
 // students.js
 
-// Add Student
+
+// ==========================
+// ADD STUDENT (OLD FORM)
+// ==========================
 
 async function addStudent() {
 
-  const studentId = document.getElementById("newStudentId").value.trim();
+  const studentId =
+    document.getElementById("studentId")?.value.trim() || "";
 
-const studentName = document.getElementById("newStudentName").value.trim();
-  const scanLimit = Number(
-    document.getElementById("scanLimit").value
-  ) || 100;
- const mobile = document.getElementById("newStudentMobile")?.value.trim() || "";
-const program = document.getElementById("newStudentProgram")?.value || "";
+  const studentName =
+    document.getElementById("studentName")?.value.trim() || "";
 
-const studentClass = document.getElementById("newStudentClass")?.value || "";
+  const scanLimit =
+    Number(document.getElementById("scanLimit")?.value) || 100;
+
+
+  const mobile =
+    document.getElementById("studentMobile")?.value.trim() || "";
+
+
+  const program =
+    document.getElementById("newStudentProgram")?.value || "";
+
+
+  const studentClass =
+    document.getElementById("newStudentClass")?.value.trim() || "";
+
 
   if (!studentId || !studentName) {
 
@@ -25,62 +39,70 @@ const studentClass = document.getElementById("newStudentClass")?.value || "";
 
   try {
 
+
     await db.collection("qrData")
-.doc(studentId)
-.set({
+    .doc(studentId)
+    .set({
 
-  studentId: studentId,
+      studentId: studentId,
 
-  studentName: studentName,
+      studentName: studentName,
 
-  mobile: mobile,
+      name: studentName,
 
-  studentClass: studentClass,
+      mobile: mobile,
 
-  count: 0,
+      program: program,
 
-  active: true,
+      studentClass: studentClass,
 
-  scanLimit: scanLimit,
 
-  unlimited: false,
+      count: 0,
 
-  paymentAmount: 30,
+      active: true,
 
-  paymentStatus: "pending",
+      scanLimit: scanLimit,
 
-  expiryDate: firebase.firestore.Timestamp.fromDate(
-    new Date("2026-08-15T23:59:59")
-  ),
+      unlimited: false,
 
-  lastScan: firebase.firestore.FieldValue.serverTimestamp(),
 
-  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      paymentAmount: 30,
 
-});
+      paymentStatus: "pending",
+
+
+      expiryDate:
+      firebase.firestore.Timestamp.fromDate(
+        new Date("2026-08-23T23:59:59")
+      ),
+
+
+      lastScan:
+      firebase.firestore.FieldValue.serverTimestamp(),
+
+
+      createdAt:
+      firebase.firestore.FieldValue.serverTimestamp()
+
+
+    });
+
 
     alert("✅ Student Added Successfully");
-
-
-    // Clear fields
-
-    document.getElementById("studentId").value = "";
-    document.getElementById("studentName").value = "";
-    document.getElementById("scanLimit").value = "100";
 
 
     loadStudents();
 
 
-  } catch(error) {
+  }
+  catch(error){
 
     console.error(error);
 
-    alert(
-      "Error: " + error.message
-    );
+    alert(error.message);
 
   }
+
 
 }
 
@@ -88,22 +110,60 @@ const studentClass = document.getElementById("newStudentClass")?.value || "";
 
 
 
-// Load Student List
+// ==========================
+// NEW STUDENT FORM BRIDGE
+// ==========================
+
+function addNewStudent(){
+
+
+  document.getElementById("studentId").value =
+  document.getElementById("newStudentId").value;
+
+
+  document.getElementById("studentName").value =
+  document.getElementById("newStudentName").value;
+
+
+  if(document.getElementById("studentMobile")){
+
+    document.getElementById("studentMobile").value =
+    document.getElementById("newStudentMobile").value;
+
+  }
+
+
+  addStudent();
+
+
+}
+
+
+
+
+
+// ==========================
+// LOAD STUDENTS
+// ==========================
 
 async function loadStudents(){
 
 
-  const list = document.getElementById("studentList");
+  const list =
+  document.getElementById("studentList");
 
 
-  list.innerHTML = "";
+  if(!list) return;
 
 
-  try {
+  list.innerHTML="";
 
 
-    const snapshot = await db.collection("qrData")
-    .get();
+  try{
+
+
+    const snapshot =
+    await db.collection("qrData").get();
 
 
 
@@ -130,7 +190,6 @@ async function loadStudents(){
       ${data.scanLimit || 0}
       </td>
 
-
       </tr>
 
       `;
@@ -140,18 +199,10 @@ async function loadStudents(){
 
 
 
-  } catch(error){
+  }
+  catch(error){
 
     console.error(error);
-
-    list.innerHTML =
-    `
-    <tr>
-    <td colspan="4">
-    Error loading students
-    </td>
-    </tr>
-    `;
 
   }
 
@@ -160,21 +211,11 @@ async function loadStudents(){
 
 
 
-// Auto Load
 
-window.onload = function(){
+// AUTO LOAD
 
-  loadStudents();
+window.onload=function(){
+
+ loadStudents();
 
 };
-function addNewStudent(){
-
-    document.getElementById("studentId").value =
-    document.getElementById("newStudentId").value;
-
-    document.getElementById("studentName").value =
-    document.getElementById("newStudentName").value;
-
-    addStudent();
-
-}
