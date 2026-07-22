@@ -26,38 +26,38 @@ const studentClass = document.getElementById("newStudentClass")?.value || "";
   try {
 
     await db.collection("qrData")
-    .doc(studentId)
-    .set({
+.doc(studentId)
+.set({
 
-      studentId: studentId,
+  studentId: studentId,
 
-      studentName: studentName,
-      name: studentName,
+  studentName: studentName,
 
-mobile: mobile,
+  mobile: mobile,
 
-program: program,
+  studentClass: studentClass,
 
-studentClass: studentClass,
+  count: 0,
 
-photoURL: "",
+  active: true,
 
-      count: 0,
+  scanLimit: scanLimit,
 
-      active: true,
+  unlimited: false,
 
-      scanLimit: scanLimit,
+  paymentAmount: 30,
 
-      unlimited: false,
+  paymentStatus: "pending",
 
-      paymentStatus: "pending",
+  expiryDate: firebase.firestore.Timestamp.fromDate(
+    new Date("2026-08-15T23:59:59")
+  ),
 
-      paymentAmount: 30,
+  lastScan: firebase.firestore.FieldValue.serverTimestamp(),
 
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
-    });
-
+});
 
     alert("✅ Student Added Successfully");
 
