@@ -33,6 +33,15 @@ const studentClass = document.getElementById("studentClass")?.value || "";
       studentId: studentId,
 
       studentName: studentName,
+      name: studentName,
+
+mobile: mobile,
+
+program: program,
+
+class: studentClass,
+
+photoURL: "",
 
       count: 0,
 
