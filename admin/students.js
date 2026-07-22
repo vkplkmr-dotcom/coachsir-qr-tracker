@@ -156,6 +156,6 @@ window.onload = function(){
 };
 function addNewStudent(){
 
-// नया code यहां रहेगा
+alert("Button Working");
 
 }
