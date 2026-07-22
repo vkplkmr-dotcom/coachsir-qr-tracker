@@ -4,13 +4,13 @@
 
 async function addStudent() {
 
-  const studentId = document.getElementById("studentId").value.trim();
-  const studentName = document.getElementById("studentName").value.trim();
+  const studentId = document.getElementById("newStudentId").value.trim();
+
+const studentName = document.getElementById("newStudentName").value.trim();
   const scanLimit = Number(
     document.getElementById("scanLimit").value
   ) || 100;
-  const mobile = document.getElementById("studentMobile")?.value.trim() || "";
-
+ const mobile = document.getElementById("newStudentMobile")?.value.trim() || "";
 const program = document.getElementById("newStudentProgram")?.value || "";
 
 const studentClass = document.getElementById("newStudentClass")?.value || "";
