@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
 
-<title>Settings - COACHsir ERP</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Students | COACHsir Academy</title>
 
 <link rel="stylesheet" href="admin.css">
 
@@ -11,52 +15,135 @@
 
 </head>
 
+
 <body>
 
 
-<div class="main">
+<div class="container">
 
 
-<div class="panel">
-
-<h1>⚙ Settings</h1>
-
-<h2>💳 Payment Settings</h2>
-
-<p>Current CBT Exam Fee</p>
-
-<h2 id="currentFee">
-Loading...
-</h2>
+<h1>🎓 Student Management</h1>
 
 
-<input 
-id="feeInput"
-type="number"
-placeholder="Enter New Fee"
->
+<div class="card">
 
 
-<br><br>
+<h2>Add New Student</h2>
 
 
-<button class="approve-btn" onclick="updateFee()">
+<input id="studentId" placeholder="Student ID">
 
-Update Fee
+<input id="studentName" placeholder="Student Name">
 
+<input id="studentMobile" placeholder="Mobile Number">
+
+
+<select id="studentProgram">
+
+<option value="NEET Biology">
+NEET Biology
+</option>
+
+<option value="Class 11 Biology">
+Class 11 Biology
+</option>
+
+<option value="Class 12 Biology">
+Class 12 Biology
+</option>
+
+<option value="SSC">
+SSC
+</option>
+
+<option value="CTET">
+CTET
+</option>
+
+</select>
+
+
+<input id="studentClass" placeholder="Class">
+
+
+<input id="scanLimit" type="number" value="100">
+
+
+<button onclick="addStudent()">
+➕ Add Student
 </button>
 
 
-<p id="msg"></p>
+</div>
+
+
+
+
+
+<div class="card">
+
+<h2>Student List</h2>
+
+
+<table border="1" width="100%">
+
+<thead>
+
+<tr>
+
+<th>ID</th>
+<th>Name</th>
+<th>Class</th>
+<th>Mobile</th>
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="studentList">
+
+</tbody>
+
+
+</table>
 
 
 </div>
 
 
+
 </div>
 
 
-<script src="settings.js"></script>
+
+
+<script>
+
+const firebaseConfig = {
+
+apiKey: "YOUR_API_KEY",
+
+authDomain: "YOUR_PROJECT.firebaseapp.com",
+
+projectId: "YOUR_PROJECT_ID"
+
+};
+
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+
+</script>
+
+
+
+<script src="students.js"></script>
+
 
 </body>
+
 </html>
