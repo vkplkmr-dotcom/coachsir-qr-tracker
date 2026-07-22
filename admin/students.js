@@ -39,7 +39,7 @@ mobile: mobile,
 
 program: program,
 
-class: studentClass,
+studentClass: studentClass,
 
 photoURL: "",
 
