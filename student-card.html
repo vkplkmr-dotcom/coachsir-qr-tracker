@@ -2,105 +2,241 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>COACHsir Academy | Student Access Card</title>
+<title>COACHsir Academy | CBT Exam Access Card</title>
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="student-card.css">
 
-  <!-- Student Card CSS -->
-  <link rel="stylesheet" href="student-card.css">
+<!-- Font Awesome -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
 </head>
 
 <body>
 
-  <!-- Background -->
-  <div class="bg-overlay"></div>
+<div class="card">
 
-  <!-- Main Card Area -->
-  <main class="card-page">
+    <!-- Header -->
+    <div class="header">
 
-    <div class="student-card">
+        <img src="assets/logo.png" class="logo" alt="Logo">
 
-      <!-- Top Header -->
-      <div class="card-header">
-
-        <div class="academy-brand">
-          <div class="logo-icon">
-            <i class="fa-solid fa-graduation-cap"></i>
-          </div>
-
-          <div>
-            <h1>COACH<span>sir</span></h1>
-            <p>ONLINE ACADEMY</p>
-          </div>
+        <div class="title">
+            <h1>COACHsir Academy</h1>
+            <span>CBT EXAM ACCESS CARD</span>
         </div>
 
-        <div class="card-status">
-          <span class="status-dot"></span>
-          ACTIVE
-        </div>
+    </div>
 
-      </div>
+    <!-- Student Section -->
 
-      <!-- Card Title -->
-      <div class="card-title">
-        <div>
-          <p class="small-title">DIGITAL STUDENT</p>
-          <h2>CBT EXAM ACCESS CARD</h2>
-        </div>
+    <div class="student">
 
-        <div class="card-chip">
-          <i class="fa-solid fa-microchip"></i>
-        </div>
-      </div>
+        <img id="studentPhoto"
+             src="assets/student.png"
+             alt="Student">
 
-      <!-- Student Information -->
-      <section class="student-details">
+        <div class="details">
 
-        <!-- Photo -->
-        <div class="photo-section">
+            <h2 id="studentName">Loading...</h2>
 
-          <div class="photo-frame">
-            <img
-              id="studentPhoto"
-              src="https://via.placeholder.com/180x220.png?text=STUDENT"
-              alt="Student Photo">
-          </div>
+            <p>
+                <b>ID :</b>
+                <span id="studentId">------</span>
+            </p>
 
-          <span class="verified-badge">
-            <i class="fa-solid fa-circle-check"></i>
-            VERIFIED
-          </span>
+            <p>
+                <b>Program :</b>
+                <span id="program">------</span>
+            </p>
+
+            <p>
+                <b>Valid Till :</b>
+                <span id="expiry">------</span>
+            </p>
 
         </div>
 
-        <!-- Details -->
-        <div class="student-info">
+    </div>
 
-          <div class="info-row full">
-            <span class="label">
-              <i class="fa-solid fa-user"></i>
-              STUDENT NAME
-            </span>
+    <!-- QR -->
 
-            <strong id="studentName">Student Name</strong>
-          </div>
+    <div class="qr-area">
 
-          <div class="info-grid">
+        <div id="qrcode"></div>
 
-            <div class="info-row">
-              <span class="label">
+    </div>
+
+    <!-- Status -->
+
+    <div class="status">
+
+        <div id="paymentStatus">
+            PAYMENT
+        </div>
+
+        <div id="accessStatus">
+            ACTIVE
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ========================= -->
+<!-- Firebase SDK -->
+<!-- ========================= -->
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+<!-- Firebase Config -->
+<script src="firebase/config.js"></script>
+
+<!-- QR Code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- Student Card JS -->
+<script src="student-card.js"></script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>COACHsir Academy | CBT Exam Access Card</title>
+
+<link rel="stylesheet" href="student-card.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body>
+
+<div class="card">
+
+    <!-- Background -->
+    <div class="bg-overlay"></div>
+
+    <!-- Header -->
+    <div class="header">
+
+        <img src="assets/logo.png" class="logo">
+
+        <div class="academy">
+            <h1>COACHsir Academy</h1>
+            <span>CBT EXAM ACCESS CARD</span>
+            <small>Session 2026-2027</small>
+        </div>
+
+    </div>
+
+    <!-- Photo + Details -->
+
+    <div class="top-section">
+
+        <div class="photo-box">
+
+            <img id="studentPhoto"
+                 src="assets/student.png">
+
+        </div>
+
+        <div class="student-details">
+
+            <h2 id="studentName">Loading...</h2>
+
+            <p>
                 <i class="fa-solid fa-id-card"></i>
-                STUDENT ID
-              </span>
+                <b>ID :</b>
+                <span id="studentId">------</span>
+            </p>
 
-              <strong id="studentId">S001</strong>
-            </div>
+            <p>
+                <i class="fa-solid fa-graduation-cap"></i>
+                <b>Program :</b>
+                <span id="program">------</span>
+            </p>
 
+            <p>
+                <i class="fa-solid fa-calendar-days"></i>
+                <b>Valid Till :</b>
+                <span id="expiry">------</span>
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- QR -->
+
+    <div class="qr-section">
+
+        <h3>SCAN & VERIFY</h3>
+
+        <div id="qrcode"></div>
+
+    </div>
+
+    <!-- Status -->
+
+    <div class="status-row">
+
+        <div id="paymentStatus">
+            PAYMENT
+        </div>
+
+        <div id="accessStatus">
+            ACTIVE
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+
+    <div class="footer">
+
+        <div>
+            <i class="fa-solid fa-shield-halved"></i>
+            Secure Access
+        </div>
+
+        <div>
+            <i class="fa-solid fa-qrcode"></i>
+            QR Verified
+        </div>
+
+        <div>
+            <i class="fa-solid fa-laptop"></i>
+            CBT Ready
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+<script src="firebase/config.js"></script>
+
+<!-- QR -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- JS -->
+<script src="student-card.js"></script>
+
+</body>
+</html>
             <div class="info-row">
               <span class="label">
                 <i class="fa-solid fa-book"></i>
