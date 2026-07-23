@@ -1,72 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Student Virtual Access Card</title>
+<title>CBT Exam Access Card</title>
 
 <link rel="stylesheet" href="student-card.css">
 
 <!-- Font Awesome -->
 <link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 </head>
+
 <body>
 
 <div class="card">
 
-    <div class="top">
+    <!-- Header -->
+    <div class="header">
 
         <img src="assets/logo.png" class="logo">
 
-        <div class="academy">
-            COACHsir Academy
-            <span>Virtual Student Access Card</span>
+        <div class="title">
+
+            <h1>COACHsir Academy</h1>
+
+            <span>CBT EXAM ACCESS CARD</span>
+
         </div>
 
     </div>
 
-    <div class="photo-area">
+    <!-- Student Area -->
+
+    <div class="student">
 
         <img id="studentPhoto"
         src="assets/student.png">
 
+        <div class="details">
+
+            <h2 id="studentName">Loading...</h2>
+
+            <p>
+                <b>ID :</b>
+                <span id="studentId">------</span>
+            </p>
+
+            <p>
+                <b>Program :</b>
+                <span id="program">------</span>
+            </p>
+
+            <p>
+                <b>Valid Till :</b>
+                <span id="expiry">------</span>
+            </p>
+
+        </div>
+
     </div>
 
-    <div class="details">
+    <!-- QR -->
 
-        <h2 id="studentName">Loading...</h2>
+    <div class="qr-area">
 
-        <p>ID :
-            <span id="studentId">------</span>
-        </p>
+        <div id="qrcode"></div>
 
-        <p>Course :
-            <span id="studentCourse">------</span>
-        </p>
+    </div>
 
-        <p>Valid Till :
-            <span id="expiryDate">------</span>
-        </p>
+    <!-- Status -->
 
-        <div id="status" class="active">
+    <div class="status">
+
+        <div id="paymentStatus">
+            PAYMENT
+        </div>
+
+        <div id="accessStatus">
             ACTIVE
         </div>
 
     </div>
 
-    <div id="qrcode"></div>
-
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<script type="module" src="student-card.js"></script>
+<script src="student-card.js"></script>
 
 </body>
+
 </html>
