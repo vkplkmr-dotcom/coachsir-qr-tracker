@@ -105,3 +105,135 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>COACHsir Academy | CBT Exam Access Card</title>
+
+<link rel="stylesheet" href="student-card.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body>
+
+<div class="card">
+
+    <!-- Background -->
+    <div class="bg-overlay"></div>
+
+    <!-- Header -->
+    <div class="header">
+
+        <img src="assets/logo.png" class="logo">
+
+        <div class="academy">
+            <h1>COACHsir Academy</h1>
+            <span>CBT EXAM ACCESS CARD</span>
+            <small>Session 2026-2027</small>
+        </div>
+
+    </div>
+
+    <!-- Photo + Details -->
+
+    <div class="top-section">
+
+        <div class="photo-box">
+
+            <img id="studentPhoto"
+                 src="assets/student.png">
+
+        </div>
+
+        <div class="student-details">
+
+            <h2 id="studentName">Loading...</h2>
+
+            <p>
+                <i class="fa-solid fa-id-card"></i>
+                <b>ID :</b>
+                <span id="studentId">------</span>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-graduation-cap"></i>
+                <b>Program :</b>
+                <span id="program">------</span>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-calendar-days"></i>
+                <b>Valid Till :</b>
+                <span id="expiry">------</span>
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- QR -->
+
+    <div class="qr-section">
+
+        <h3>SCAN & VERIFY</h3>
+
+        <div id="qrcode"></div>
+
+    </div>
+
+    <!-- Status -->
+
+    <div class="status-row">
+
+        <div id="paymentStatus">
+            PAYMENT
+        </div>
+
+        <div id="accessStatus">
+            ACTIVE
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+
+    <div class="footer">
+
+        <div>
+            <i class="fa-solid fa-shield-halved"></i>
+            Secure Access
+        </div>
+
+        <div>
+            <i class="fa-solid fa-qrcode"></i>
+            QR Verified
+        </div>
+
+        <div>
+            <i class="fa-solid fa-laptop"></i>
+            CBT Ready
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+<script src="firebase/config.js"></script>
+
+<!-- QR -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- JS -->
+<script src="student-card.js"></script>
+
+</body>
+</html>
