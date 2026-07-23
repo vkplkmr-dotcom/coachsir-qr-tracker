@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CBT Exam Access Card</title>
+<title>COACHsir Academy | CBT Exam Access Card</title>
 
 <link rel="stylesheet" href="student-card.css">
 
@@ -22,24 +22,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     <!-- Header -->
     <div class="header">
 
-        <img src="assets/logo.png" class="logo">
+        <img src="assets/logo.png" class="logo" alt="Logo">
 
         <div class="title">
-
             <h1>COACHsir Academy</h1>
-
             <span>CBT EXAM ACCESS CARD</span>
-
         </div>
 
     </div>
 
-    <!-- Student Area -->
+    <!-- Student Section -->
 
     <div class="student">
 
         <img id="studentPhoto"
-        src="assets/student.png">
+             src="assets/student.png"
+             alt="Student">
 
         <div class="details">
 
@@ -88,10 +86,22 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
 </div>
 
+<!-- ========================= -->
+<!-- Firebase SDK -->
+<!-- ========================= -->
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+<!-- Firebase Config -->
+<script src="firebase/config.js"></script>
+
+<!-- QR Code -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
+<!-- Student Card JS -->
 <script src="student-card.js"></script>
 
 </body>
-
 </html>
