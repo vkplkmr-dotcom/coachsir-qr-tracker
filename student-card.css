@@ -279,3 +279,165 @@ left:150%;
 }
 
 }
+/* ========================= */
+/* PART 2C - PREMIUM FINISH */
+/* ========================= */
+
+/* Digital Background */
+
+body{
+    background:
+    radial-gradient(circle at top,#1e4fa8 0%,#071b38 40%,#020d1d 100%);
+    background-attachment:fixed;
+}
+
+/* Card Border Glow */
+
+.card{
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+}
+
+.card::after{
+    content:"";
+    position:absolute;
+    inset:8px;
+    border-radius:22px;
+    border:1px solid rgba(255,255,255,.08);
+    pointer-events:none;
+}
+
+/* Photo */
+
+.photo-box{
+    transition:.35s;
+}
+
+.photo-box:hover{
+
+    transform:scale(1.03);
+
+    box-shadow:
+    0 0 25px cyan,
+    0 0 45px rgba(0,255,255,.35);
+
+}
+
+/* Student Name */
+
+.student-details h2{
+
+    color:#fff;
+
+    text-shadow:
+    0 0 8px cyan;
+
+}
+
+/* QR */
+
+#qrcode{
+
+    transition:.35s;
+
+}
+
+#qrcode:hover{
+
+    transform:scale(1.04);
+
+    box-shadow:
+
+    0 0 30px cyan,
+
+    0 0 50px rgba(0,255,255,.45);
+
+}
+
+/* Footer */
+
+.footer{
+
+backdrop-filter:blur(10px);
+
+}
+
+.footer div{
+
+transition:.3s;
+
+}
+
+.footer div:hover{
+
+color:#fff;
+
+transform:translateY(-4px);
+
+}
+
+/* Scroll */
+
+::-webkit-scrollbar{
+
+width:8px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+background:#19d7ff;
+
+border-radius:20px;
+
+}
+
+/* Responsive */
+
+@media(max-width:420px){
+
+.card{
+
+width:100%;
+
+}
+
+.top-section{
+
+flex-direction:column;
+
+align-items:center;
+
+text-align:center;
+
+}
+
+.student-details{
+
+padding-left:0;
+
+padding-top:15px;
+
+}
+
+.photo-box{
+
+margin-bottom:15px;
+
+}
+
+.status-row{
+
+flex-direction:column;
+
+}
+
+.footer{
+
+flex-wrap:wrap;
+
+gap:15px;
+
+}
+
+}
