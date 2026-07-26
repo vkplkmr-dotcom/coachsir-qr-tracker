@@ -15,330 +15,116 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
 </head>
 
-
 <body>
 
+<div class="card">
 
-<div class="card-container">
+    <!-- Background -->
+    <div class="bg-overlay"></div>
 
+    <!-- Header -->
+    <div class="header">
 
-<!-- FRONT CARD -->
+        <img src="assets/logo.png" class="logo" alt="Logo">
 
-<div class="card" id="studentCard">
+        <div class="academy">
 
+            <h1>COACHsir Academy</h1>
 
-<div class="bg-overlay"></div>
+            <span>CBT EXAM ACCESS CARD</span>
 
+            <small>Session 2026-2027</small>
 
-<!-- Header -->
+        </div>
 
-<div class="header">
+    </div>
 
-<img src="assets/logo.png" class="logo" alt="Logo">
+    <!-- Student Section -->
 
+    <div class="top-section">
 
-<div class="academy">
+        <div class="photo-box">
 
-<h1>COACHsir Academy</h1>
+            <img id="studentPhoto"
+                 src="assets/student.png"
+                 alt="Student">
 
-<span>CBT EXAM ACCESS CARD</span>
+        </div>
 
-<small>Session 2026-2027</small>
+        <div class="student-details">
+
+            <h2 id="studentName">Loading...</h2>
+
+            <p>
+                <i class="fa-solid fa-id-card"></i>
+                <b>ID :</b>
+                <span id="studentId">------</span>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-graduation-cap"></i>
+                <b>Program :</b>
+                <span id="program">------</span>
+            </p>
+
+            <p>
+                <i class="fa-solid fa-calendar-days"></i>
+                <b>Valid Till :</b>
+                <span id="expiry">------</span>
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- QR -->
+
+    <div class="qr-section">
+
+        <h3>SCAN & VERIFY</h3>
+
+        <div id="qrcode"></div>
+
+    </div>
+
+    <!-- Status -->
+
+    <div class="status-row">
+
+        <div id="paymentStatus">
+            PAYMENT
+        </div>
+
+        <div id="accessStatus">
+            ACTIVE
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+
+    <div class="footer">
+
+        <div>
+            <i class="fa-solid fa-shield-halved"></i>
+            Secure Access
+        </div>
+
+        <div>
+            <i class="fa-solid fa-qrcode"></i>
+            QR Verified
+        </div>
+
+        <div>
+            <i class="fa-solid fa-laptop"></i>
+            CBT Ready
+        </div>
+
+    </div>
 
 </div>
-
-</div>
-
-
-
-<!-- Student -->
-
-<div class="top-section">
-
-
-<div class="photo-box">
-
-<img id="studentPhoto"
-src="assets/student.png"
-alt="Student">
-
-</div>
-
-
-
-<div class="student-details">
-
-
-<h2 id="studentName">
-Loading...
-</h2>
-
-
-
-<p>
-<i class="fa-solid fa-id-card"></i>
-
-<b>ID :</b>
-
-<span id="studentId">
-------
-</span>
-
-</p>
-
-
-
-<p>
-
-<i class="fa-solid fa-graduation-cap"></i>
-
-<b>Program :</b>
-
-<span id="program">
-------
-</span>
-
-</p>
-
-
-
-<p>
-
-<i class="fa-solid fa-calendar-days"></i>
-
-<b>Valid Till :</b>
-
-<span id="expiry">
-------
-</span>
-
-</p>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-<!-- QR -->
-
-<div class="qr-section">
-
-
-<h3>
-SCAN & VERIFY
-</h3>
-
-
-<div id="qrcode"></div>
-
-
-</div>
-
-
-
-
-<!-- Status -->
-
-<div class="status-row">
-
-
-<div id="paymentStatus">
-PAYMENT
-</div>
-
-
-<div id="accessStatus">
-ACTIVE
-</div>
-
-
-</div>
-
-
-
-
-<!-- Footer -->
-
-
-<div class="footer">
-
-
-<div>
-
-<i class="fa-solid fa-shield-halved"></i>
-
-Secure Access
-
-</div>
-
-
-<div>
-
-<i class="fa-solid fa-qrcode"></i>
-
-QR Verified
-
-</div>
-
-
-<div>
-
-<i class="fa-solid fa-laptop"></i>
-
-CBT Ready
-
-</div>
-
-
-</div>
-
-
-
-</div>
-<!-- FRONT CARD END -->
-
-
-
-
-
-<!-- BACK CARD -->
-
-
-<div class="card back-card">
-
-
-<div class="back-header">
-
-
-<h2>
-COACHsir Academy
-</h2>
-
-
-<span>
-CBT EXAM ACCESS CARD
-</span>
-
-
-</div>
-
-
-
-
-<div class="back-content">
-
-
-<h3>
-Student Guidelines
-</h3>
-
-
-
-<ul>
-
-<li>
-Card is digitally verified
-</li>
-
-
-<li>
-Keep QR code secure
-</li>
-
-
-<li>
-Use registered details only
-</li>
-
-
-<li>
-Valid for CBT Examination
-</li>
-
-
-</ul>
-
-
-
-<div class="contact">
-
-
-<p>
-
-<i class="fa-solid fa-phone"></i>
-
-COACHsir Academy Support
-
-</p>
-
-
-
-<p>
-
-<i class="fa-solid fa-shield"></i>
-
-Secure Digital Identity
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-<div class="back-footer">
-
-© 2026 COACHsir Academy
-
-</div>
-
-
-
-</div>
-<!-- BACK CARD END -->
-
-
-
-</div>
-<!-- CARD CONTAINER END -->
-
-
-
-
-
-<!-- BUTTON -->
-
-
-<div class="action-buttons">
-
-
-<button id="flipBtn">
-
-<i class="fa-solid fa-repeat"></i>
-
-Front
-
-</button>
-
-
-</div>
-
-
-
-
-
 
 <!-- Firebase -->
-
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 
@@ -346,25 +132,15 @@ Front
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
-
 <script src="firebase/config.js"></script>
 
-
-
-
-<!-- QR -->
+<!-- QR Library -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-
-
-
-<!-- Student Card JS -->
+<!-- Student Card -->
 
 <script src="student-card.js"></script>
 
-
-
 </body>
-
 </html>
