@@ -1,22 +1,27 @@
-// Get Student ID from URL
+// ================================
+// GET STUDENT ID FROM URL
+// ================================
 
 const urlParams = new URLSearchParams(window.location.search);
 
 const studentId = urlParams.get("id");
 
 
-// Check ID
+// ================================
+// LOAD STUDENT DATA
+// ================================
 
 if(!studentId){
 
     alert("Student ID Missing");
 
 }
+else{
 
 
-// Load Student Data
-
-db.collection("qrData").doc(studentId).get()
+db.collection("qrData")
+.doc(studentId)
+.get()
 
 .then((doc)=>{
 
@@ -24,7 +29,6 @@ db.collection("qrData").doc(studentId).get()
     if(!doc.exists){
 
         alert("Student Not Found");
-
         return;
 
     }
@@ -34,30 +38,28 @@ db.collection("qrData").doc(studentId).get()
 
 
 
-    // Student Name
+    // NAME
 
     document.getElementById("studentName").innerText =
     data.name || "No Name";
 
 
 
-    // Student ID
+    // ID
 
     document.getElementById("studentId").innerText =
     studentId;
 
 
 
-    // Program
+    // PROGRAM
 
     document.getElementById("program").innerText =
     data.program || "Not Available";
 
 
 
-
-
-    // Expiry Date
+    // EXPIRY DATE
 
     if(data.expiryDate){
 
@@ -93,7 +95,7 @@ db.collection("qrData").doc(studentId).get()
 
 
 
-    // Payment Status
+    // PAYMENT STATUS
 
     document.getElementById("paymentStatus").innerText =
     (data.paymentStatus || "PENDING").toUpperCase();
@@ -102,26 +104,28 @@ db.collection("qrData").doc(studentId).get()
 
 
 
-    // Access Status
 
-    const access = document.getElementById("accessStatus");
+    // ACTIVE STATUS
+
+    const accessStatus =
+    document.getElementById("accessStatus");
 
 
     if(data.active){
 
 
-        access.innerText = "ACTIVE";
+        accessStatus.innerText="ACTIVE";
 
-        access.style.background="#16c60c";
+        accessStatus.style.background="#16c60c";
 
 
     }
     else{
 
 
-        access.innerText="EXPIRED";
+        accessStatus.innerText="EXPIRED";
 
-        access.style.background="#ff0000";
+        accessStatus.style.background="#ff0000";
 
 
     }
@@ -130,7 +134,8 @@ db.collection("qrData").doc(studentId).get()
 
 
 
-    // Student Photo
+    // PHOTO
+
 
     const photo =
     document.getElementById("studentPhoto");
@@ -151,24 +156,25 @@ db.collection("qrData").doc(studentId).get()
 
 
 
-    // QR Code
+    // QR CODE
 
 
-    document.getElementById("qrcode").innerHTML="";
+    const qr =
+    document.getElementById("qrcode");
 
 
-    new QRCode(
-        document.getElementById("qrcode"),
-        {
+    qr.innerHTML="";
 
-            text: studentId,
 
-            width:180,
+    new QRCode(qr,{
 
-            height:180
+        text:studentId,
 
-        }
-    );
+        width:180,
+
+        height:180
+
+    });
 
 
 
@@ -176,40 +182,40 @@ db.collection("qrData").doc(studentId).get()
 
 .catch((error)=>{
 
-
     alert(error.message);
-
 
 });
 
 
+}
 
 
 
+// ================================
+// CARD FLIP
+// ================================
 
-// CARD FLIP BUTTON
+
+const cardContainer =
+document.querySelector(".card-container");
 
 
-const flipBtn = document.getElementById("flipBtn");
+const flipBtn =
+document.getElementById("flipBtn");
 
-const card = document.getElementById("studentCard");
+
+
+if(flipBtn){
 
 
 flipBtn.addEventListener("click",()=>{
 
 
-    card.classList.toggle("flip");
+    cardContainer.classList.toggle("flip");
 
 
-    if(card.classList.contains("flip")){
 
-
-        flipBtn.innerHTML =
-        '<i class="fa-solid fa-repeat"></i> Back';
-
-
-    }
-    else{
+    if(cardContainer.classList.contains("flip")){
 
 
         flipBtn.innerHTML =
@@ -217,6 +223,17 @@ flipBtn.addEventListener("click",()=>{
 
 
     }
+    else{
+
+
+        flipBtn.innerHTML =
+        '<i class="fa-solid fa-repeat"></i> Back';
+
+
+    }
 
 
 });
+
+
+}
