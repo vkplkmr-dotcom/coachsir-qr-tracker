@@ -1,15 +1,15 @@
-// ================================
-// GET STUDENT ID FROM URL
-// ================================
+// ===============================
+// GET STUDENT ID
+// ===============================
 
-const urlParams = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
 
-const studentId = urlParams.get("id");
+const studentId = params.get("id");
 
 
-// ================================
-// LOAD STUDENT DATA
-// ================================
+// ===============================
+// LOAD STUDENT
+// ===============================
 
 if(!studentId){
 
@@ -28,7 +28,7 @@ db.collection("qrData")
 
     if(!doc.exists){
 
-        alert("Student Not Found");
+        alert("Student Not Found : " + studentId);
         return;
 
     }
@@ -59,12 +59,13 @@ db.collection("qrData")
 
 
 
-    // EXPIRY DATE
 
-    if(data.expiryDate){
+    // EXPIRY
+
+    let expiry = data.expiryDate;
 
 
-        let expiry = data.expiryDate;
+    if(expiry){
 
 
         if(expiry.toDate){
@@ -86,8 +87,10 @@ db.collection("qrData")
     }
     else{
 
+
         document.getElementById("expiry").innerText =
         "Not Available";
+
 
     }
 
@@ -95,7 +98,7 @@ db.collection("qrData")
 
 
 
-    // PAYMENT STATUS
+    // PAYMENT
 
     document.getElementById("paymentStatus").innerText =
     (data.paymentStatus || "PENDING").toUpperCase();
@@ -104,28 +107,27 @@ db.collection("qrData")
 
 
 
+    // ACTIVE
 
-    // ACTIVE STATUS
-
-    const accessStatus =
+    const access =
     document.getElementById("accessStatus");
 
 
-    if(data.active){
+    if(data.active === true){
 
 
-        accessStatus.innerText="ACTIVE";
+        access.innerText="ACTIVE";
 
-        accessStatus.style.background="#16c60c";
+        access.style.background="#16c60c";
 
 
     }
     else{
 
 
-        accessStatus.innerText="EXPIRED";
+        access.innerText="EXPIRED";
 
-        accessStatus.style.background="#ff0000";
+        access.style.background="#ff0000";
 
 
     }
@@ -141,22 +143,15 @@ db.collection("qrData")
     document.getElementById("studentPhoto");
 
 
-    if(data.photoURL){
-
-        photo.src=data.photoURL;
-
-    }
-    else{
-
-        photo.src="assets/student.png";
-
-    }
+    photo.src =
+    data.photoURL || "assets/student.png";
 
 
 
 
 
-    // QR CODE
+
+    // QR
 
 
     const qr =
@@ -170,9 +165,9 @@ db.collection("qrData")
 
         text:studentId,
 
-        width:180,
+        width:150,
 
-        height:180
+        height:150
 
     });
 
@@ -182,7 +177,9 @@ db.collection("qrData")
 
 .catch((error)=>{
 
+
     alert(error.message);
+
 
 });
 
@@ -191,12 +188,14 @@ db.collection("qrData")
 
 
 
-// ================================
+
+
+// ===============================
 // CARD FLIP
-// ================================
+// ===============================
 
 
-const cardContainer =
+const container =
 document.querySelector(".card-container");
 
 
@@ -205,21 +204,21 @@ document.getElementById("flipBtn");
 
 
 
-if(flipBtn){
+if(container && flipBtn){
 
 
-flipBtn.addEventListener("click",()=>{
+flipBtn.addEventListener("click",function(){
 
 
-    cardContainer.classList.toggle("flip");
+    container.classList.toggle("flip");
 
 
 
-    if(cardContainer.classList.contains("flip")){
+    if(container.classList.contains("flip")){
 
 
         flipBtn.innerHTML =
-        '<i class="fa-solid fa-repeat"></i> Front';
+        '<i class="fa-solid fa-repeat"></i> Back';
 
 
     }
@@ -227,7 +226,7 @@ flipBtn.addEventListener("click",()=>{
 
 
         flipBtn.innerHTML =
-        '<i class="fa-solid fa-repeat"></i> Back';
+        '<i class="fa-solid fa-repeat"></i> Front';
 
 
     }
