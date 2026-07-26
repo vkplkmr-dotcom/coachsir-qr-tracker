@@ -491,3 +491,72 @@ body{
     font-size:16px;
 
 }
+/* ===== FINAL FLIP FIX ===== */
+
+
+.card-container{
+    width:360px;
+    height:560px;
+    position:relative;
+    perspective:1000px;
+}
+
+
+/* FRONT + BACK SAME POSITION */
+
+#studentCard,
+.back-card{
+
+    width:100%;
+    height:100%;
+
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    transition:0.8s;
+
+    transform-style:preserve-3d;
+
+    backface-visibility:hidden;
+
+}
+
+
+/* BACK HIDE */
+
+.back-card{
+
+    transform:rotateY(180deg);
+
+}
+
+
+
+/* FLIP */
+
+.card-container.flip #studentCard{
+
+    transform:rotateY(-180deg);
+
+}
+
+
+.card-container.flip .back-card{
+
+    transform:rotateY(0deg);
+
+}
+
+
+
+/* BUTTON */
+
+.action-buttons{
+
+    margin-top:20px;
+
+    text-align:center;
+
+}
