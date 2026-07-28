@@ -132,7 +132,7 @@ db.collection("qrData")
 
     }
 
-
+z
 
 
 
@@ -214,8 +214,7 @@ flipBtn.addEventListener("click",function(){
 
 
         flipBtn.innerHTML =
-'<i class="fa-solid fa-repeat"></i><span>Front</span>';
-
+'<i class="fa-solid "fa-repeat"></i><span>Front</span>';
 
     }
     else{
