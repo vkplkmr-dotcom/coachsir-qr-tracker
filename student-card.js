@@ -132,10 +132,7 @@ db.collection("qrData")
 
     }
 
-
-
-
-    // PHOTO
+// PHOTO
 
 
     const photo =
@@ -202,26 +199,23 @@ document.getElementById("flipBtn");
 
 if(container && flipBtn){
 
+    flipBtn.addEventListener("click",function(){
 
-flipBtn.addEventListener("click",function(){
+        container.classList.toggle("flip");
 
+        if(container.classList.contains("flip")){
 
-    container.classList.toggle("flip");
+            flipBtn.innerHTML =
+            '<i class="fa-solid fa-repeat"></i><span>Front</span>';
 
+        }
+        else{
 
-    if(container.classList.contains("flip")){
+            flipBtn.innerHTML =
+            '<i class="fa-solid fa-repeat"></i><span>Back</span>';
 
-    flipBtn.innerHTML =
-    '<i class="fa-solid fa-repeat"></i><span>Front</span>';
+        }
 
-}
-else{
-
-    flipBtn.innerHTML =
-    '<i class="fa-solid fa-repeat"></i><span>Back</span>';
-
-}
-});
-
+    });
 
 }
