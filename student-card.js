@@ -190,10 +190,8 @@ db.collection("qrData")
 
 
 
-// ===============================
 // CARD FLIP
 // ===============================
-
 
 const container =
 document.querySelector(".card-container");
@@ -201,7 +199,6 @@ document.querySelector(".card-container");
 
 const flipBtn =
 document.getElementById("flipBtn");
-
 
 
 if(container && flipBtn){
@@ -213,12 +210,11 @@ flipBtn.addEventListener("click",function(){
     container.classList.toggle("flip");
 
 
-
     if(container.classList.contains("flip")){
 
 
         flipBtn.innerHTML =
-        '<i class="fa-solid fa-repeat"></i> Back';
+        '<i class="fa-solid fa-repeat"></i> Front';
 
 
     }
@@ -226,7 +222,7 @@ flipBtn.addEventListener("click",function(){
 
 
         flipBtn.innerHTML =
-        '<i class="fa-solid fa-repeat"></i> Front';
+        '<i class="fa-solid fa-repeat"></i> Back';
 
 
     }
