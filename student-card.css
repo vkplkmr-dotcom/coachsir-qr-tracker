@@ -641,3 +641,14 @@ gap:15px;
     transform:scale(.95);
 
 }
+/* BACK SIDE NORMAL VIEW */
+
+.back-card{
+    transform:rotateY(180deg);
+}
+
+.back-card .back-header,
+.back-card .back-content,
+.back-card .back-footer{
+    transform:rotateY(180deg);
+}
