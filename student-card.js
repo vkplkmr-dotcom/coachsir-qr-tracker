@@ -214,7 +214,7 @@ flipBtn.addEventListener("click",function(){
 
 
         flipBtn.innerHTML =
-        '<i class="fa-solid fa-repeat"></i> Front';
+'<i class="fa-solid fa-repeat"></i><span>Front</span>';
 
 
     }
@@ -222,7 +222,7 @@ flipBtn.addEventListener("click",function(){
 
 
         flipBtn.innerHTML =
-        '<i class="fa-solid fa-repeat"></i> Back';
+'<i class="fa-solid fa-repeat"></i><span>Back</span>';
 
 
     }
