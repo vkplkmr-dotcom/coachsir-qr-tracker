@@ -578,3 +578,66 @@ gap:15px;
 .card-container.flip .card{
     transform:rotateY(180deg);
 }
+
+/* PREMIUM FLIP BUTTON */
+
+#flipBtn{
+
+    width:180px;
+    padding:14px 25px;
+
+    border:none;
+    outline:none;
+
+    border-radius:50px;
+
+    background:
+    linear-gradient(135deg,
+    #00e5ff,
+    #1565c0);
+
+    color:#fff;
+
+    font-size:16px;
+    font-weight:700;
+
+    letter-spacing:1px;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    box-shadow:
+    0 0 15px rgba(0,229,255,.6),
+    0 0 35px rgba(21,101,192,.5);
+
+    transition:.35s;
+}
+
+
+#flipBtn i{
+
+    font-size:20px;
+
+}
+
+
+#flipBtn:hover{
+
+    transform:translateY(-4px) scale(1.05);
+
+    box-shadow:
+    0 0 25px #00e5ff,
+    0 0 50px rgba(0,229,255,.8);
+
+}
+
+
+#flipBtn:active{
+
+    transform:scale(.95);
+
+}
