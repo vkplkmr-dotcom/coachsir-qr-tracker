@@ -420,7 +420,21 @@ border-radius:20px;
 width:100%;
 
 }
+/* ========================= */
+/* CARD FLIP FIX */
+/* ========================= */
 
+.back-card{
+display:none;
+}
+
+.card-container.flip .back-card{
+display:block;
+}
+
+.card-container.flip #studentCard{
+display:none;
+}
 .top-section{
 
 flex-direction:column;
