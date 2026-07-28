@@ -132,7 +132,6 @@ db.collection("qrData")
 
     }
 
-z
 
 
 
@@ -212,21 +211,16 @@ flipBtn.addEventListener("click",function(){
 
     if(container.classList.contains("flip")){
 
+    flipBtn.innerHTML =
+    '<i class="fa-solid fa-repeat"></i><span>Front</span>';
 
-        flipBtn.innerHTML =
-'<i class="fa-solid "fa-repeat"></i><span>Front</span>';
+}
+else{
 
-    }
-    else{
+    flipBtn.innerHTML =
+    '<i class="fa-solid fa-repeat"></i><span>Back</span>';
 
-
-        flipBtn.innerHTML =
-'<i class="fa-solid fa-repeat"></i><span>Back</span>';
-
-
-    }
-
-
+}
 });
 
 
