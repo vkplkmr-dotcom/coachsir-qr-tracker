@@ -424,17 +424,7 @@ width:100%;
 /* CARD FLIP FIX */
 /* ========================= */
 
-.back-card{
-display:none;
-}
 
-.card-container.flip .back-card{
-display:block;
-}
-
-.card-container.flip #studentCard{
-display:none;
-}
 .top-section{
 
 flex-direction:column;
@@ -527,4 +517,47 @@ gap:15px;
 
 .card-container.flip .back-card{
     transform:rotateY(0deg);
+}
+/* ========================= */
+/* FINAL FLIP CARD FIX */
+/* ========================= */
+
+.card-container{
+    width:390px;
+    perspective:1000px;
+}
+
+
+.card{
+    width:100%;
+    min-height:650px;
+    position:relative;
+    transform-style:preserve-3d;
+    transition:0.8s;
+}
+
+
+.front-card,
+.back-card{
+    width:100%;
+    min-height:650px;
+    position:absolute;
+    top:0;
+    left:0;
+    backface-visibility:hidden;
+}
+
+
+.front-card{
+    z-index:2;
+}
+
+
+.back-card{
+    transform:rotateY(180deg);
+}
+
+
+.card-container.flip .card{
+    transform:rotateY(180deg);
 }
