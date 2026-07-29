@@ -224,7 +224,23 @@ else{
 
 
 }
+// WEBSITE BUTTON
+// ===============================
 
+const websiteBtn = document.getElementById("websiteBtn");
+
+if(websiteBtn){
+
+    websiteBtn.onclick = function(){
+
+        window.open(
+            "https://vkplkmr-dotcom.github.io/coachsir--website/",
+            "_blank"
+        );
+
+    };
+
+}
 
 
 
