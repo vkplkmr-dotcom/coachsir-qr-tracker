@@ -812,3 +812,67 @@ gap:15px;
     font-size:16px;
 
 }
+/* PREMIUM BACK HEADER */
+
+.back-header{
+
+    text-align:center;
+
+    padding:20px 15px;
+
+    background:
+    linear-gradient(
+    135deg,
+    rgba(0,229,255,.15),
+    rgba(255,213,79,.12)
+    );
+
+    border-bottom:
+    1px solid rgba(255,255,255,.2);
+
+}
+
+
+.back-header h2{
+
+    font-size:26px;
+
+    font-weight:800;
+
+    letter-spacing:1px;
+
+    background:
+    linear-gradient(
+    90deg,
+    #00e5ff,
+    #ffffff,
+    #ffd54f
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    text-shadow:
+    0 0 15px rgba(0,229,255,.5);
+
+    margin-bottom:8px;
+
+}
+
+
+.back-header span{
+
+    display:block;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    letter-spacing:2px;
+
+    color:#00e5ff;
+
+    text-shadow:
+    0 0 12px rgba(0,229,255,.8);
+
+}
