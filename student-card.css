@@ -668,4 +668,20 @@ gap:15px;
     align-items:center;
     margin-top:15px;
 }
+#paymentStatus{
+    animation: pendingGlow 1s infinite;
+}
 
+@keyframes pendingGlow{
+    0%{
+        opacity:1;
+    }
+
+    50%{
+        opacity:0.4;
+    }
+
+    100%{
+        opacity:1;
+    }
+}
