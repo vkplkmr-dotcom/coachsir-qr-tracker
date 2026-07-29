@@ -137,9 +137,8 @@ else{
     else{
 
 
-        document.getElementById("expiry").innerText =
-        "Not Available";
-
+       document.getElementById("expiry").innerText =
+data.expiryDate || "Not Available";
 
     }
 
