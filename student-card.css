@@ -705,3 +705,40 @@ gap:15px;
     }
 
 }
+.approved-status{
+
+    background:linear-gradient(
+    135deg,
+    #00c853,
+    #00e676
+    ) !important;
+
+    color:#fff;
+
+    animation:successGlow 2s infinite;
+
+}
+
+.approved-status i{
+    margin-right:6px;
+}
+
+@keyframes successGlow{
+
+    0%{
+        box-shadow:
+        0 0 8px rgba(0,255,120,.4);
+    }
+
+    50%{
+        box-shadow:
+        0 0 25px rgba(0,255,120,.9),
+        0 0 50px rgba(0,255,120,.6);
+    }
+
+    100%{
+        box-shadow:
+        0 0 8px rgba(0,255,120,.4);
+    }
+
+}
