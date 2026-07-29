@@ -106,9 +106,17 @@ document.getElementById("paymentStatus");
 const status =
 (data.paymentStatus || "PENDING").toUpperCase();
 
-paymentStatus.innerText = status;
+if(status === "APPROVED"){
 
-if(status === "PENDING"){
+    paymentStatus.innerHTML =
+    '<i class="fa-solid fa-circle-check"></i> APPROVED';
+
+    paymentStatus.classList.add("approved-status");
+
+}
+else{
+
+    paymentStatus.innerText = status;
 
     paymentStatus.classList.add("pending-animation");
 
