@@ -484,26 +484,13 @@ gap:15px;
     padding:12px;
     border-radius:20px;
 }
-.card-container{
-    perspective:1000px;
-}
-
-.card{
-    position:relative;
-    transform-style:preserve-3d;
-}
-
-.card{
-    position:relative;
-    min-height:650px;
-}
-
-.front-card{
+..front-card{
     display:block;
 }
 
 .back-card{
     display:none;
+    width:100%;
 }
 
 .card-container.flip .front-card{
@@ -514,13 +501,10 @@ gap:15px;
     display:block;
 }
 
-
-/* Back default hidden */
-.back-card{
-    transform:rotateY(180deg);
+.card{
+    width:390px;
+    min-height:650px;
 }
-
-
 /* Flip hone par */
 .card-container.flip .front-card{
     transform:rotateY(-180deg);
