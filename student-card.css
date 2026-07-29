@@ -1115,58 +1115,40 @@ gap:15px;
 
 .back-footer{
 
-    margin-top:20px;
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
 
     padding:15px;
 
-    text-align:center;
+    margin-top:20px;
 
     font-size:13px;
 
     font-weight:700;
 
-    letter-spacing:1.5px;
+    letter-spacing:1px;
 
     color:#fff;
 
-    background:
-    linear-gradient(
-    135deg,
-    rgba(0,229,255,.15),
-    rgba(255,213,79,.15)
+    background:linear-gradient(
+        135deg,
+        rgba(0,229,255,.15),
+        rgba(255,213,79,.15)
     );
 
-    border-top:
-    1px solid rgba(255,255,255,.2);
+    border-top:1px solid rgba(255,255,255,.15);
 
     text-shadow:
     0 0 10px rgba(0,229,255,.8);
 
-    box-shadow:
-    0 -5px 20px rgba(0,229,255,.15);
-
-}
-
-
-.back-footer::before{
-
-    content:"✦";
-
-    color:#ffd54f;
-
-    margin-right:8px;
-
-}
-
-
-.back-footer::after{
-
-    content:"✦";
-
-    color:#ffd54f;
-
-    margin-left:8px;
-
+    border-radius:0 0 20px 20px;
 }
 /* MOBILE RESPONSIVE */
 
