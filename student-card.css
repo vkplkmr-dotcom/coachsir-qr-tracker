@@ -1001,3 +1001,19 @@ gap:15px;
     margin-right:6px;
 
 }
+.whatsapp-btn{
+    position:relative;
+    z-index:999;
+    pointer-events:auto !important;
+}
+
+.contact{
+    position:relative;
+    z-index:999;
+    pointer-events:auto;
+}
+
+.back-card{
+    position:relative;
+    z-index:10;
+}
