@@ -743,3 +743,21 @@ gap:15px;
     }
 
 }
+/* SECURITY ACTIVITY PANEL */
+
+.security-panel{
+
+    margin:20px;
+    padding:15px;
+
+    background:
+    rgba(255,255,255,.08);
+
+    border-radius:18px;
+
+    border:1px solid rgba(0,229,255,.3);
+
+    box-shadow:
+    0 0 15px rgba(0,229,255,.25);
+
+}
