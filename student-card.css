@@ -918,3 +918,86 @@ gap:15px;
     drop-shadow(0 0 8px #ffd54f);
 
 }
+/* WHATSAPP SUPPORT BUTTON */
+
+.whatsapp-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    padding:10px 18px;
+
+    margin:10px auto;
+
+    width:max-content;
+
+    border-radius:30px;
+
+    text-decoration:none;
+
+    color:#fff;
+
+    font-size:14px;
+
+    font-weight:700;
+
+
+    background:
+    linear-gradient(
+    135deg,
+    #00e676,
+    #00c853
+    );
+
+
+    box-shadow:
+    0 0 15px rgba(0,255,100,.6);
+
+    transition:.3s;
+
+}
+
+
+.whatsapp-btn i{
+
+    font-size:22px;
+
+}
+
+
+.whatsapp-btn:hover{
+
+    transform:translateY(-4px) scale(1.05);
+
+    box-shadow:
+    0 0 30px rgba(0,255,100,.9);
+
+}
+
+
+
+.secure-btn{
+
+    text-align:center;
+
+    margin-top:12px;
+
+    color:#00e5ff;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+
+.secure-btn i{
+
+    margin-right:6px;
+
+}
