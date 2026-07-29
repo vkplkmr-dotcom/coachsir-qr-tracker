@@ -761,3 +761,54 @@ gap:15px;
     0 0 15px rgba(0,229,255,.25);
 
 }
+.scan-badge{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+
+    margin-top:15px;
+
+    padding:10px 18px;
+
+    border-radius:30px;
+
+    background:
+    linear-gradient(
+    135deg,
+    #00e5ff,
+    #1565c0
+    );
+
+    color:#fff;
+
+    font-size:14px;
+    font-weight:700;
+
+    box-shadow:
+    0 0 15px rgba(0,229,255,.6);
+
+}
+
+
+.scan-badge i{
+
+    font-size:18px;
+    color:#ffd54f;
+
+}
+
+
+.scan-badge strong{
+
+    background:#fff;
+    color:#1565c0;
+
+    padding:4px 12px;
+
+    border-radius:20px;
+
+    font-size:16px;
+
+}
