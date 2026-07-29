@@ -287,52 +287,62 @@ alert("Student ID : "+id);
 // EDIT STUDENT
 
 
-async function editStudent(id){
+async function updateStudent(){
+
+const id =
+document.getElementById("studentId").value;
 
 
-const doc =
 await db.collection("qrData")
 .doc(id)
-.get();
+.update({
+
+studentName:
+document.getElementById("studentName").value,
 
 
-
-if(doc.exists){
-
-
-const data=doc.data();
+mobile:
+document.getElementById("studentMobile").value,
 
 
-document.getElementById("studentId").value=id;
-
-document.getElementById("studentName").value=
-data.studentName || "";
+studentClass:
+document.getElementById("studentClass").value,
 
 
-document.getElementById("studentMobile").value=
-data.mobile || "";
+program:
+document.getElementById("studentProgram").value,
 
 
-document.getElementById("studentClass").value=
-data.studentClass || "";
+scanLimit:
+Number(document.getElementById("scanLimit").value)
+
+});
 
 
-document.getElementById("studentProgram").value=
-data.program || "";
+alert("✅ Student Updated Successfully");
 
 
-document.getElementById("scanLimit").value=
-data.scanLimit || 100;
+// Hide Update Button
+
+document.getElementById("updateBtn").style.display="none";
 
 
-alert("✏️ Edit Mode Activated");
+// Clear Fields
 
+document.getElementById("studentId").value="";
+
+document.getElementById("studentName").value="";
+
+document.getElementById("studentMobile").value="";
+
+document.getElementById("studentClass").value="";
+
+document.getElementById("scanLimit").value="100";
+
+
+loadStudents();
 
 }
-
-
-}
-
 
 
 
