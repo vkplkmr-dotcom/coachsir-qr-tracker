@@ -100,9 +100,19 @@ db.collection("qrData")
 
     // PAYMENT
 
-    document.getElementById("paymentStatus").innerText =
-    (data.paymentStatus || "PENDING").toUpperCase();
+    const paymentStatus =
+document.getElementById("paymentStatus");
 
+const status =
+(data.paymentStatus || "PENDING").toUpperCase();
+
+paymentStatus.innerText = status;
+
+if(status === "PENDING"){
+
+    paymentStatus.classList.add("pending-animation");
+
+}
 
 
 
