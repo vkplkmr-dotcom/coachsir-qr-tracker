@@ -599,5 +599,10 @@ gap:15px;
 
 }
 /* BACK SIDE NORMAL VIEW */
-
+.action-buttons{
+    width:390px;
+    display:flex;
+    justify-content:center;
+    margin-top:15px;
+}
 
