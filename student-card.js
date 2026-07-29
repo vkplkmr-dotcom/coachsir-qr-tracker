@@ -35,7 +35,32 @@ db.collection("qrData")
 
 
     const data = doc.data();
+// SECURITY ACTIVITY
 
+document.getElementById("scanCount").innerText =
+data.count || 0;
+
+
+if(data.lastScan){
+
+    let scanDate;
+
+    if(data.lastScan.toDate){
+
+        scanDate = data.lastScan.toDate();
+
+    }
+    else{
+
+        scanDate = new Date(data.lastScan);
+
+    }
+
+
+    document.getElementById("lastVerified").innerText =
+    scanDate.toLocaleString("en-IN");
+
+}
 
 
     // NAME
