@@ -1,1 +1,76 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Settings | COACHsir Academy</title>
+
+<link rel="stylesheet" href="admin.css">
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script src="../firebase/config.js"></script>
+</head>
+
+<body>
+
+<div class="main-content">
+
+    <div class="page-header">
+        <h1>⚙️ Settings</h1>
+        <p>Manage Academy Configuration</p>
+    </div>
+
+    <div class="card">
+
+        <h2>💰 Payment Settings</h2>
+
+        <div class="form-group">
+            <label>Monthly CBT Fee (₹)</label>
+            <input
+                type="number"
+                id="paymentAmount"
+                placeholder="Enter Payment Amount">
+        </div>
+
+        <button class="save-btn" onclick="savePaymentSettings()">
+            💾 Save Settings
+        </button>
+
+        <div id="statusMsg"></div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>🏫 Academy Information</h2>
+
+        <div class="form-group">
+            <label>Academy Name</label>
+            <input
+                type="text"
+                id="academyName"
+                value="COACHsir Online Academy">
+        </div>
+
+        <div class="form-group">
+            <label>Session</label>
+            <input
+                type="text"
+                id="session"
+                value="2026-2027">
+        </div>
+
+    </div>
+
+</div>
+
+<script src="settings.js"></script>
+
+</body>
+</html>
+```
 
