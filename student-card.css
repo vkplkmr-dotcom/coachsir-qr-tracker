@@ -529,7 +529,7 @@ gap:15px;
 /* Premium Card Upgrade */
 
 .card{
-    transform:scale(1.05);
+    transform:none;
 }
 
 .photo-box{
@@ -1166,5 +1166,78 @@ gap:15px;
     color:#ffd54f;
 
     margin-left:8px;
+
+}
+/* MOBILE RESPONSIVE */
+
+@media screen and (max-width: 480px){
+
+    body{
+        padding:10px;
+    }
+
+    .card{
+        width:100% !important;
+        max-width:360px;
+        min-height:auto;
+        transform:none;
+    }
+
+    .header{
+        padding:12px;
+    }
+
+    .logo{
+        width:55px;
+        height:55px;
+    }
+
+    .academy h1{
+        font-size:18px;
+    }
+
+    .academy span{
+        font-size:11px;
+    }
+
+    .top-section{
+        flex-direction:column;
+        align-items:center;
+        text-align:center;
+    }
+
+    .student-details{
+        padding-left:0;
+        padding-top:15px;
+    }
+
+    .student-details h2{
+        font-size:18px;
+    }
+
+    .photo-box{
+        width:100px;
+        height:125px;
+    }
+
+    #qrcode{
+        width:160px;
+        height:160px;
+    }
+
+    .status-row{
+        flex-direction:column;
+        gap:10px;
+    }
+
+    .footer{
+        flex-wrap:wrap;
+        gap:10px;
+    }
+
+    #flipBtn{
+        width:150px;
+        font-size:14px;
+    }
 
 }
