@@ -65,9 +65,8 @@ if(data.lastScan){
 
     // NAME
 
-    document.getElementById("studentName").innerText =
-    data.name || "No Name";
-
+   document.getElementById("studentName").innerText =
+data.studentName || data.name || "No Name";
 
 
     // ID
@@ -203,14 +202,11 @@ else{
 // PHOTO
 
 
-    const photo =
-    document.getElementById("studentPhoto");
+  const photo =
+document.getElementById("studentPhoto");
 
-
-    photo.src =
-    data.photoURL || "assets/student.png";
-
-
+photo.src =
+data.photoURL || "assets/students/S001.jpg";
 
 
 
