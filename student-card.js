@@ -49,7 +49,32 @@ db.collection("qrData")
 
     document.getElementById("studentId").innerText =
     studentId;
+// CBT EXAM BUTTON
 
+const cbtBtn = document.getElementById("cbtBtn");
+
+
+if(data.paymentStatus === "approved"){
+
+    cbtBtn.style.cursor = "pointer";
+
+    cbtBtn.onclick = function(){
+
+        window.location.href =
+        "https://cbtexam.onlinetestpanel.com";
+
+    };
+
+}
+else{
+
+    cbtBtn.onclick = function(){
+
+        alert("Payment approval pending.");
+
+    };
+
+}
 
 
     // PROGRAM
