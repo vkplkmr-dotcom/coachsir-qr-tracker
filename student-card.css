@@ -583,6 +583,8 @@ gap:15px;
 
 .back-card{
     display:none;
+     width:100%;
+    text-align:center;
 }
 
 .card-container.flip .front-card{
@@ -1127,7 +1129,9 @@ gap:15px;
 
     padding:15px;
 
-    margin-top:20px;
+    margin-top:15px;
+
+    box-sizing:border-box;
 
     font-size:13px;
 
@@ -1137,14 +1141,17 @@ gap:15px;
 
     color:#fff;
 
-    background:linear-gradient(
-        135deg,
-        rgba(0,229,255,.15),
-        rgba(255,213,79,.15)
+    background:
+    linear-gradient(
+    135deg,
+    rgba(0,229,255,.15),
+    rgba(255,213,79,.15)
     );
 
-    border-top:1px solid rgba(255,255,255,.15);
+    border-top:
+    1px solid rgba(255,255,255,.15);
 
+}
     text-shadow:
     0 0 10px rgba(0,229,255,.8);
 
@@ -1221,5 +1228,22 @@ gap:15px;
         width:150px;
         font-size:14px;
     }
+
+}
+.back-footer{
+
+    width:100% !important;
+
+    text-align:center !important;
+
+    display:flex !important;
+
+    justify-content:center !important;
+
+    align-items:center !important;
+
+    padding:15px;
+
+    box-sizing:border-box;
 
 }
