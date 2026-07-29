@@ -876,3 +876,45 @@ gap:15px;
     0 0 12px rgba(0,229,255,.8);
 
 }
+/* PREMIUM GUIDELINE TITLE */
+
+.guideline-title{
+
+    text-align:center;
+
+    font-size:22px;
+
+    font-weight:800;
+
+    letter-spacing:1px;
+
+    margin-bottom:18px;
+
+    background:
+    linear-gradient(
+    90deg,
+    #00e5ff,
+    #ffffff,
+    #ffd54f
+    );
+
+    -webkit-background-clip:text;
+
+    -webkit-text-fill-color:transparent;
+
+    text-shadow:
+    0 0 15px rgba(0,229,255,.6);
+
+}
+
+
+.guideline-title i{
+
+    color:#ffd54f;
+
+    margin-right:8px;
+
+    filter:
+    drop-shadow(0 0 8px #ffd54f);
+
+}
