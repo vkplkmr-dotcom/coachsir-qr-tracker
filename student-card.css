@@ -661,27 +661,7 @@ gap:15px;
 
 }
 /* BACK SIDE NORMAL VIEW */
-.pending-animation{
-    animation: warningPulse 1.2s infinite;
-}
 
-@keyframes warningPulse{
-
-    0%{
-        box-shadow:0 0 5px rgba(255,140,0,.4);
-    }
-
-    50%{
-        box-shadow:
-        0 0 30px rgba(255,140,0,1),
-        0 0 60px rgba(255,87,34,.9);
-    }
-
-    100%{
-        box-shadow:0 0 5px rgba(255,140,0,.4);
-    }
-
-}
 .action-buttons{
     width:100%;
     display:flex;
