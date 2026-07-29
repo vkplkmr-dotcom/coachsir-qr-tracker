@@ -1,116 +1,93 @@
-// =====================================
-// COACHsir Academy
-// Student Management JS
-// =====================================
+// ===============================
+// STUDENT MANAGEMENT JS
+// ===============================
 
 
-// ADD NEW STUDENT
+// ADD STUDENT
 
 async function addStudent(){
 
-    const studentId = 
-    document.getElementById("studentId").value.trim();
+const studentId =
+document.getElementById("studentId").value.trim();
 
+const studentName =
+document.getElementById("studentName").value.trim();
 
-    const studentName = 
-    document.getElementById("studentName").value.trim();
+const mobile =
+document.getElementById("studentMobile").value.trim();
 
+const studentClass =
+document.getElementById("studentClass").value.trim();
 
-    const mobile = 
-    document.getElementById("studentMobile").value.trim();
+const program =
+document.getElementById("studentProgram").value;
 
-
-    const studentClass = 
-    document.getElementById("studentClass").value.trim();
-
-
-    const program =
-    document.getElementById("studentProgram").value;
-
-
-    const scanLimit =
-    Number(document.getElementById("scanLimit").value) || 100;
+const scanLimit =
+Number(document.getElementById("scanLimit").value) || 100;
 
 
 
-    if(!studentId || !studentName){
+if(!studentId || !studentName){
 
-        alert("Please enter Student ID and Name");
-        return;
+alert("Please enter Student ID and Name");
+return;
 
-    }
-
-
-
-    try{
+}
 
 
-        await db.collection("qrData")
-        .doc(studentId)
-        .set({
-
-            studentId: studentId,
-
-            studentName: studentName,
-
-            mobile: mobile,
-
-            studentClass: studentClass,
-
-            program: program,
+try{
 
 
-            count:0,
+await db.collection("qrData")
+.doc(studentId)
+.set({
 
-            active:true,
+studentId:studentId,
 
-            scanLimit:scanLimit,
+studentName:studentName,
 
-            unlimited:false,
+mobile:mobile,
 
+studentClass:studentClass,
 
-            paymentStatus:"pending",
+program:program,
 
-            paymentAmount:30,
+count:0,
 
+active:true,
 
-            createdAt:
-            firebase.firestore.FieldValue.serverTimestamp()
+scanLimit:scanLimit,
 
-        });
+unlimited:false,
+
+paymentStatus:"pending",
+
+paymentAmount:30,
+
+createdAt:
+firebase.firestore.FieldValue.serverTimestamp()
+
+});
 
 
 
-        alert("✅ Student Added Successfully");
+alert("✅ Student Added Successfully");
+
+
+loadStudents();
 
 
 
-        // Clear Form
+}
 
-        document.getElementById("studentId").value="";
+catch(error){
 
-        document.getElementById("studentName").value="";
+console.error(error);
 
-        document.getElementById("studentMobile").value="";
+alert(error.message);
 
-        document.getElementById("studentClass").value="";
+}
 
-        document.getElementById("scanLimit").value="100";
-
-
-
-        loadStudents();
-
-
-
-    }
-    catch(error){
-
-        console.error(error);
-
-        alert("Error : "+error.message);
-
-    }
 
 }
 
@@ -118,192 +95,122 @@ async function addStudent(){
 
 
 
-// =====================================
 // LOAD STUDENTS
-// =====================================
 
 
 async function loadStudents(){
 
 
-    const list =
-    document.getElementById("studentList");
+const list =
+document.getElementById("studentList");
 
 
+list.innerHTML="";
 
-    list.innerHTML="";
 
+try{
 
-    let total=0;
 
-    let active=0;
+const snapshot =
+await db.collection("qrData").get();
 
-    let pending=0;
 
 
+snapshot.forEach(doc=>{
 
-    try{
 
+const data = doc.data();
 
-        const snapshot =
-        await db.collection("qrData")
-        .get();
 
 
+list.innerHTML += `
 
-        snapshot.forEach(doc=>{
+<tr>
 
+<td>${doc.id}</td>
 
-            const data = doc.data();
+<td>${data.studentName || "-"}</td>
 
+<td>${data.studentClass || "-"}</td>
 
+<td>${data.program || "-"}</td>
 
-            total++;
+<td>${data.mobile || "-"}</td>
 
 
+<td>
 
-            if(data.active===true){
+${data.active ? "🟢 Active":"🔴 Inactive"}
 
-                active++;
+</td>
 
-            }
 
+<td>
 
+${data.paymentStatus || "pending"}
 
-            if(data.paymentStatus==="pending"){
+</td>
 
-                pending++;
 
-            }
+<td>
 
 
+<button class="view-btn"
+onclick="viewStudent('${doc.id}')">
 
-            list.innerHTML += `
+👁 View
 
-            <tr>
+</button>
 
 
-            <td>
-            ${doc.id}
-            </td>
+<button class="edit-btn"
+onclick="editStudent('${doc.id}')">
 
+✏️ Edit
 
-            <td>
-            ${data.studentName || "-"}
-            </td>
+</button>
 
 
-            <td>
-            ${data.studentClass || "-"}
-            </td>
+<button class="delete-btn"
+onclick="deleteStudent('${doc.id}')">
 
+🗑 Delete
 
-            <td>
-            ${data.program || "-"}
-            </td>
+</button>
 
 
-            <td>
-            ${data.mobile || "-"}
-            </td>
+</td>
 
 
-            <td>
+</tr>
 
-            ${
-            data.active
-            ?
-            "🟢 Active"
-            :
-            "🔴 Inactive"
-            }
 
-            </td>
+`;
 
 
+});
 
-            <td>
 
-            ${
-            data.paymentStatus || "pending"
-            }
 
-            </td>
+}
 
+catch(error){
 
+console.error(error);
 
-            <td>
 
-            <button 
-            class="view-btn"
-            onclick="viewStudent('${doc.id}')">
+list.innerHTML=`
 
-            👁 View
+<tr>
+<td colspan="8">
+Error Loading Students
+</td>
+</tr>
 
-            </button>
+`;
 
 
-            </td>
-
-
-            </tr>
-
-            `;
-
-
-        });
-
-
-
-        // Update Dashboard Cards
-
-
-        if(document.getElementById("totalStudents")){
-
-            document.getElementById("totalStudents").innerHTML=total;
-
-        }
-
-
-        if(document.getElementById("activeStudents")){
-
-            document.getElementById("activeStudents").innerHTML=active;
-
-        }
-
-
-        if(document.getElementById("pendingStudents")){
-
-            document.getElementById("pendingStudents").innerHTML=pending;
-
-        }
-
-
-
-    }
-    catch(error){
-
-
-        console.error(error);
-
-
-
-        list.innerHTML=`
-
-        <tr>
-
-        <td colspan="8">
-
-        ❌ Error Loading Students
-
-        </td>
-
-        </tr>
-
-        `;
-
-
-    }
+}
 
 
 }
@@ -312,40 +219,32 @@ async function loadStudents(){
 
 
 
-// =====================================
 // SEARCH STUDENT
-// =====================================
 
 
 function searchStudents(){
 
 
-    const value =
-    document.getElementById("searchBox")
-    .value
-    .toLowerCase();
+let value =
+document.getElementById("searchBox")
+.value.toLowerCase();
 
 
 
-    const rows =
-    document.querySelectorAll("#studentList tr");
+document.querySelectorAll("#studentList tr")
+.forEach(row=>{
 
 
-
-    rows.forEach(row=>{
-
-
-        row.style.display =
-        row.innerText
-        .toLowerCase()
-        .includes(value)
-        ?
-        ""
-        :
-        "none";
+row.style.display =
+row.innerText.toLowerCase()
+.includes(value)
+?
+""
+:
+"none";
 
 
-    });
+});
 
 
 }
@@ -354,17 +253,93 @@ function searchStudents(){
 
 
 
-// =====================================
 // VIEW STUDENT
-// =====================================
 
 
 function viewStudent(id){
 
+alert("Student ID : "+id);
 
-    alert(
-        "Student ID : "+id
-    );
+}
+
+
+
+
+
+// EDIT STUDENT
+
+
+async function editStudent(id){
+
+
+const doc =
+await db.collection("qrData")
+.doc(id)
+.get();
+
+
+
+if(doc.exists){
+
+
+const data=doc.data();
+
+
+document.getElementById("studentId").value=id;
+
+document.getElementById("studentName").value=
+data.studentName || "";
+
+
+document.getElementById("studentMobile").value=
+data.mobile || "";
+
+
+document.getElementById("studentClass").value=
+data.studentClass || "";
+
+
+document.getElementById("studentProgram").value=
+data.program || "";
+
+
+document.getElementById("scanLimit").value=
+data.scanLimit || 100;
+
+
+alert("✏️ Edit Mode Activated");
+
+
+}
+
+
+}
+
+
+
+
+
+// DELETE STUDENT
+
+
+async function deleteStudent(id){
+
+
+if(confirm("Delete Student?")){
+
+
+await db.collection("qrData")
+.doc(id)
+.delete();
+
+
+alert("🗑 Deleted");
+
+
+loadStudents();
+
+
+}
 
 
 }
@@ -375,8 +350,9 @@ function viewStudent(id){
 
 // AUTO LOAD
 
+
 window.onload=function(){
 
-    loadStudents();
+loadStudents();
 
 };
