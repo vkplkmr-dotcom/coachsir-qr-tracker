@@ -10,94 +10,51 @@ appId: "1:617727926623:web:36d78ef0a54e6051cbd6ea"
 };
 
 
-if(!firebase.apps.length){
-
-firebase.initializeApp(firebaseConfig);
-
-}
-
-
 const db = firebase.firestore();
 
+async function loadSettings() {
+    try {
 
+        const doc = await db
+        .collection("settings")
+        .doc("payment")
+        .get();
 
-async function loadFee(){
+        if (doc.exists) {
+            document.getElementById("paymentAmount").value =
+            doc.data().amount || 30;
+        }
 
-
-const doc = await db.collection("settings")
-.doc("payment")
-.get();
-
-
-
-if(doc.exists){
-
-document.getElementById("currentFee").innerHTML =
-"₹ " + doc.data().amount;
-
-
+    } catch (error) {
+        console.error(error);
+    }
 }
 
-else{
+async function savePaymentSettings() {
 
+    const amount = Number(
+        document.getElementById("paymentAmount").value
+    );
 
-await db.collection("settings")
-.doc("payment")
-.set({
+    try {
 
-amount:30
+        await db
+        .collection("settings")
+        .doc("payment")
+        .set({
+            amount: amount
+        });
 
-});
+        document.getElementById("statusMsg").innerHTML =
+        "✅ Settings Saved Successfully";
 
+    } catch (error) {
 
-document.getElementById("currentFee").innerHTML =
-"₹ 30";
+        document.getElementById("statusMsg").innerHTML =
+        "❌ Error Saving Settings";
 
-
+        console.error(error);
+    }
 }
 
-
-}
-
-
-
-async function updateFee(){
-
-
-let fee =
-Number(document.getElementById("feeInput").value);
-
-
-
-if(!fee){
-
-alert("Enter Fee");
-
-return;
-
-}
-
-
-
-await db.collection("settings")
-.doc("payment")
-.update({
-
-amount:fee
-
-});
-
-
-
-document.getElementById("msg").innerHTML =
-"✅ Fee Updated Successfully";
-
-
-loadFee();
-
-
-}
-
-
-
-loadFee();
+loadSettings();
