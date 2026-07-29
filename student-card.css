@@ -63,19 +63,25 @@ z-index:0;
 
 /* Header */
 
+/* PREMIUM HEADER */
+
 .header{
-background:
-linear-gradient(
-90deg,
-rgba(0,180,255,.25),
-rgba(13,110,253,.15)
-);
+    display:flex;
+    align-items:center;
+    gap:15px;
 
-backdrop-filter:blur(15px);
+    padding:18px 20px;
 
-border-bottom:
-1px solid rgba(255,255,255,.15);
+    background:linear-gradient(
+    135deg,
+    #000000,
+    #0d1b3d,
+    #122b5a
+    );
+
+    border-bottom:1px solid rgba(255,255,255,.12);
 }
+
 
 .logo{
 width:60px;
