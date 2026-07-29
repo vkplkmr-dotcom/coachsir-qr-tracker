@@ -493,14 +493,25 @@ gap:15px;
     transform-style:preserve-3d;
 }
 
-.front-card,
+.card{
+    position:relative;
+    min-height:650px;
+}
+
+.front-card{
+    display:block;
+}
+
 .back-card{
-    backface-visibility:hidden;
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
+    display:none;
+}
+
+.card-container.flip .front-card{
+    display:none;
+}
+
+.card-container.flip .back-card{
+    display:block;
 }
 
 
@@ -518,65 +529,27 @@ gap:15px;
 .card-container.flip .back-card{
     transform:rotateY(0deg);
 }
-/* ========================= */
-/* FINAL FLIP CARD FIX */
-/* ========================= */
-
-.card-container{
-    width:390px;
-    perspective:1000px;
-}
-
-
-.card{
-    width:100%;
-    min-height:650px;
-    position:relative;
-    transform-style:preserve-3d;
-    transition:0.8s;
-}
-
-
-.front-card,
-.back-card{
-    width:100%;
-    min-height:650px;
-    position:absolute;
-    top:0;
-    left:0;
-    backface-visibility:hidden;
-}
-
+/* SIMPLE FLIP FIX */
 
 .front-card{
-    z-index:2;
+    display:block;
 }
-
-/* Flip Button Fix */
-
-#flipBtn{
-    position:relative;
-    z-index:10;
-    margin-top:20px;
-}
-
-.card-container{
-    position:relative;
-}
-
-.action-buttons{
-    position:relative;
-    z-index:20;
-}
-
 
 .back-card{
-    transform:rotateY(180deg);
+    display:none;
 }
 
+.card-container.flip .front-card{
+    display:none;
+}
 
-.card-container.flip .card{
-    transform:rotateY(180deg);
+.card-container.flip .back-card{
+    display:block;
+}
+
+.card{
+    width:390px;
+    min-height:650px;
 }
 
 /* PREMIUM FLIP BUTTON */
@@ -643,12 +616,4 @@ gap:15px;
 }
 /* BACK SIDE NORMAL VIEW */
 
-.back-card{
-    transform:rotateY(180deg);
-}
 
-.back-card .back-header,
-.back-card .back-content,
-.back-card .back-footer{
-    transform:rotateY(180deg);
-}
