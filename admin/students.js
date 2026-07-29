@@ -74,6 +74,24 @@ firebase.firestore.FieldValue.serverTimestamp()
 alert("✅ Student Added Successfully");
 
 
+// Clear Form Fields
+
+document.getElementById("studentId").value = "";
+
+document.getElementById("studentName").value = "";
+
+document.getElementById("studentMobile").value = "";
+
+document.getElementById("studentClass").value = "";
+
+document.getElementById("scanLimit").value = "100";
+
+
+// Reload List
+
+loadStudents();
+
+
 loadStudents();
 
 
