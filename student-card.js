@@ -111,39 +111,31 @@ else{
 
     // EXPIRY
 
-    let expiry = data.expiryDate;
+   let expiry = data.expiryDate;
 
+if(expiry){
 
-    if(expiry){
+    if(expiry.toDate){
 
-
-        if(expiry.toDate){
-
-            expiry = expiry.toDate();
-
-        }
-        else{
-
-            expiry = new Date(expiry);
-
-        }
-
-
-        document.getElementById("expiry").innerText =
-        expiry.toLocaleDateString("en-IN");
-
+        expiry = expiry.toDate();
 
     }
     else{
 
-
-       document.getElementById("expiry").innerText =
-data.expiryDate || "Not Available";
+        expiry = new Date(expiry);
 
     }
 
+    document.getElementById("expiry").innerText =
+    expiry.toLocaleDateString("en-IN");
 
+}
+else{
 
+    document.getElementById("expiry").innerText =
+    "Not Available";
+
+}
 
 
     // PAYMENT
