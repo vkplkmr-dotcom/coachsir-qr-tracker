@@ -59,12 +59,12 @@ totalStudents++;
 
 // Payment Status
 
-if(data.paymentStatus === "verification_pending"){
-
+if(
+   data.paymentStatus === "verification_pending" ||
+   data.paymentStatus === "pending"
+){
     pendingPayments++;
-
 }
-
 
 if(data.paymentStatus === "approved"){
 
@@ -131,17 +131,16 @@ ${data.paymentStatus || "pending"}
 <td>
 
 ${
-data.paymentStatus === "verification_pending"
-
+(
+ data.paymentStatus === "verification_pending" ||
+ data.paymentStatus === "pending"
+)
 ?
-
 `<button class="approve-btn"
 onclick="approvePayment('${doc.id}')">
 Approve
 </button>`
-
 :
-
 `<button class="view-btn"
 onclick="viewPayment('${doc.id}')">
 View
@@ -206,69 +205,31 @@ console.error(error);
 
 // Run
 
-loadDashboard();
 window.approvePayment = async function(id){
+
+if(!confirm("Approve this payment?")){
+    return;
+}
+
 try{
 
 await db.collection("qrData")
 .doc(id)
 .update({
-
-paymentStatus:"approved"
-
+    paymentStatus:"approved"
 });
 
-
 alert("Payment Approved ✅");
-
-
 location.reload();
 
-
-}
-
-catch(error){
+}catch(error){
 
 alert(error.message);
 
 }
 
-
 }
-window.viewPayment = function(id){
 
-    db.collection("qrData")
-    .doc(id)
-    .get()
-    .then((doc)=>{
-
-        if(doc.exists){
-
-            const data = doc.data();
-
-            alert(
-`Student ID: ${id}
-
-Amount: ₹${data.paymentAmount || 0}
-
-Status: ${data.paymentStatus}
-
-Scan Limit: ${data.scanLimit || 0}
-
-Created:
-${data.createdAt ? data.createdAt.toDate() : "N/A"}`
-            );
-
-        }
-
-    })
-    .catch(error=>{
-
-        alert(error.message);
-
-    });
-
-}
 window.viewPayment = function(id){
 
     db.collection("qrData")
