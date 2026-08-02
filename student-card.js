@@ -35,6 +35,59 @@ db.collection("qrData")
 
 
     const data = doc.data();
+    // ===============================
+// LIVE CLASS BUTTON
+// ===============================
+
+const liveBtn = document.getElementById("liveClassBtn");
+
+if (liveBtn) {
+
+    liveBtn.onclick = async function () {
+
+        // Payment check
+        if ((data.paymentStatus || "").toLowerCase() !== "approved") {
+            alert("Payment approval pending.");
+            return;
+        }
+
+        // Program -> Document ID
+        const map = {
+            "NEET Biology": "neet_biology",
+            "NEET Physics": "neet_physics",
+            "NEET Chemistry": "neet_chemistry"
+        };
+
+        const docId = map[data.program];
+
+        if (!docId) {
+            alert("Live class is not configured for this program.");
+            return;
+        }
+
+        try {
+
+            const liveDoc = await db.collection("liveClasses").doc(docId).get();
+
+            if (!liveDoc.exists) {
+                alert("Live class not found.");
+                return;
+            }
+
+            const liveData = liveDoc.data();
+
+            if (liveData.status !== true) {
+                alert("Live class has not started yet.");
+                return;
+            }
+
+            window.open(liveData.meetingLink, "_blank");
+
+        } catch (e) {
+            alert(e.message);
+        }
+    };
+}
 // SECURITY ACTIVITY
 
 document.getElementById("scanCount").innerText =
