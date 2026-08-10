@@ -162,31 +162,61 @@ else{
 
 
 
-    // EXPIRY
+    // ===============================
+// EXPIRY / VALID TILL
+// ===============================
 
-   let expiry = data.expiryDate;
+let expiry = data.expiryDate;
 
-if(expiry){
+if (expiry) {
 
-    if(expiry.toDate){
+    let expiryDate;
 
-        expiry = expiry.toDate();
+    // Firestore Timestamp
+    if (expiry.toDate) {
+
+        expiryDate = expiry.toDate();
 
     }
-    else{
 
-        expiry = new Date(expiry);
+    // Normal JavaScript Date
+    else if (expiry instanceof Date) {
+
+        expiryDate = expiry;
 
     }
 
-    document.getElementById("expiry").innerText =
-    expiry.toLocaleDateString("en-IN");
+    // String: "Aug 29,2026"
+    else if (typeof expiry === "string") {
+
+        let cleanDate = expiry.replace(",", " ");
+
+        expiryDate = new Date(cleanDate);
+
+    }
+
+    if (expiryDate && !isNaN(expiryDate.getTime())) {
+
+        document.getElementById("expiry").innerText =
+            expiryDate.toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+            });
+
+    }
+    else {
+
+        document.getElementById("expiry").innerText =
+            expiry;
+
+    }
 
 }
-else{
+else {
 
     document.getElementById("expiry").innerText =
-    "Not Available";
+        "Not Available";
 
 }
 
