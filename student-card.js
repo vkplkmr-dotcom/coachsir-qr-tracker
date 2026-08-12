@@ -542,9 +542,8 @@ else {
                         function () {
 
 
-                            window.location.href =
-                                "https://cbtexam.onlinetestpanel.com";
-
+                           window.location.href =
+"https://coachsiracademy.onlinetestpanel.com";
 
                         };
 
