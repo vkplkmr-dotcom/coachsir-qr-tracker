@@ -7,15 +7,9 @@
 // ===============================
 
 const CONFIG = {
-
-  
-
   UPI_ID: "vkplkmr-1@oksbi",
-
-  EXAM_URL: "https://cbtexam.onlinetestpanel.com/",
-
+  EXAM_URL: "https://coachsiracademy.onlinetestpanel.com/",
   EXPIRY_DATE: new Date("2026-08-15T23:59:59")
-
 };
 CONFIG.SHEET_URL= "https://script.google.com/macros/s/AKfycby5inXpjWD10lIzHkOku21RwhVlMh9htuDOxwkb3mFwxR6BooQ0L-f6YArf8sNv4WbE/exec";
 // Student ID
