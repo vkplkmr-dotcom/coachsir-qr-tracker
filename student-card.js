@@ -270,6 +270,12 @@ else {
             db.collection("qrData")
   .doc(studentId)
   .update({
+    cardOpenCount: firebase.firestore.FieldValue.increment(1),
+    lastScan: firebase.firestore.FieldValue.serverTimestamp()
+  });
+            db.collection("qrData")
+  .doc(studentId)
+  .update({
       count: firebase.firestore.FieldValue.increment(1),
       lastScan: firebase.firestore.FieldValue.serverTimestamp()
   })
@@ -565,9 +571,16 @@ async function increaseScanCount() {
                         "pointer";
 
 
-                 cbtBtn.onclick = async function () {
+                cbtBtn.onclick = async function () {
 
-    await increaseScanCount();
+    await db.collection("qrData")
+        .doc(studentId)
+        .update({
+
+            cbtClickCount:
+            firebase.firestore.FieldValue.increment(1)
+
+        });
 
     window.location.href =
     "https://coachsiracademy.onlinetestpanel.com";
@@ -760,6 +773,14 @@ async function increaseScanCount() {
                             }
 
 await increaseScanCount();
+                            await db.collection("qrData")
+    .doc(studentId)
+    .update({
+
+        liveClassCount:
+        firebase.firestore.FieldValue.increment(1)
+
+    });
                             window.open(
                                 liveData.meetingLink,
                                 "_blank"
