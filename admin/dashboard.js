@@ -37,7 +37,11 @@ let totalStudents = 0;
 let pendingPayments = 0;
 let approvedPayments = 0;
 let todayScan = 0;
-
+let totalCardOpen = 0;
+let totalQrScan = 0;
+let totalCbtClick = 0;
+let totalLiveClass = 0;
+let totalWebsiteVisit = 0;
 
 
 const today = new Date();
@@ -53,7 +57,15 @@ snapshot.forEach(doc=>{
 
 
 const data = doc.data();
+totalCardOpen += data.cardOpenCount || 0;
 
+totalQrScan += data.qrScanCount || 0;
+
+totalCbtClick += data.cbtClickCount || 0;
+
+totalLiveClass += data.liveClassCount || 0;
+
+totalWebsiteVisit += data.websiteClickCount || 0;
 totalStudents++;
 
 
@@ -179,7 +191,20 @@ approvedPayments;
 
 document.getElementById("todayScan").innerHTML =
 todayScan;
+document.getElementById("totalCardOpen").innerHTML =
+totalCardOpen;
 
+document.getElementById("totalQrScan").innerHTML =
+totalQrScan;
+
+document.getElementById("totalCbtClick").innerHTML =
+totalCbtClick;
+
+document.getElementById("totalLiveClass").innerHTML =
+totalLiveClass;
+
+document.getElementById("totalWebsiteVisit").innerHTML =
+totalWebsiteVisit;
 
 
 
