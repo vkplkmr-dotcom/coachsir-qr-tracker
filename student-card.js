@@ -267,6 +267,13 @@ else {
 
 
             const data = doc.data();
+            db.collection("qrData")
+  .doc(studentId)
+  .update({
+      count: firebase.firestore.FieldValue.increment(1),
+      lastScan: firebase.firestore.FieldValue.serverTimestamp()
+  })
+  .catch(err => console.log(err));
 async function increaseScanCount() {
 
     try {
