@@ -267,6 +267,8 @@ else {
 
 
             const data = doc.data();
+            const liveStatus =
+document.getElementById("liveStatus");
             db.collection("qrData")
   .doc(studentId)
   .update({
@@ -622,7 +624,42 @@ async function increaseScanCount() {
                 }
 
             }
+const programMap = {
+    "NEET Biology": "neet_biology",
+    "NEET Physics": "neet_physics",
+    "NEET Chemistry": "neet_chemistry"
+};
 
+const liveDocId = programMap[data.program];
+
+if (liveDocId) {
+
+    db.collection("liveClasses")
+      .doc(liveDocId)
+      .onSnapshot((doc) => {
+
+        if (!doc.exists) return;
+
+        const liveData = doc.data();
+
+        if (liveData.status === true) {
+
+            liveStatus.innerHTML =
+            "🔴 LIVE CLASS RUNNING";
+
+            liveStatus.classList.add("live");
+
+        } else {
+
+            liveStatus.innerHTML =
+            "⚫ No Live Class";
+
+            liveStatus.classList.remove("live");
+        }
+
+    });
+
+}
 
             // ==================================================
             // LIVE CLASS BUTTON
