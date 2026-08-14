@@ -267,7 +267,27 @@ else {
 
 
             const data = doc.data();
+async function increaseScanCount() {
 
+    try {
+
+        await db.collection("qrData")
+            .doc(studentId)
+            .update({
+
+                count: firebase.firestore.FieldValue.increment(1),
+
+                lastScan: firebase.firestore.FieldValue.serverTimestamp()
+
+            });
+
+    } catch (err) {
+
+        console.error("Count Update Error:", err);
+
+    }
+
+}
 
             // ==================================================
             // STUDENT NAME
@@ -538,15 +558,14 @@ else {
                         "pointer";
 
 
-                    cbtBtn.onclick =
-                        function () {
+                 cbtBtn.onclick = async function () {
 
+    await increaseScanCount();
 
-                           window.location.href =
-"https://coachsiracademy.onlinetestpanel.com";
+    window.location.href =
+    "https://coachsiracademy.onlinetestpanel.com";
 
-                        };
-
+};
 
                 }
                 else {
@@ -733,7 +752,7 @@ else {
 
                             }
 
-
+await increaseScanCount();
                             window.open(
                                 liveData.meetingLink,
                                 "_blank"
@@ -820,20 +839,24 @@ const websiteBtn =
 if (websiteBtn) {
 
 
-    websiteBtn.onclick =
-        function () {
+   websiteBtn.onclick = async function () {
 
+    await db.collection("qrData")
+        .doc(studentId)
+        .update({
 
-            window.open(
+            count: firebase.firestore.FieldValue.increment(1),
 
-                "https://vkplkmr-dotcom.github.io/coachsir--website/",
+            lastScan: firebase.firestore.FieldValue.serverTimestamp()
 
-                "_blank"
+        });
 
-            );
+    window.open(
+        "https://vkplkmr-dotcom.github.io/coachsir--website/",
+        "_blank"
+    );
 
-        };
-
+};
 }
 
 
