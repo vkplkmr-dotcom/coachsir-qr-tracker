@@ -1157,6 +1157,7 @@ gap:15px;
 
     border-radius:0 0 20px 20px;
 }
+
 /* MOBILE RESPONSIVE */
 
 @media screen and (max-width: 480px){
@@ -1246,4 +1247,25 @@ gap:15px;
 
     box-sizing:border-box;
 
+}
+.live-status{
+    margin:10px 15px;
+    padding:8px;
+    text-align:center;
+    border-radius:10px;
+    font-weight:700;
+    color:#fff;
+    background:#666;
+    font-size:13px;
+}
+
+.live-status.live{
+    background:#ff0000;
+    animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+    0%{opacity:1;}
+    50%{opacity:.5;}
+    100%{opacity:1;}
 }
