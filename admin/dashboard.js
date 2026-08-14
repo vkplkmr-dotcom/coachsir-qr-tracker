@@ -47,9 +47,8 @@ let totalWebsiteVisit = 0;
 const today = new Date();
 today.setHours(0,0,0,0);
 
-
-
 let paymentHTML = "";
+let activityHTML = "";
 
 
 
@@ -57,6 +56,17 @@ snapshot.forEach(doc=>{
 
 
 const data = doc.data();
+  activityHTML += `
+<tr>
+<td>${doc.id}</td>
+<td>${data.studentName || data.name || "-"}</td>
+<td>${data.cardOpenCount || 0}</td>
+<td>${data.qrScanCount || 0}</td>
+<td>${data.cbtClickCount || 0}</td>
+<td>${data.liveClassCount || 0}</td>
+<td>${data.websiteClickCount || 0}</td>
+</tr>
+`;
 totalCardOpen += data.cardOpenCount || 0;
 
 totalQrScan += data.qrScanCount || 0;
@@ -212,7 +222,12 @@ totalWebsiteVisit;
 
 document.getElementById("paymentList").innerHTML =
 paymentHTML || "No Payments";
-
+document.getElementById("studentActivityTable").innerHTML =
+activityHTML || `
+<tr>
+<td colspan="7">No Data</td>
+</tr>
+`;
 
 
 }
