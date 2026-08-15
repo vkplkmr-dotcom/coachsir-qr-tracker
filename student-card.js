@@ -338,38 +338,43 @@ async function increaseScanCount() {
                 "Not Available";
 
 
-            // ==================================================
-            // EXPIRY / VALID TILL
-            // ==================================================
+            // ======================================================
+// EXPIRY / VALID TILL - FIXED
+// ======================================================
 
-            const expiryElement =
-                document.getElementById("expiry");
-
-
-            const expiryValue =
-                data.expiryDate;
+const expiryElement =
+    document.getElementById("expiry");
 
 
-            const expiryDate =
-                parseExpiryDate(expiryValue);
+// Firebase field
+const expiryValue =
+    data.expiryDate;
 
 
-            if (expiryDate) {
+// Parse expiry
+const expiryDate =
+    parseExpiryDate(expiryValue);
 
-                expiryElement.innerText =
-                    formatExpiryDate(
-                        expiryDate
-                    );
 
+if (expiryDate) {
+
+    expiryElement.innerText =
+        expiryDate.toLocaleDateString(
+            "en-IN",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
             }
-            else {
+        );
 
-                expiryElement.innerText =
-                    expiryValue ||
-                    "Not Available";
+}
+else {
 
-            }
+    expiryElement.innerText =
+        "Not Available";
 
+}
 
             // ==================================================
             // AUTOMATIC ACTIVE / EXPIRED
