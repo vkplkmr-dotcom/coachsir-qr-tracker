@@ -1046,3 +1046,230 @@ if (
     );
 
 }
+// ======================================================
+// ADD-ON : AUTOMATIC LIVE CLASS STATUS
+// DOES NOT MODIFY OLD LIVE CLASS CODE
+// Uses existing startTime field
+// ======================================================
+
+(function () {
+
+    const autoLiveStatus =
+        document.getElementById("liveStatus");
+
+    if (!autoLiveStatus) return;
+
+
+    // --------------------------------------------------
+    // Convert "6:30 PM" into today's Date
+    // --------------------------------------------------
+
+    function getTodayTime(timeString) {
+
+        if (!timeString) return null;
+
+        const match = timeString
+            .trim()
+            .match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+        if (!match) return null;
+
+        let hour = parseInt(match[1], 10);
+        const minute = parseInt(match[2], 10);
+        const ampm = match[3].toUpperCase();
+
+        if (ampm === "PM" && hour !== 12) {
+            hour += 12;
+        }
+
+        if (ampm === "AM" && hour === 12) {
+            hour = 0;
+        }
+
+        const now = new Date();
+
+        return new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            hour,
+            minute,
+            0,
+            0
+        );
+    }
+
+
+    // --------------------------------------------------
+    // Check automatic status
+    // --------------------------------------------------
+
+    async function automaticLiveCheck() {
+
+        if (!studentId) return;
+
+
+        const programMap = {
+
+            "NEET Biology": "neet_biology",
+            "NEET Physics": "neet_physics",
+            "NEET Chemistry": "neet_chemistry"
+
+        };
+
+
+        const liveDocId =
+            programMap[window.currentStudentProgram];
+
+
+        if (!liveDocId) return;
+
+
+        try {
+
+            const doc = await db
+                .collection("liveClasses")
+                .doc(liveDocId)
+                .get();
+
+
+            if (!doc.exists) {
+
+                return;
+
+            }
+
+
+            const liveData = doc.data();
+
+
+            // Existing status must be TRUE
+            // Old system remains untouched
+
+            if (liveData.status !== true) {
+
+                autoLiveStatus.innerHTML =
+                    "⚫ No Live Class";
+
+                autoLiveStatus.classList.remove("live");
+
+                return;
+
+            }
+
+
+            const startTime =
+                getTodayTime(liveData.startTime);
+
+
+            if (!startTime) {
+
+                return;
+
+            }
+
+
+            const now = new Date();
+
+
+            // ------------------------------------------------
+            // CLASS HAS NOT STARTED
+            // ------------------------------------------------
+
+            if (now < startTime) {
+
+                autoLiveStatus.innerHTML =
+                    "🟡 CLASS STARTING SOON";
+
+                autoLiveStatus.classList.remove("live");
+
+                return;
+
+            }
+
+
+            // ------------------------------------------------
+            // CLASS STARTED
+            // Default duration = 60 minutes
+            // ------------------------------------------------
+
+            const endTime =
+                new Date(
+                    startTime.getTime() +
+                    60 * 60 * 1000
+                );
+
+
+            // ------------------------------------------------
+            // LIVE
+            // ------------------------------------------------
+
+            if (
+                now >= startTime &&
+                now < endTime
+            ) {
+
+                autoLiveStatus.innerHTML =
+                    "🔴 LIVE CLASS RUNNING";
+
+                autoLiveStatus.classList.add("live");
+
+                return;
+
+            }
+
+
+            // ------------------------------------------------
+            // CLASS ENDED
+            // ------------------------------------------------
+
+            autoLiveStatus.innerHTML =
+                "⚫ No Live Class";
+
+            autoLiveStatus.classList.remove("live");
+
+
+        }
+        catch (error) {
+
+            console.log(
+                "Automatic Live Check:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // --------------------------------------------------
+    // Get student's program
+    // --------------------------------------------------
+
+    db.collection("qrData")
+        .doc(studentId)
+        .get()
+        .then(function (doc) {
+
+            if (!doc.exists) return;
+
+            const data = doc.data();
+
+            window.currentStudentProgram =
+                data.program;
+
+            automaticLiveCheck();
+
+        });
+
+
+    // --------------------------------------------------
+    // Check every 10 seconds
+    // --------------------------------------------------
+
+    setInterval(
+        automaticLiveCheck,
+        10000
+    );
+
+})();
