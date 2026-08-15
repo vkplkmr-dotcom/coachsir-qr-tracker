@@ -1189,15 +1189,24 @@ if (
 
 
             // ------------------------------------------------
-            // CLASS STARTED
-            // Default duration = 60 minutes
-            // ------------------------------------------------
+// GET END TIME FROM FIREBASE
+// Example: "7:30 PM"
+// ------------------------------------------------
 
-            const endTime =
-                new Date(
-                    startTime.getTime() +
-                    60 * 60 * 1000
-                );
+const endTime =
+    getTodayTime(liveData.endTime);
+
+
+if (!endTime) {
+
+    autoLiveStatus.innerHTML =
+        "⚫ No Live Class";
+
+    autoLiveStatus.classList.remove("live");
+
+    return;
+
+}
 
 
             // ------------------------------------------------
