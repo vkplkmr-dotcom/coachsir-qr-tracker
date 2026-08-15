@@ -779,18 +779,82 @@ if (liveDocId) {
                             // Live class status
                             // ----------------------------------
 
-                            if (
-                                liveData.status !==
-                                true
-                            ) {
+                            // ==================================================
+// AUTOMATIC TIME CHECK
+// ==================================================
 
-                                alert(
-                                    "Live class has not started yet."
-                                );
+let startTime = null;
+let endTime = null;
 
-                                return;
 
-                            }
+if (
+    liveData.startAt &&
+    typeof liveData.startAt.toDate === "function"
+) {
+
+    startTime =
+        liveData.startAt.toDate();
+
+}
+
+
+if (
+    liveData.endAt &&
+    typeof liveData.endAt.toDate === "function"
+) {
+
+    endTime =
+        liveData.endAt.toDate();
+
+}
+
+
+const now = new Date();
+
+
+if (
+    !startTime ||
+    !endTime
+) {
+
+    alert(
+        "Live class timing is not configured."
+    );
+
+    return;
+
+}
+
+
+// Before class
+
+if (now < startTime) {
+
+    alert(
+        "Live class has not started yet."
+    );
+
+    return;
+
+}
+
+
+// After class
+
+if (now >= endTime) {
+
+    alert(
+        "Live class has ended."
+    );
+
+    return;
+
+}
+
+
+// ==================================================
+// CLASS IS CURRENTLY LIVE
+// ==================================================
 
 
                             // ----------------------------------
