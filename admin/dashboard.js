@@ -247,29 +247,65 @@ console.error(error);
 
 window.approvePayment = async function(id){
 
-if(!confirm("Approve this payment?")){
-    return;
+    if(!confirm(
+        "Approve this payment?\n\n30 days validity will start from today."
+    )){
+        return;
+    }
+
+    try{
+
+        // Approval date = अभी
+        const approvedDate = new Date();
+
+        // 30 days validity
+        const expiryDate = new Date(approvedDate);
+        expiryDate.setDate(
+            expiryDate.getDate() + 30
+        );
+
+        await db.collection("qrData")
+        .doc(id)
+        .update({
+
+            paymentStatus: "approved",
+
+            approvedAt:
+                firebase.firestore.FieldValue.serverTimestamp(),
+
+            expiryDate:
+                firebase.firestore.Timestamp.fromDate(
+                    expiryDate
+                )
+
+        });
+
+        alert(
+            "Payment Approved ✅\n\n" +
+            "Validity: 30 Days\n" +
+            "Valid Till: " +
+            expiryDate.toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            })
+        );
+
+        location.reload();
+
+    }
+    catch(error){
+
+        console.error(
+            "Payment Approval Error:",
+            error
+        );
+
+        alert(error.message);
+
+    }
+
 }
-
-try{
-
-await db.collection("qrData")
-.doc(id)
-.update({
-    paymentStatus:"approved"
-});
-
-alert("Payment Approved ✅");
-location.reload();
-
-}catch(error){
-
-alert(error.message);
-
-}
-
-}
-
 window.viewPayment = function(id){
 
     db.collection("qrData")
