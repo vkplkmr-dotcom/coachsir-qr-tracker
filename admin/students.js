@@ -52,17 +52,25 @@ studentClass:studentClass,
 
 program:program,
 
-count:0,
+count: 0,
 
-active:true,
+cardOpenCount: 0,
 
-scanLimit:scanLimit,
+cbtClickCount: 0,
 
-unlimited:false,
+liveClassCount: 0,
 
-paymentStatus:"pending",
+websiteClickCount: 0,
 
-paymentAmount:30,
+active: true,
+
+scanLimit: scanLimit,
+
+unlimited: false,
+
+paymentStatus: "pending",
+
+paymentAmount: 30,
 
 createdAt:
 firebase.firestore.FieldValue.serverTimestamp()
@@ -90,10 +98,6 @@ document.getElementById("scanLimit").value = "100";
 // Reload List
 
 loadStudents();
-
-
-loadStudents();
-
 
 
 }
