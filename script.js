@@ -47,12 +47,34 @@ window.copyUPI = function() {
 };
 
 // Global function for admin approval
-window.approvePayment = function(id) {
-  db.collection("qrData")
-    .doc(id)
-    .update({
-      paymentStatus: "approved"
-    })
+window.approvePayment = async function(id) {
+
+  try {
+
+    // Approval ke time se 30 days expiry
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 30);
+
+    await db.collection("qrData")
+      .doc(id)
+      .update({
+        paymentStatus: "approved",
+        expiryDate: firebase.firestore.Timestamp.fromDate(expiryDate)
+      });
+
+    alert("✅ Payment Approved\nExpiry: " + expiryDate.toLocaleDateString());
+
+    location.reload();
+
+  } catch(error) {
+
+    alert("Error approving payment: " + error.message);
+
+    console.error("Error approving payment:", error);
+
+  }
+
+};
     .then(() => {
      alert("✅ Payment Approved");
       location.reload();
