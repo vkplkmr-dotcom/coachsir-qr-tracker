@@ -1,5 +1,7 @@
+```js
 // ======================================================
 // COACHsir ACADEMY - STUDENT CBT ACCESS CARD
+// FINAL CLEAN VERSION
 // ======================================================
 
 
@@ -14,10 +16,29 @@ const studentId = params.get("id");
 
 
 // ======================================================
-// HELPER - PARSE EXPIRY DATE
+// PROGRAM MAP
+// ======================================================
+
+const programMap = {
+
+    "NEET Biology": "neet_biology",
+    "NEET Physics": "neet_physics",
+    "NEET Chemistry": "neet_chemistry"
+
+};
+
+
+// ======================================================
+// PARSE EXPIRY DATE
+//
 // Supports:
-// "Aug 29,2026"
-// "Aug 29, 2026"
+// 2026-08-22
+// 2026-08-29
+// Aug 29,2026
+// Aug 29, 2026
+// 29 Aug 2026
+// 29/08/2026
+// 29-08-2026
 // Firestore Timestamp
 // JavaScript Date
 // ======================================================
@@ -29,11 +50,14 @@ function parseExpiryDate(expiry) {
     }
 
 
-    // ------------------------------------------
+    // --------------------------------------------------
     // Firestore Timestamp
-    // ------------------------------------------
+    // --------------------------------------------------
 
-    if (expiry && typeof expiry.toDate === "function") {
+    if (
+        expiry &&
+        typeof expiry.toDate === "function"
+    ) {
 
         const date = expiry.toDate();
 
@@ -44,9 +68,9 @@ function parseExpiryDate(expiry) {
     }
 
 
-    // ------------------------------------------
+    // --------------------------------------------------
     // JavaScript Date
-    // ------------------------------------------
+    // --------------------------------------------------
 
     if (expiry instanceof Date) {
 
@@ -57,52 +81,215 @@ function parseExpiryDate(expiry) {
     }
 
 
-    // ------------------------------------------
+    // --------------------------------------------------
     // String
-    // ------------------------------------------
+    // --------------------------------------------------
 
     if (typeof expiry === "string") {
 
         let cleanDate = expiry.trim();
 
-        // Example:
+        if (!cleanDate) {
+            return null;
+        }
+
+
+        // --------------------------------------------------
+        // YYYY-MM-DD
+        // --------------------------------------------------
+
+        let match =
+            cleanDate.match(
+                /^(\d{4})-(\d{2})-(\d{2})$/
+            );
+
+        if (match) {
+
+            const year =
+                parseInt(match[1], 10);
+
+            const month =
+                parseInt(match[2], 10) - 1;
+
+            const day =
+                parseInt(match[3], 10);
+
+            const date =
+                new Date(
+                    year,
+                    month,
+                    day
+                );
+
+
+            if (
+                date.getFullYear() === year &&
+                date.getMonth() === month &&
+                date.getDate() === day
+            ) {
+
+                return date;
+
+            }
+
+        }
+
+
+        // --------------------------------------------------
+        // DD/MM/YYYY
+        // DD-MM-YYYY
+        // --------------------------------------------------
+
+        match =
+            cleanDate.match(
+                /^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/
+            );
+
+        if (match) {
+
+            const day =
+                parseInt(match[1], 10);
+
+            const month =
+                parseInt(match[2], 10) - 1;
+
+            const year =
+                parseInt(match[3], 10);
+
+            const date =
+                new Date(
+                    year,
+                    month,
+                    day
+                );
+
+
+            if (
+                date.getFullYear() === year &&
+                date.getMonth() === month &&
+                date.getDate() === day
+            ) {
+
+                return date;
+
+            }
+
+        }
+
+
+        // --------------------------------------------------
+        // Month Name Formats
+        //
         // Aug 29,2026
-        // becomes:
+        // Aug 29, 2026
+        // 29 Aug 2026
+        // --------------------------------------------------
+
+        cleanDate =
+            cleanDate.replace(/,/g, " ");
+
+        const parts =
+            cleanDate.split(/\s+/);
+
+
+        const monthMap = {
+
+            Jan: 0,
+            Feb: 1,
+            Mar: 2,
+            Apr: 3,
+            May: 4,
+            Jun: 5,
+            Jul: 6,
+            Aug: 7,
+            Sep: 8,
+            Oct: 9,
+            Nov: 10,
+            Dec: 11
+
+        };
+
+
+        // --------------------------------------------------
+        // Month Day Year
+        // Example:
         // Aug 29 2026
-
-        cleanDate = cleanDate.replace(/,/g, " ");
-
-        const parts = cleanDate.split(/\s+/);
-
-
-        // ------------------------------------------
-        // Manually parse:
-        // Aug 29 2026
-        // ------------------------------------------
+        // --------------------------------------------------
 
         if (parts.length >= 3) {
 
-            const monthName = parts[0];
-            const day = parseInt(parts[1], 10);
-            const year = parseInt(parts[2], 10);
+            let monthName =
+                parts[0]
+                    .substring(0, 3);
+
+            monthName =
+                monthName.charAt(0).toUpperCase() +
+                monthName.substring(1).toLowerCase();
 
 
-            const monthMap = {
+            let day =
+                parseInt(parts[1], 10);
 
-                Jan: 0,
-                Feb: 1,
-                Mar: 2,
-                Apr: 3,
-                May: 4,
-                Jun: 5,
-                Jul: 6,
-                Aug: 7,
-                Sep: 8,
-                Oct: 9,
-                Nov: 10,
-                Dec: 11
+            let year =
+                parseInt(parts[2], 10);
 
-            };
+
+            let month =
+                monthMap[monthName];
+
+
+            if (
+                month !== undefined &&
+                !isNaN(day) &&
+                !isNaN(year)
+            ) {
+
+                const date =
+                    new Date(
+                        year,
+                        month,
+                        day
+                    );
+
+
+                if (
+                    date.getFullYear() === year &&
+                    date.getMonth() === month &&
+                    date.getDate() === day
+                ) {
+
+                    return date;
+
+                }
+
+            }
+
+        }
+
+
+        // --------------------------------------------------
+        // Day Month Year
+        // Example:
+        // 29 Aug 2026
+        // --------------------------------------------------
+
+        if (parts.length >= 3) {
+
+            const day =
+                parseInt(parts[0], 10);
+
+
+            let monthName =
+                parts[1]
+                    .substring(0, 3);
+
+            monthName =
+                monthName.charAt(0).toUpperCase() +
+                monthName.substring(1).toLowerCase();
+
+
+            const year =
+                parseInt(parts[2], 10);
 
 
             const month =
@@ -116,9 +303,18 @@ function parseExpiryDate(expiry) {
             ) {
 
                 const date =
-                    new Date(year, month, day);
+                    new Date(
+                        year,
+                        month,
+                        day
+                    );
 
-                if (!isNaN(date.getTime())) {
+
+                if (
+                    date.getFullYear() === year &&
+                    date.getMonth() === month &&
+                    date.getDate() === day
+                ) {
 
                     return date;
 
@@ -129,17 +325,16 @@ function parseExpiryDate(expiry) {
         }
 
 
-        // ------------------------------------------
-        // Fallback
-        // ------------------------------------------
+        // --------------------------------------------------
+        // Final browser fallback
+        // --------------------------------------------------
 
         const parsed =
             new Date(cleanDate);
 
+
         if (!isNaN(parsed.getTime())) {
-
             return parsed;
-
         }
 
     }
@@ -151,81 +346,656 @@ function parseExpiryDate(expiry) {
 
 
 // ======================================================
-// FORMAT DATE
+// FORMAT EXPIRY DATE
 // Example:
 // 29 Aug 2026
 // ======================================================
 
 function formatExpiryDate(date) {
 
-    if (!date || isNaN(date.getTime())) {
+    if (
+        !date ||
+        isNaN(date.getTime())
+    ) {
 
         return "Not Available";
 
     }
 
 
-    return date.toLocaleDateString("en-IN", {
-
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-
-    });
+    return date.toLocaleDateString(
+        "en-IN",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    );
 
 }
 
 
 // ======================================================
-// CHECK WHETHER CARD IS ACTIVE
-// Valid till date is inclusive.
+// CHECK CARD ACTIVE
 //
-// Example:
 // Valid Till = 29 Aug 2026
 //
-// Card remains ACTIVE throughout 29 Aug.
-// From 30 Aug -> EXPIRED.
+// Active:
+// 29 Aug 2026 पूरा दिन
+//
+// Expired:
+// 30 Aug 2026 से
 // ======================================================
 
 function isCardActive(expiryDate) {
 
     if (!expiryDate) {
+        return false;
+    }
+
+
+    if (
+        !(expiryDate instanceof Date) ||
+        isNaN(expiryDate.getTime())
+    ) {
 
         return false;
 
     }
 
 
-    const today = new Date();
+    const now = new Date();
 
 
-    // Remove time from today's date
+    const today =
+        new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
 
-    today.setHours(
-        0,
-        0,
+
+    const expiry =
+        new Date(
+            expiryDate.getFullYear(),
+            expiryDate.getMonth(),
+            expiryDate.getDate()
+        );
+
+
+    return today <= expiry;
+
+}
+
+
+// ======================================================
+// GET TODAY TIME
+//
+// Example:
+// "7:30 PM"
+// "07:30 PM"
+// ======================================================
+
+function getTodayTime(timeString) {
+
+    if (!timeString) {
+        return null;
+    }
+
+
+    const match =
+        timeString
+            .toString()
+            .trim()
+            .match(
+                /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i
+            );
+
+
+    if (!match) {
+        return null;
+    }
+
+
+    let hour =
+        parseInt(match[1], 10);
+
+    const minute =
+        parseInt(match[2], 10);
+
+    const ampm =
+        match[3].toUpperCase();
+
+
+    if (
+        hour < 1 ||
+        hour > 12 ||
+        minute < 0 ||
+        minute > 59
+    ) {
+
+        return null;
+
+    }
+
+
+    if (
+        ampm === "PM" &&
+        hour !== 12
+    ) {
+
+        hour += 12;
+
+    }
+
+
+    if (
+        ampm === "AM" &&
+        hour === 12
+    ) {
+
+        hour = 0;
+
+    }
+
+
+    const now = new Date();
+
+
+    return new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hour,
+        minute,
         0,
         0
     );
 
-
-    // Copy expiry date
-
-    const expiry =
-        new Date(expiryDate);
+}
 
 
-    // Valid throughout expiry day
+// ======================================================
+// GET FIRESTORE DATE
+// Supports:
+// Firestore Timestamp
+// JavaScript Date
+// String
+// ======================================================
 
-    expiry.setHours(
-        23,
-        59,
-        59,
-        999
+function getFirestoreDate(value) {
+
+    if (!value) {
+        return null;
+    }
+
+
+    if (
+        value &&
+        typeof value.toDate === "function"
+    ) {
+
+        const date =
+            value.toDate();
+
+        if (!isNaN(date.getTime())) {
+            return date;
+        }
+
+    }
+
+
+    if (value instanceof Date) {
+
+        if (!isNaN(value.getTime())) {
+            return value;
+        }
+
+    }
+
+
+    if (typeof value === "string") {
+
+        const date =
+            new Date(value);
+
+        if (!isNaN(date.getTime())) {
+            return date;
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+// ======================================================
+// GET LIVE CLASS START TIME
+//
+// Priority:
+// 1. startAt Firestore Timestamp
+// 2. startTime "7:30 PM"
+// ======================================================
+
+function getLiveStartTime(liveData) {
+
+    if (!liveData) {
+        return null;
+    }
+
+
+    if (liveData.startAt) {
+
+        const timestampDate =
+            getFirestoreDate(
+                liveData.startAt
+            );
+
+
+        if (timestampDate) {
+            return timestampDate;
+        }
+
+    }
+
+
+    if (liveData.startTime) {
+
+        return getTodayTime(
+            liveData.startTime
+        );
+
+    }
+
+
+    return null;
+
+}
+
+
+// ======================================================
+// GET LIVE CLASS END TIME
+//
+// Priority:
+// 1. endAt Firestore Timestamp
+// 2. endTime "8:30 PM"
+// ======================================================
+
+function getLiveEndTime(liveData) {
+
+    if (!liveData) {
+        return null;
+    }
+
+
+    if (liveData.endAt) {
+
+        const timestampDate =
+            getFirestoreDate(
+                liveData.endAt
+            );
+
+
+        if (timestampDate) {
+            return timestampDate;
+        }
+
+    }
+
+
+    if (liveData.endTime) {
+
+        return getTodayTime(
+            liveData.endTime
+        );
+
+    }
+
+
+    return null;
+
+}
+
+
+// ======================================================
+// CHECK WHETHER LIVE CLASS IS ACTUALLY LIVE
+// ======================================================
+
+function isLiveClassNow(liveData) {
+
+    if (!liveData) {
+
+        return {
+            live: false,
+            reason: "not-found"
+        };
+
+    }
+
+
+    // Existing admin status must be TRUE
+    if (liveData.status !== true) {
+
+        return {
+            live: false,
+            reason: "disabled"
+        };
+
+    }
+
+
+    const startTime =
+        getLiveStartTime(liveData);
+
+
+    const endTime =
+        getLiveEndTime(liveData);
+
+
+    if (!startTime || !endTime) {
+
+        return {
+            live: false,
+            reason: "timing-missing"
+        };
+
+    }
+
+
+    const now = new Date();
+
+
+    if (now < startTime) {
+
+        return {
+            live: false,
+            reason: "before-start",
+            startTime,
+            endTime
+        };
+
+    }
+
+
+    if (now >= endTime) {
+
+        return {
+            live: false,
+            reason: "ended",
+            startTime,
+            endTime
+        };
+
+    }
+
+
+    return {
+        live: true,
+        reason: "live",
+        startTime,
+        endTime
+    };
+
+}
+
+
+// ======================================================
+// UPDATE LIVE STATUS UI
+// ======================================================
+
+function updateLiveStatusUI(liveData) {
+
+    const liveStatus =
+        document.getElementById(
+            "liveStatus"
+        );
+
+
+    if (!liveStatus) {
+        return;
+    }
+
+
+    const result =
+        isLiveClassNow(liveData);
+
+
+    liveStatus.classList.remove(
+        "live"
     );
 
 
-    return today <= expiry;
+    // --------------------------------------------------
+    // LIVE
+    // --------------------------------------------------
+
+    if (result.live) {
+
+        liveStatus.innerHTML =
+            "🔴 LIVE CLASS RUNNING";
+
+        liveStatus.classList.add(
+            "live"
+        );
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------
+    // BEFORE START
+    // --------------------------------------------------
+
+    if (
+        result.reason ===
+        "before-start"
+    ) {
+
+        liveStatus.innerHTML =
+            "🟡 CLASS STARTING SOON";
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------
+    // DEFAULT
+    // --------------------------------------------------
+
+    liveStatus.innerHTML =
+        "⚫ No Live Class";
+
+}
+
+
+// ======================================================
+// INCREASE CARD OPEN COUNT
+// Runs ONCE when card loads
+// ======================================================
+
+async function increaseCardOpenCount() {
+
+    if (!studentId) {
+        return;
+    }
+
+
+    try {
+
+        await db
+            .collection("qrData")
+            .doc(studentId)
+            .update({
+
+                cardOpenCount:
+                    firebase.firestore.FieldValue.increment(1),
+
+                lastScan:
+                    firebase.firestore.FieldValue.serverTimestamp()
+
+            });
+
+    }
+    catch (error) {
+
+        console.error(
+            "Card Open Count Error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// INCREASE QR SCAN COUNT
+// Use this when QR tracker opens the card
+// ======================================================
+
+async function increaseScanCount() {
+
+    if (!studentId) {
+        return;
+    }
+
+
+    try {
+
+        await db
+            .collection("qrData")
+            .doc(studentId)
+            .update({
+
+                count:
+                    firebase.firestore.FieldValue.increment(1),
+
+                lastScan:
+                    firebase.firestore.FieldValue.serverTimestamp()
+
+            });
+
+    }
+    catch (error) {
+
+        console.error(
+            "QR Scan Count Error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// UPDATE LIVE CLASS COUNT
+// ======================================================
+
+async function increaseLiveClassCount() {
+
+    if (!studentId) {
+        return;
+    }
+
+
+    try {
+
+        await db
+            .collection("qrData")
+            .doc(studentId)
+            .update({
+
+                liveClassCount:
+                    firebase.firestore.FieldValue.increment(1)
+
+            });
+
+    }
+    catch (error) {
+
+        console.error(
+            "Live Class Count Error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// UPDATE CBT CLICK COUNT
+// ======================================================
+
+async function increaseCbtClickCount() {
+
+    if (!studentId) {
+        return;
+    }
+
+
+    try {
+
+        await db
+            .collection("qrData")
+            .doc(studentId)
+            .update({
+
+                cbtClickCount:
+                    firebase.firestore.FieldValue.increment(1)
+
+            });
+
+    }
+    catch (error) {
+
+        console.error(
+            "CBT Count Error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ======================================================
+// UPDATE WEBSITE CLICK COUNT
+// ======================================================
+
+async function increaseWebsiteClickCount() {
+
+    if (!studentId) {
+        return;
+    }
+
+
+    try {
+
+        await db
+            .collection("qrData")
+            .doc(studentId)
+            .update({
+
+                websiteClickCount:
+                    firebase.firestore.FieldValue.increment(1)
+
+            });
+
+    }
+    catch (error) {
+
+        console.error(
+            "Website Count Error:",
+            error
+        );
+
+    }
 
 }
 
@@ -236,18 +1006,18 @@ function isCardActive(expiryDate) {
 
 if (!studentId) {
 
-    alert("Student ID Missing");
+    alert(
+        "Student ID Missing"
+    );
 
 }
 else {
-
 
     db.collection("qrData")
         .doc(studentId)
         .get()
 
-
-        .then((doc) => {
+        .then(async (doc) => {
 
 
             // ==================================================
@@ -266,118 +1036,119 @@ else {
             }
 
 
-            const data = doc.data();
-            const liveStatus =
-document.getElementById("liveStatus");
-            db.collection("qrData")
-  .doc(studentId)
-  .update({
-    cardOpenCount: firebase.firestore.FieldValue.increment(1),
-    lastScan: firebase.firestore.FieldValue.serverTimestamp()
-  });
-            db.collection("qrData")
-  .doc(studentId)
-  .update({
-      count: firebase.firestore.FieldValue.increment(1),
-      lastScan: firebase.firestore.FieldValue.serverTimestamp()
-  })
-  .catch(err => console.log(err));
-async function increaseScanCount() {
+            const data =
+                doc.data();
 
-    try {
 
-        await db.collection("qrData")
-            .doc(studentId)
-            .update({
+            // ==================================================
+            // STORE PROGRAM GLOBALLY
+            // ==================================================
 
-                count: firebase.firestore.FieldValue.increment(1),
+            window.currentStudentProgram =
+                data.program || "";
 
-                lastScan: firebase.firestore.FieldValue.serverTimestamp()
 
-            });
+            // ==================================================
+            // CARD OPEN COUNT
+            //
+            // IMPORTANT:
+            // Only cardOpenCount increases here.
+            //
+            // "count" is reserved for QR Scan.
+            // ==================================================
 
-    } catch (err) {
+            increaseCardOpenCount();
 
-        console.error("Count Update Error:", err);
-
-    }
-
-}
 
             // ==================================================
             // STUDENT NAME
             // ==================================================
 
-            document.getElementById(
-                "studentName"
-            ).innerText =
+            const studentName =
+                document.getElementById(
+                    "studentName"
+                );
 
-                data.studentName ||
-                data.name ||
-                "No Name";
+
+            if (studentName) {
+
+                studentName.innerText =
+                    data.studentName ||
+                    data.name ||
+                    "No Name";
+
+            }
 
 
             // ==================================================
             // STUDENT ID
             // ==================================================
 
-            document.getElementById(
-                "studentId"
-            ).innerText = studentId;
+            const studentIdElement =
+                document.getElementById(
+                    "studentId"
+                );
+
+
+            if (studentIdElement) {
+
+                studentIdElement.innerText =
+                    studentId;
+
+            }
 
 
             // ==================================================
             // PROGRAM
             // ==================================================
 
-            document.getElementById(
-                "program"
-            ).innerText =
-
-                data.program ||
-                "Not Available";
+            const programElement =
+                document.getElementById(
+                    "program"
+                );
 
 
-            // ======================================================
-// EXPIRY / VALID TILL - FIXED
-// ======================================================
+            if (programElement) {
 
-const expiryElement =
-    document.getElementById("expiry");
+                programElement.innerText =
+                    data.program ||
+                    "Not Available";
 
-
-// Firebase field
-const expiryValue =
-    data.expiryDate;
-
-
-// Parse expiry
-const expiryDate =
-    parseExpiryDate(expiryValue);
-
-
-if (expiryDate) {
-
-    expiryElement.innerText =
-        expiryDate.toLocaleDateString(
-            "en-IN",
-            {
-                day: "2-digit",
-                month: "short",
-                year: "numeric"
             }
-        );
 
-}
-else {
-
-    expiryElement.innerText =
-        "Not Available";
-
-}
 
             // ==================================================
-            // AUTOMATIC ACTIVE / EXPIRED
+            // EXPIRY / VALID TILL
+            // ==================================================
+
+            const expiryElement =
+                document.getElementById(
+                    "expiry"
+                );
+
+
+            const expiryValue =
+                data.expiryDate;
+
+
+            const expiryDate =
+                parseExpiryDate(
+                    expiryValue
+                );
+
+
+            if (expiryElement) {
+
+                expiryElement.innerText =
+                    formatExpiryDate(
+                        expiryDate
+                    );
+
+            }
+
+
+            // ==================================================
+            // CARD ACTIVE / EXPIRED
             // ==================================================
 
             const accessStatus =
@@ -392,22 +1163,26 @@ else {
                 );
 
 
-            if (cardActive) {
+            if (accessStatus) {
 
-                accessStatus.innerText =
-                    "ACTIVE";
+                if (cardActive) {
 
-                accessStatus.style.background =
-                    "#16c60c";
+                    accessStatus.innerText =
+                        "ACTIVE";
 
-            }
-            else {
+                    accessStatus.style.background =
+                        "#16c60c";
 
-                accessStatus.innerText =
-                    "EXPIRED";
+                }
+                else {
 
-                accessStatus.style.background =
-                    "#ff0000";
+                    accessStatus.innerText =
+                        "EXPIRED";
+
+                    accessStatus.style.background =
+                        "#ff0000";
+
+                }
 
             }
 
@@ -432,24 +1207,37 @@ else {
                 .trim();
 
 
-            if (payment === "approved") {
+            if (paymentStatus) {
 
-                paymentStatus.innerHTML =
-                    '<i class="fa-solid fa-circle-check"></i> APPROVED';
-
-                paymentStatus.classList.add(
-                    "approved-status"
-                );
-
-            }
-            else {
-
-                paymentStatus.innerText =
-                    payment.toUpperCase();
-
-                paymentStatus.classList.add(
+                paymentStatus.classList.remove(
+                    "approved-status",
                     "pending-animation"
                 );
+
+
+                if (
+                    payment ===
+                    "approved"
+                ) {
+
+                    paymentStatus.innerHTML =
+                        '<i class="fa-solid fa-circle-check"></i> APPROVED';
+
+                    paymentStatus.classList.add(
+                        "approved-status"
+                    );
+
+                }
+                else {
+
+                    paymentStatus.innerText =
+                        payment.toUpperCase();
+
+                    paymentStatus.classList.add(
+                        "pending-animation"
+                    );
+
+                }
 
             }
 
@@ -464,30 +1252,130 @@ else {
                 );
 
 
-            photo.src =
-                data.photoURL ||
-                "assets/students/S001.jpg";
+            if (photo) {
 
-
-            // If image fails
-
-            photo.onerror = function () {
-
-                this.src =
+                photo.src =
+                    data.photoURL ||
                     "assets/students/S001.jpg";
 
-            };
+
+                photo.onerror =
+                    function () {
+
+                        this.src =
+                            "assets/students/S001.jpg";
+
+                    };
+
+            }
 
 
             // ==================================================
             // SCAN COUNT
             // ==================================================
 
-            document.getElementById(
-                "scanCount"
-            ).innerText =
+            const scanCount =
+                document.getElementById(
+                    "scanCount"
+                );
 
-                data.count || 0;
+
+            if (scanCount) {
+
+                scanCount.innerText =
+                    data.count || 0;
+
+            }
+
+
+            // ==================================================
+            // CARD OPEN COUNT
+            // ==================================================
+
+            const cardOpenCount =
+                document.getElementById(
+                    "cardOpenCount"
+                );
+
+
+            if (cardOpenCount) {
+
+                cardOpenCount.innerText =
+                    data.cardOpenCount || 0;
+
+            }
+
+
+            // ==================================================
+            // QR SCAN COUNT
+            // ==================================================
+
+            const qrScanCount =
+                document.getElementById(
+                    "qrScanCount"
+                );
+
+
+            if (qrScanCount) {
+
+                qrScanCount.innerText =
+                    data.count || 0;
+
+            }
+
+
+            // ==================================================
+            // CBT CLICK COUNT
+            // ==================================================
+
+            const cbtClickCount =
+                document.getElementById(
+                    "cbtClickCount"
+                );
+
+
+            if (cbtClickCount) {
+
+                cbtClickCount.innerText =
+                    data.cbtClickCount || 0;
+
+            }
+
+
+            // ==================================================
+            // LIVE CLASS COUNT
+            // ==================================================
+
+            const liveClassCount =
+                document.getElementById(
+                    "liveClassCount"
+                );
+
+
+            if (liveClassCount) {
+
+                liveClassCount.innerText =
+                    data.liveClassCount || 0;
+
+            }
+
+
+            // ==================================================
+            // WEBSITE CLICK COUNT
+            // ==================================================
+
+            const websiteClickCount =
+                document.getElementById(
+                    "websiteClickCount"
+                );
+
+
+            if (websiteClickCount) {
+
+                websiteClickCount.innerText =
+                    data.websiteClickCount || 0;
+
+            }
 
 
             // ==================================================
@@ -500,41 +1388,30 @@ else {
                 );
 
 
-            if (data.lastScan) {
+            if (lastVerified) {
 
-                let scanDate = null;
+                if (data.lastScan) {
 
-
-                if (
-                    typeof data.lastScan.toDate ===
-                    "function"
-                ) {
-
-                    scanDate =
-                        data.lastScan.toDate();
-
-                }
-                else {
-
-                    scanDate =
-                        new Date(
+                    const scanDate =
+                        getFirestoreDate(
                             data.lastScan
                         );
 
-                }
 
+                    if (scanDate) {
 
-                if (
-                    scanDate &&
-                    !isNaN(
-                        scanDate.getTime()
-                    )
-                ) {
+                        lastVerified.innerText =
+                            scanDate.toLocaleString(
+                                "en-IN"
+                            );
 
-                    lastVerified.innerText =
-                        scanDate.toLocaleString(
-                            "en-IN"
-                        );
+                    }
+                    else {
+
+                        lastVerified.innerText =
+                            "---";
+
+                    }
 
                 }
                 else {
@@ -545,10 +1422,61 @@ else {
                 }
 
             }
+
+
+            // ==================================================
+            // LIVE STATUS
+            // ==================================================
+
+            const liveDocId =
+                programMap[
+                    data.program
+                ];
+
+
+            if (liveDocId) {
+
+                db.collection("liveClasses")
+                    .doc(liveDocId)
+                    .onSnapshot(
+                        (liveDoc) => {
+
+                            if (!liveDoc.exists) {
+
+                                updateLiveStatusUI(
+                                    null
+                                );
+
+                                return;
+
+                            }
+
+
+                            const liveData =
+                                liveDoc.data();
+
+
+                            updateLiveStatusUI(
+                                liveData
+                            );
+
+                        },
+                        (error) => {
+
+                            console.error(
+                                "Live Class Listener Error:",
+                                error
+                            );
+
+                        }
+                    );
+
+            }
             else {
 
-                lastVerified.innerText =
-                    "---";
+                updateLiveStatusUI(
+                    null
+                );
 
             }
 
@@ -565,38 +1493,28 @@ else {
 
             if (cbtBtn) {
 
-
-                // Payment + expiry check
-
                 if (
                     payment === "approved" &&
                     cardActive
                 ) {
 
-
                     cbtBtn.style.cursor =
                         "pointer";
 
 
-                cbtBtn.onclick = async function () {
+                    cbtBtn.onclick =
+                        async function () {
 
-    await db.collection("qrData")
-        .doc(studentId)
-        .update({
+                            await increaseCbtClickCount();
 
-            cbtClickCount:
-            firebase.firestore.FieldValue.increment(1)
 
-        });
+                            window.location.href =
+                                "https://coachsiracademy.onlinetestpanel.com";
 
-    window.location.href =
-    "https://coachsiracademy.onlinetestpanel.com";
-
-};
+                        };
 
                 }
                 else {
-
 
                     cbtBtn.style.cursor =
                         "not-allowed";
@@ -604,7 +1522,6 @@ else {
 
                     cbtBtn.onclick =
                         function () {
-
 
                             if (
                                 payment !==
@@ -629,42 +1546,7 @@ else {
                 }
 
             }
-const programMap = {
-    "NEET Biology": "neet_biology",
-    "NEET Physics": "neet_physics",
-    "NEET Chemistry": "neet_chemistry"
-};
 
-const liveDocId = programMap[data.program];
-
-if (liveDocId) {
-
-    db.collection("liveClasses")
-      .doc(liveDocId)
-      .onSnapshot((doc) => {
-
-        if (!doc.exists) return;
-
-        const liveData = doc.data();
-
-        if (liveData.status === true) {
-
-            liveStatus.innerHTML =
-            "🔴 LIVE CLASS RUNNING";
-
-            liveStatus.classList.add("live");
-
-        } else {
-
-            liveStatus.innerHTML =
-            "⚫ No Live Class";
-
-            liveStatus.classList.remove("live");
-        }
-
-    });
-
-}
 
             // ==================================================
             // LIVE CLASS BUTTON
@@ -678,13 +1560,12 @@ if (liveDocId) {
 
             if (liveBtn) {
 
-
                 liveBtn.onclick =
                     async function () {
 
 
                         // --------------------------------------
-                        // Payment check
+                        // PAYMENT CHECK
                         // --------------------------------------
 
                         if (
@@ -702,7 +1583,7 @@ if (liveDocId) {
 
 
                         // --------------------------------------
-                        // Expiry check
+                        // EXPIRY CHECK
                         // --------------------------------------
 
                         if (!cardActive) {
@@ -717,22 +1598,8 @@ if (liveDocId) {
 
 
                         // --------------------------------------
-                        // Program mapping
+                        // PROGRAM CHECK
                         // --------------------------------------
-
-                        const programMap = {
-
-                            "NEET Biology":
-                                "neet_biology",
-
-                            "NEET Physics":
-                                "neet_physics",
-
-                            "NEET Chemistry":
-                                "neet_chemistry"
-
-                        };
-
 
                         const docId =
                             programMap[
@@ -753,7 +1620,6 @@ if (liveDocId) {
 
                         try {
 
-
                             const liveDoc =
                                 await db
                                     .collection(
@@ -763,9 +1629,7 @@ if (liveDocId) {
                                     .get();
 
 
-                            if (
-                                !liveDoc.exists
-                            ) {
+                            if (!liveDoc.exists) {
 
                                 alert(
                                     "Live class not found."
@@ -781,89 +1645,64 @@ if (liveDocId) {
 
 
                             // ----------------------------------
-                            // Live class status
+                            // ACTUAL LIVE CHECK
                             // ----------------------------------
 
-                            // ==================================================
-// AUTOMATIC TIME CHECK
-// ==================================================
-
-let startTime = null;
-let endTime = null;
+                            const liveResult =
+                                isLiveClassNow(
+                                    liveData
+                                );
 
 
-if (
-    liveData.startAt &&
-    typeof liveData.startAt.toDate === "function"
-) {
+                            if (
+                                !liveResult.live
+                            ) {
 
-    startTime =
-        liveData.startAt.toDate();
+                                if (
+                                    liveResult.reason ===
+                                    "before-start"
+                                ) {
 
-}
+                                    alert(
+                                        "Live class has not started yet."
+                                    );
 
+                                }
+                                else if (
+                                    liveResult.reason ===
+                                    "ended"
+                                ) {
 
-if (
-    liveData.endAt &&
-    typeof liveData.endAt.toDate === "function"
-) {
+                                    alert(
+                                        "Live class has ended."
+                                    );
 
-    endTime =
-        liveData.endAt.toDate();
+                                }
+                                else if (
+                                    liveResult.reason ===
+                                    "disabled"
+                                ) {
 
-}
+                                    alert(
+                                        "No Live Class is running right now."
+                                    );
 
+                                }
+                                else {
 
-const now = new Date();
+                                    alert(
+                                        "Live class timing is not configured."
+                                    );
 
+                                }
 
-if (
-    !startTime ||
-    !endTime
-) {
+                                return;
 
-    alert(
-        "Live class timing is not configured."
-    );
-
-    return;
-
-}
-
-
-// Before class
-
-if (now < startTime) {
-
-    alert(
-        "Live class has not started yet."
-    );
-
-    return;
-
-}
-
-
-// After class
-
-if (now >= endTime) {
-
-    alert(
-        "Live class has ended."
-    );
-
-    return;
-
-}
-
-
-// ==================================================
-// CLASS IS CURRENTLY LIVE
-// ==================================================
+                            }
 
 
                             // ----------------------------------
-                            // Meeting link
+                            // MEETING LINK
                             // ----------------------------------
 
                             if (
@@ -878,30 +1717,35 @@ if (now >= endTime) {
 
                             }
 
-await increaseScanCount();
-                            await db.collection("qrData")
-    .doc(studentId)
-    .update({
 
-        liveClassCount:
-        firebase.firestore.FieldValue.increment(1)
+                            // ----------------------------------
+                            // COUNT LIVE CLASS CLICK
+                            // ----------------------------------
 
-    });
+                            await increaseLiveClassCount();
+
+
+                            // ----------------------------------
+                            // OPEN MEETING
+                            // ----------------------------------
+
                             window.open(
                                 liveData.meetingLink,
                                 "_blank"
                             );
 
-
                         }
                         catch (error) {
 
                             console.error(
+                                "Live Class Error:",
                                 error
                             );
 
+
                             alert(
-                                error.message
+                                error.message ||
+                                "Unable to open live class."
                             );
 
                         }
@@ -921,28 +1765,85 @@ await increaseScanCount();
                 );
 
 
-            qr.innerHTML = "";
+            if (
+                qr &&
+                typeof QRCode !==
+                "undefined"
+            ) {
+
+                qr.innerHTML =
+                    "";
 
 
-            new QRCode(
-                qr,
-                {
+                new QRCode(
+                    qr,
+                    {
 
-                    text: studentId,
+                        text:
+                            studentId,
 
-                    width: 150,
+                        width:
+                            150,
 
-                    height: 150
+                        height:
+                            150
+
+                    }
+                );
+
+            }
+
+
+            // ==================================================
+            // INITIAL LIVE STATUS
+            // ==================================================
+
+            if (liveDocId) {
+
+                try {
+
+                    const initialLiveDoc =
+                        await db
+                            .collection(
+                                "liveClasses"
+                            )
+                            .doc(liveDocId)
+                            .get();
+
+
+                    if (
+                        initialLiveDoc.exists
+                    ) {
+
+                        updateLiveStatusUI(
+                            initialLiveDoc.data()
+                        );
+
+                    }
+                    else {
+
+                        updateLiveStatusUI(
+                            null
+                        );
+
+                    }
 
                 }
-            );
+                catch (error) {
 
+                    console.error(
+                        "Initial Live Status Error:",
+                        error
+                    );
+
+                }
+
+            }
 
         })
 
 
         .catch((error) => {
-
 
             console.error(
                 "Firestore Error:",
@@ -953,7 +1854,6 @@ await increaseScanCount();
             alert(
                 error.message
             );
-
 
         });
 
@@ -972,25 +1872,20 @@ const websiteBtn =
 
 if (websiteBtn) {
 
+    websiteBtn.onclick =
+        async function () {
 
-   websiteBtn.onclick = async function () {
 
-    await db.collection("qrData")
-        .doc(studentId)
-        .update({
+            await increaseWebsiteClickCount();
 
-            count: firebase.firestore.FieldValue.increment(1),
 
-            lastScan: firebase.firestore.FieldValue.serverTimestamp()
+            window.open(
+                "https://vkplkmr-dotcom.github.io/coachsir--website/",
+                "_blank"
+            );
 
-        });
+        };
 
-    window.open(
-        "https://vkplkmr-dotcom.github.io/coachsir--website/",
-        "_blank"
-    );
-
-};
 }
 
 
@@ -1015,7 +1910,6 @@ if (
     flipBtn
 ) {
 
-
     flipBtn.addEventListener(
         "click",
         function () {
@@ -1032,18 +1926,14 @@ if (
                 )
             ) {
 
-
                 flipBtn.innerHTML =
                     '<i class="fa-solid fa-repeat"></i><span>Front</span>';
-
 
             }
             else {
 
-
                 flipBtn.innerHTML =
                     '<i class="fa-solid fa-repeat"></i><span>Back</span>';
-
 
             }
 
@@ -1051,239 +1941,119 @@ if (
     );
 
 }
+
+
 // ======================================================
-// ADD-ON : AUTOMATIC LIVE CLASS STATUS
-// DOES NOT MODIFY OLD LIVE CLASS CODE
-// Uses existing startTime field
+// AUTOMATIC LIVE STATUS REFRESH
+//
+// Checks every 10 seconds.
+//
+// This is only a UI refresh.
+// Actual button click performs another
+// real-time Firestore check before opening.
 // ======================================================
 
-(function () {
+async function automaticLiveCheck() {
 
-    const autoLiveStatus =
-        document.getElementById("liveStatus");
-
-    if (!autoLiveStatus) return;
-
-
-    // --------------------------------------------------
-    // Convert "6:30 PM" into today's Date
-    // --------------------------------------------------
-
-    function getTodayTime(timeString) {
-
-        if (!timeString) return null;
-
-        const match = timeString
-            .trim()
-            .match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-
-        if (!match) return null;
-
-        let hour = parseInt(match[1], 10);
-        const minute = parseInt(match[2], 10);
-        const ampm = match[3].toUpperCase();
-
-        if (ampm === "PM" && hour !== 12) {
-            hour += 12;
-        }
-
-        if (ampm === "AM" && hour === 12) {
-            hour = 0;
-        }
-
-        const now = new Date();
-
-        return new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate(),
-            hour,
-            minute,
-            0,
-            0
-        );
+    if (!studentId) {
+        return;
     }
 
 
-    // --------------------------------------------------
-    // Check automatic status
-    // --------------------------------------------------
-
-    async function automaticLiveCheck() {
-
-        if (!studentId) return;
+    const autoLiveStatus =
+        document.getElementById(
+            "liveStatus"
+        );
 
 
-        const programMap = {
-
-            "NEET Biology": "neet_biology",
-            "NEET Physics": "neet_physics",
-            "NEET Chemistry": "neet_chemistry"
-
-        };
+    if (!autoLiveStatus) {
+        return;
+    }
 
 
-        const liveDocId =
-            programMap[window.currentStudentProgram];
+    const program =
+        window.currentStudentProgram;
 
 
-        if (!liveDocId) return;
+    if (!program) {
+        return;
+    }
 
 
-        try {
+    const liveDocId =
+        programMap[program];
 
-            const doc = await db
-                .collection("liveClasses")
+
+    if (!liveDocId) {
+
+        updateLiveStatusUI(
+            null
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const doc =
+            await db
+                .collection(
+                    "liveClasses"
+                )
                 .doc(liveDocId)
                 .get();
 
 
-            if (!doc.exists) {
+        if (!doc.exists) {
 
-                return;
+            updateLiveStatusUI(
+                null
+            );
 
-            }
+            return;
 
-
-            const liveData = doc.data();
-
-
-            // Existing status must be TRUE
-            // Old system remains untouched
-
-            if (liveData.status !== true) {
-
-                autoLiveStatus.innerHTML =
-                    "⚫ No Live Class";
-
-                autoLiveStatus.classList.remove("live");
-
-                return;
-
-            }
+        }
 
 
-            const startTime =
-                getTodayTime(liveData.startTime);
+        const liveData =
+            doc.data();
 
 
-            if (!startTime) {
+        updateLiveStatusUI(
+            liveData
+        );
 
-                return;
+    }
+    catch (error) {
 
-            }
+        console.error(
+            "Automatic Live Check:",
+            error
+        );
 
-
-            const now = new Date();
-
-
-            // ------------------------------------------------
-            // CLASS HAS NOT STARTED
-            // ------------------------------------------------
-
-            if (now < startTime) {
-
-                autoLiveStatus.innerHTML =
-                    "🟡 CLASS STARTING SOON";
-
-                autoLiveStatus.classList.remove("live");
-
-                return;
-
-            }
-
-
-            // ------------------------------------------------
-// GET END TIME FROM FIREBASE
-// Example: "7:30 PM"
-// ------------------------------------------------
-
-const endTime =
-    getTodayTime(liveData.endTime);
-
-
-if (!endTime) {
-
-    autoLiveStatus.innerHTML =
-        "⚫ No Live Class";
-
-    autoLiveStatus.classList.remove("live");
-
-    return;
+    }
 
 }
 
 
-            // ------------------------------------------------
-            // LIVE
-            // ------------------------------------------------
+// ======================================================
+// CHECK LIVE STATUS EVERY 10 SECONDS
+// ======================================================
 
-            if (
-                now >= startTime &&
-                now < endTime
-            ) {
-
-                autoLiveStatus.innerHTML =
-                    "🔴 LIVE CLASS RUNNING";
-
-                autoLiveStatus.classList.add("live");
-
-                return;
-
-            }
+setInterval(
+    automaticLiveCheck,
+    10000
+);
 
 
-            // ------------------------------------------------
-            // CLASS ENDED
-            // ------------------------------------------------
+// ======================================================
+// OPTIONAL FIRST CHECK
+// ======================================================
 
-            autoLiveStatus.innerHTML =
-                "⚫ No Live Class";
-
-            autoLiveStatus.classList.remove("live");
-
-
-        }
-        catch (error) {
-
-            console.log(
-                "Automatic Live Check:",
-                error
-            );
-
-        }
-
-    }
-
-
-    // --------------------------------------------------
-    // Get student's program
-    // --------------------------------------------------
-
-    db.collection("qrData")
-        .doc(studentId)
-        .get()
-        .then(function (doc) {
-
-            if (!doc.exists) return;
-
-            const data = doc.data();
-
-            window.currentStudentProgram =
-                data.program;
-
-            automaticLiveCheck();
-
-        });
-
-
-    // --------------------------------------------------
-    // Check every 10 seconds
-    // --------------------------------------------------
-
-    setInterval(
-        automaticLiveCheck,
-        10000
-    );
-
-})();
+setTimeout(
+    automaticLiveCheck,
+    1000
+);
+```
