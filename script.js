@@ -1,7 +1,7 @@
 // ======================================================
 // COACHsir ACADEMY - QR TRACKER
 // ======================================================
-// Firebase SDK v8.10.1 must be loaded in index.html
+// Firebase SDK v8.10.1 must be loaded before this file
 // ======================================================
 
 
@@ -26,9 +26,12 @@ const CONFIG = {
 // STUDENT ID
 // Example:
 // index.html?id=S001
+// Admin:
+// index.html?admin=1234
 // ======================================================
 
-const params = new URLSearchParams(window.location.search);
+const params =
+  new URLSearchParams(window.location.search);
 
 const studentId =
   params.get("id") || "general";
@@ -47,13 +50,40 @@ const counterRef =
 
 // ======================================================
 // DEFAULT EXPIRY
-// IMPORTANT:
-// This should only be used when creating a NEW student.
-// Existing student's Firestore expiryDate is preferred.
+// Only used for NEW students
 // ======================================================
 
 const defaultExpiryDate =
   new Date("2026-12-31T23:59:59");
+
+
+// ======================================================
+// HELPER - GET COUNT ELEMENT
+// ======================================================
+
+function getCountElement() {
+
+  return document.getElementById("count");
+
+}
+
+
+// ======================================================
+// HELPER - SHOW MESSAGE
+// ======================================================
+
+function showMessage(html) {
+
+  const element =
+    getCountElement();
+
+  if (element) {
+
+    element.innerHTML = html;
+
+  }
+
+}
 
 
 // ======================================================
@@ -72,7 +102,14 @@ async function getPaymentAmount() {
 
     if (doc.exists) {
 
-      return Number(doc.data().amount) || 30;
+      const amount =
+        Number(doc.data().amount);
+
+      if (amount > 0) {
+
+        return amount;
+
+      }
 
     }
 
@@ -97,6 +134,1606 @@ async function getPaymentAmount() {
 // ======================================================
 
 window.copyUPI = function () {
+
+  if (
+    navigator.clipboard &&
+    navigator.clipboard.writeText
+  ) {
+
+    navigator.clipboard
+      .writeText(CONFIG.UPI_ID)
+
+      .then(() => {
+
+        alert("✅ UPI ID Copied");
+
+      })
+
+      .catch(() => {
+
+        alert(
+          "UPI ID: " +
+          CONFIG.UPI_ID
+        );
+
+      });
+
+  } else {
+
+    alert(
+      "UPI ID: " +
+      CONFIG.UPI_ID
+    );
+
+  }
+
+};
+
+
+// ======================================================
+// ADMIN - APPROVE PAYMENT
+// ======================================================
+
+window.approvePayment =
+  async function (id) {
+
+    try {
+
+      const expiryDate =
+        new Date();
+
+      // Approval ke time se 30 days
+      expiryDate.setDate(
+        expiryDate.getDate() + 30
+      );
+
+
+      await db
+        .collection("qrData")
+        .doc(id)
+        .update({
+
+          paymentStatus:
+            "approved",
+
+          expiryDate:
+            firebase.firestore.Timestamp
+              .fromDate(expiryDate),
+
+          active:
+            true
+
+        });
+
+
+      alert(
+        "✅ Payment Approved\n" +
+        "Expiry: " +
+        expiryDate.toLocaleDateString()
+      );
+
+
+      location.reload();
+
+
+    } catch (error) {
+
+      console.error(
+        "Approve payment error:",
+        error
+      );
+
+      alert(
+        "❌ Error approving payment:\n" +
+        error.message
+      );
+
+    }
+
+  };
+
+
+// ======================================================
+// UPLOAD PAYMENT PROOF
+// ======================================================
+
+window.uploadPaymentProof =
+  async function () {
+
+    try {
+
+      const fileElement =
+        document.getElementById(
+          "paymentScreenshot"
+        );
+
+
+      if (!fileElement) {
+
+        alert(
+          "Payment upload field not found."
+        );
+
+        return;
+
+      }
+
+
+      const file =
+        fileElement.files[0];
+
+
+      if (!file) {
+
+        alert(
+          "Please upload payment screenshot."
+        );
+
+        return;
+
+      }
+
+
+      // Basic image check
+      if (
+        !file.type ||
+        !file.type.startsWith("image/")
+      ) {
+
+        alert(
+          "Please select a valid image file."
+        );
+
+        return;
+
+      }
+
+
+      showMessage(`
+
+        <div style="
+          text-align:center;
+          padding:25px;
+        ">
+
+          <h2>⏳ Uploading...</h2>
+
+          <p>
+            Please wait...
+          </p>
+
+        </div>
+
+      `);
+
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        async function () {
+
+          try {
+
+            const result =
+              reader.result;
+
+
+            const base64 =
+              result.split(",")[1];
+
+
+            if (!base64) {
+
+              throw new Error(
+                "Unable to read payment screenshot."
+              );
+
+            }
+
+
+            const amount =
+              await getPaymentAmount();
+
+
+            const payload = {
+
+              action:
+                "payment",
+
+              studentId:
+                studentId,
+
+              amount:
+                amount,
+
+              paymentStatus:
+                "verification_pending",
+
+              fileName:
+                file.name,
+
+              mimeType:
+                file.type,
+
+              image:
+                base64
+
+            };
+
+
+            console.log(
+              "Sending payment proof:",
+              {
+                studentId:
+                  studentId,
+
+                amount:
+                  amount,
+
+                fileName:
+                  file.name
+              }
+            );
+
+
+            // Google Sheet
+            await fetch(
+              CONFIG.SHEET_URL,
+              {
+
+                method:
+                  "POST",
+
+                body:
+                  JSON.stringify(payload)
+
+              }
+            );
+
+
+            // Firestore
+            await counterRef.update({
+
+              paymentStatus:
+                "verification_pending"
+
+            });
+
+
+            showMessage(`
+
+              <div style="
+                text-align:center;
+                padding:25px;
+              ">
+
+                <h2 style="
+                  color:green;
+                ">
+                  ✅ Payment Submitted
+                </h2>
+
+                <p>
+                  Screenshot received successfully.
+                </p>
+
+                <p>
+                  Admin verification के बाद
+                  CBT Access मिलेगा।
+                </p>
+
+                <button
+                  onclick="location.reload()"
+                  style="
+                    padding:10px 18px;
+                    margin-top:10px;
+                    border:none;
+                    border-radius:8px;
+                    cursor:pointer;
+                  "
+                >
+                  🔄 Refresh
+                </button>
+
+              </div>
+
+            `);
+
+
+          } catch (error) {
+
+            console.error(
+              "Payment proof error:",
+              error
+            );
+
+            alert(
+              "❌ Error:\n" +
+              error.message
+            );
+
+
+            showMessage(`
+
+              <div style="
+                text-align:center;
+                padding:20px;
+              ">
+
+                <h2>
+                  ❌ Upload Failed
+                </h2>
+
+                <p>
+                  ${error.message}
+                </p>
+
+              </div>
+
+            `);
+
+          }
+
+        };
+
+
+      reader.onerror =
+        function () {
+
+          alert(
+            "Unable to read screenshot."
+          );
+
+        };
+
+
+      reader.readAsDataURL(file);
+
+
+    } catch (error) {
+
+      console.error(
+        "Upload error:",
+        error
+      );
+
+      alert(
+        "❌ Error:\n" +
+        error.message
+      );
+
+    }
+
+  };
+
+
+// ======================================================
+// PAYMENT DONE
+// ======================================================
+
+window.paymentDone =
+  async function () {
+
+    try {
+
+      let currentPaymentAmount =
+        await getPaymentAmount();
+
+
+      const amountElement =
+        document.getElementById(
+          "paymentAmountDisplay"
+        );
+
+
+      if (amountElement) {
+
+        const text =
+          amountElement.innerText
+            .replace("₹", "")
+            .trim();
+
+
+        const parsed =
+          parseFloat(text);
+
+
+        if (!isNaN(parsed)) {
+
+          currentPaymentAmount =
+            parsed;
+
+        }
+
+      }
+
+
+      console.log(
+        "Payment amount:",
+        currentPaymentAmount
+      );
+
+
+      const doc =
+        await counterRef.get();
+
+
+      if (
+        doc.exists &&
+        doc.data().paymentStatus ===
+        "approved"
+      ) {
+
+        alert(
+          "✅ Payment is already approved."
+        );
+
+        return;
+
+      }
+
+
+      await counterRef.update({
+
+        paymentStatus:
+          "verification_pending"
+
+      });
+
+
+      const payload = {
+
+        action:
+          "payment",
+
+        studentId:
+          studentId,
+
+        amount:
+          currentPaymentAmount,
+
+        paymentStatus:
+          "verification_pending",
+
+        paymentProofURL:
+          ""
+
+      };
+
+
+      console.log(
+        "Sending Payment Data:",
+        payload
+      );
+
+
+      await fetch(
+        CONFIG.SHEET_URL,
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify(payload)
+
+        }
+      );
+
+
+      showMessage(`
+
+        <div style="
+          text-align:center;
+          padding:20px;
+        ">
+
+          <h2 style="
+            color:green;
+          ">
+            ✅ Payment Submitted
+          </h2>
+
+          <p>
+            Your payment has been
+            submitted successfully.
+          </p>
+
+          <p>
+            After admin verification,
+            CBT Exam access will be activated.
+          </p>
+
+          <button
+            onclick="location.reload()"
+            style="
+              padding:10px;
+              margin-top:10px;
+            "
+          >
+            🔄 Refresh Page
+          </button>
+
+        </div>
+
+      `);
+
+
+    } catch (error) {
+
+      console.error(
+        "Payment submission error:",
+        error
+      );
+
+
+      alert(
+        "Error submitting payment:\n" +
+        error.message
+      );
+
+
+      showMessage(`
+
+        <div style="
+          text-align:center;
+          padding:20px;
+        ">
+
+          <h2>
+            ❌ Error
+          </h2>
+
+          <p>
+            ${error.message}
+          </p>
+
+        </div>
+
+      `);
+
+    }
+
+  };
+
+
+// ======================================================
+// PAYMENT PAGE
+// ======================================================
+
+async function showPaymentPage(
+  amount
+) {
+
+  const upiId =
+    CONFIG.UPI_ID;
+
+
+  const upiLink =
+    `upi://pay?pa=${
+      encodeURIComponent(upiId)
+    }&pn=${
+      encodeURIComponent(
+        "COACHsir Academy"
+      )
+    }&am=${
+      amount
+    }&cu=INR`;
+
+
+  showMessage(`
+
+    <div style="
+      max-width:400px;
+      margin:auto;
+      background:#fff;
+      padding:20px;
+      border-radius:15px;
+      box-shadow:
+        0 0 15px
+        rgba(0,0,0,.2);
+      text-align:center;
+    ">
+
+      <h2 style="
+        color:#0066ff;
+      ">
+        💳 Payment Required
+      </h2>
+
+
+      <p>
+        CBT Exam Access के लिए
+        पहले Payment करें।
+      </p>
+
+
+      <h1
+        id="paymentAmountDisplay"
+        style="
+          color:#16a34a;
+          font-size:42px;
+          font-weight:bold;
+        "
+      >
+        ₹${amount}
+      </h1>
+
+
+      <img
+        src="assets/upi-qr.png"
+        style="
+          width:220px;
+          max-width:100%;
+          border-radius:12px;
+          margin:15px 0;
+        "
+        onerror="
+          this.style.display='none'
+        "
+      >
+
+
+      <br>
+
+
+      <a
+        href="${upiLink}"
+        style="
+          text-decoration:none;
+        "
+      >
+
+        <button
+          style="
+            width:100%;
+            padding:14px;
+            background:#0066ff;
+            color:white;
+            border:none;
+            border-radius:10px;
+            font-size:18px;
+            cursor:pointer;
+          "
+        >
+          💳 Pay with Any UPI App
+        </button>
+
+      </a>
+
+
+      <br><br>
+
+
+      <p>
+        <b>UPI ID</b>
+      </p>
+
+
+      <div style="
+        background:#f1f1f1;
+        padding:12px;
+        border-radius:8px;
+        font-size:17px;
+        font-weight:bold;
+      ">
+
+        ${upiId}
+
+      </div>
+
+
+      <br>
+
+
+      <button
+        onclick="
+          window.copyUPI()
+        "
+        style="
+          width:100%;
+          padding:12px;
+          background:#333;
+          color:white;
+          border:none;
+          border-radius:8px;
+          cursor:pointer;
+        "
+      >
+        📋 Copy UPI ID
+      </button>
+
+
+      <br><br>
+
+
+      <input
+        type="file"
+        id="paymentScreenshot"
+        accept="image/*"
+        style="
+          width:100%;
+          padding:10px;
+          margin-top:15px;
+          box-sizing:border-box;
+        "
+      >
+
+
+      <br><br>
+
+
+      <button
+        onclick="
+          window.uploadPaymentProof()
+        "
+        style="
+          width:100%;
+          padding:14px;
+          background:green;
+          color:white;
+          border:none;
+          border-radius:10px;
+          font-size:18px;
+          cursor:pointer;
+        "
+      >
+        📤 Submit Payment Proof
+      </button>
+
+
+      <p style="
+        margin-top:15px;
+        color:#666;
+        font-size:14px;
+      ">
+
+        After successful payment
+        verification by the Admin,
+        your CBT Exam Access
+        will be activated.
+
+      </p>
+
+    </div>
+
+  `);
+
+}
+
+
+// ======================================================
+// ADMIN PANEL
+// ======================================================
+
+async function showAdminPanel() {
+
+  const countElement =
+    getCountElement();
+
+
+  if (!countElement) {
+
+    return;
+
+  }
+
+
+  countElement.innerHTML = `
+
+    <div style="
+      text-align:center;
+      padding:20px;
+    ">
+
+      <h2>
+        🔐 Admin Panel
+      </h2>
+
+      <p>
+        Loading students...
+      </p>
+
+    </div>
+
+  `;
+
+
+  const snapshot =
+    await db
+      .collection("qrData")
+      .get();
+
+
+  let html =
+    "<h2>🔐 Admin Panel</h2>";
+
+
+  if (snapshot.empty) {
+
+    html += `
+      <p>
+        No students found.
+      </p>
+    `;
+
+  }
+
+
+  snapshot.forEach(
+    function (d) {
+
+      const data =
+        d.data();
+
+
+      html += `
+
+        <div style="
+          border:1px solid #ccc;
+          padding:10px;
+          margin:10px;
+          border-radius:8px;
+        ">
+
+          <b>
+            Student ID:
+            ${d.id}
+          </b>
+
+          <br><br>
+
+          Status:
+          <b>
+            ${data.paymentStatus ||
+              "pending"}
+          </b>
+
+          <br><br>
+
+          Count:
+          ${data.count || 0}
+
+          <br><br>
+
+          <button
+            style="
+              cursor:pointer;
+              padding:10px;
+              position:relative;
+              z-index:9999;
+            "
+            onclick="
+              window.approvePayment(
+                '${d.id}'
+              )
+            "
+          >
+            ✅ Approve
+          </button>
+
+        </div>
+
+      `;
+
+    }
+  );
+
+
+  countElement.innerHTML =
+    html;
+
+}
+
+
+// ======================================================
+// GET EXPIRY DATE
+// ======================================================
+
+function getExpiryDate(data) {
+
+  let expiry =
+    defaultExpiryDate;
+
+
+  if (data.expiryDate) {
+
+    // Firestore Timestamp
+    if (
+      typeof data.expiryDate.toDate ===
+      "function"
+    ) {
+
+      expiry =
+        data.expiryDate.toDate();
+
+    }
+
+    // JavaScript Date
+    else if (
+      data.expiryDate instanceof Date
+    ) {
+
+      expiry =
+        data.expiryDate;
+
+    }
+
+    // String / Number
+    else {
+
+      const parsed =
+        new Date(
+          data.expiryDate
+        );
+
+
+      if (
+        !isNaN(
+          parsed.getTime()
+        )
+      ) {
+
+        expiry =
+          parsed;
+
+      }
+
+    }
+
+  }
+
+
+  return expiry;
+
+}
+
+
+// ======================================================
+// MAIN LOGIC
+// ======================================================
+
+async function runMainLogic() {
+
+  const countElement =
+    getCountElement();
+
+
+  try {
+
+    console.log(
+      "================================"
+    );
+
+    console.log(
+      "COACHsir QR Tracker Started"
+    );
+
+    console.log(
+      "Student ID:",
+      studentId
+    );
+
+    console.log(
+      "Admin:",
+      isAdmin
+    );
+
+    console.log(
+      "================================"
+    );
+
+
+    if (!countElement) {
+
+      throw new Error(
+        "Element #count not found in index.html"
+      );
+
+    }
+
+
+    // Initial loading
+    countElement.innerHTML = `
+
+      <div style="
+        text-align:center;
+        padding:30px;
+      ">
+
+        <h2>
+          ⏳ Loading...
+        </h2>
+
+        <p>
+          Please wait...
+        </p>
+
+      </div>
+
+    `;
+
+
+    // ==================================================
+    // CHECK FIREBASE
+    // ==================================================
+
+    if (
+      typeof firebase ===
+      "undefined"
+    ) {
+
+      throw new Error(
+        "Firebase SDK is not loaded."
+      );
+
+    }
+
+
+    if (
+      typeof db ===
+      "undefined"
+    ) {
+
+      throw new Error(
+        "Firestore database is not initialized."
+      );
+
+    }
+
+
+    // ==================================================
+    // ADMIN PANEL
+    // ==================================================
+
+    if (isAdmin) {
+
+      await showAdminPanel();
+
+      return;
+
+    }
+
+
+    // ==================================================
+    // CURRENT TIME
+    // ==================================================
+
+    const now =
+      new Date();
+
+
+    // ==================================================
+    // GET STUDENT DOCUMENT
+    // ==================================================
+
+    const doc =
+      await counterRef.get();
+
+
+    console.log(
+      "Firestore document exists:",
+      doc.exists
+    );
+
+
+    // ==================================================
+    // EXISTING STUDENT
+    // ==================================================
+
+    if (doc.exists) {
+
+      const data =
+        doc.data();
+
+
+      console.log(
+        "Student data:",
+        data
+      );
+
+
+      // ================================================
+      // 1. ACTIVE CHECK
+      // ================================================
+
+      if (data.active === false) {
+
+        showMessage(`
+
+          <div style="
+            text-align:center;
+            padding:20px;
+          ">
+
+            <h2>
+              ❌ QR Inactive
+            </h2>
+
+            <p>
+              Please contact COACHsir Academy.
+            </p>
+
+          </div>
+
+        `);
+
+        return;
+
+      }
+
+
+      // ================================================
+      // 2. PAYMENT VERIFICATION PENDING
+      // ================================================
+
+      if (
+        data.paymentStatus ===
+        "verification_pending"
+      ) {
+
+        showMessage(`
+
+          <div style="
+            text-align:center;
+            padding:20px;
+          ">
+
+            <h2>
+              ⏳ Payment Verification Pending
+            </h2>
+
+            <p>
+              Your payment has already
+              been submitted.
+            </p>
+
+            <p>
+              Please wait for admin approval.
+            </p>
+
+            <button
+              onclick="
+                location.reload()
+              "
+              style="
+                padding:10px 18px;
+                margin-top:10px;
+                cursor:pointer;
+              "
+            >
+              🔄 Refresh
+            </button>
+
+          </div>
+
+        `);
+
+        return;
+
+      }
+
+
+      // ================================================
+      // 3. PAYMENT REQUIRED
+      // ================================================
+
+      if (
+        data.paymentStatus !==
+        "approved"
+      ) {
+
+        const amount =
+          Number(
+            data.paymentAmount
+          ) ||
+          await getPaymentAmount();
+
+
+        await showPaymentPage(
+          amount
+        );
+
+        return;
+
+      }
+
+
+      // ================================================
+      // 4. EXPIRY CHECK
+      // ================================================
+
+      const expiry =
+        getExpiryDate(data);
+
+
+      console.log(
+        "Expiry:",
+        expiry
+      );
+
+
+      if (
+        now.getTime() >
+        expiry.getTime()
+      ) {
+
+        await counterRef.update({
+
+          active:
+            false
+
+        });
+
+
+        showMessage(`
+
+          <div style="
+            text-align:center;
+            padding:20px;
+          ">
+
+            <h2>
+              ❌ QR Expired
+            </h2>
+
+            <p>
+              Please renew fees.
+            </p>
+
+          </div>
+
+        `);
+
+        return;
+
+      }
+
+
+      // ================================================
+      // 5. SCAN LIMIT
+      // ================================================
+
+      const currentCount =
+        Number(
+          data.count || 0
+        );
+
+
+      const scanLimit =
+        Number(
+          data.scanLimit ??
+          Infinity
+        );
+
+
+      const unlimited =
+        data.unlimited === true;
+
+
+      if (
+        !unlimited &&
+        currentCount >= scanLimit
+      ) {
+
+        await counterRef.update({
+
+          active:
+            false
+
+        });
+
+
+        showMessage(`
+
+          <div style="
+            text-align:center;
+            padding:20px;
+          ">
+
+            <h2>
+              ❌ Scan Limit Reached
+            </h2>
+
+            <p>
+              Please contact COACHsir Academy.
+            </p>
+
+          </div>
+
+        `);
+
+        return;
+
+      }
+
+
+      // ================================================
+      // 6. RECORD SCAN
+      // ================================================
+
+      const newCount =
+        currentCount + 1;
+
+
+      await counterRef.update({
+
+        count:
+          newCount,
+
+        lastScan:
+          firebase.firestore.Timestamp
+            .fromDate(now)
+
+      });
+
+
+      console.log(
+        "Scan recorded:",
+        newCount
+      );
+
+
+      // ================================================
+      // GOOGLE SHEET LOG
+      // ================================================
+
+      fetch(
+        CONFIG.SHEET_URL,
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify({
+
+              studentId:
+                studentId,
+
+              scanCount:
+                newCount
+
+            })
+
+        }
+
+      ).catch(
+        function (error) {
+
+          console.error(
+            "Sheet log error:",
+            error
+          );
+
+        }
+      );
+
+
+    }
+
+
+    // ==================================================
+    // NEW STUDENT
+    // ==================================================
+
+    else {
+
+      console.log(
+        "Creating new student:",
+        studentId
+      );
+
+
+      const paymentAmount =
+        await getPaymentAmount();
+
+
+      await counterRef.set({
+
+        count:
+          1,
+
+        active:
+          true,
+
+        scanLimit:
+          100,
+
+        unlimited:
+          false,
+
+        paymentStatus:
+          "pending",
+
+        paymentAmount:
+          paymentAmount,
+
+        createdAt:
+          firebase.firestore.Timestamp
+            .fromDate(now),
+
+        expiryDate:
+          firebase.firestore.Timestamp
+            .fromDate(
+              defaultExpiryDate
+            ),
+
+        lastScan:
+          firebase.firestore.Timestamp
+            .fromDate(now)
+
+      });
+
+
+      // New student ko payment page dikhao
+      await showPaymentPage(
+        paymentAmount
+      );
+
+      return;
+
+    }
+
+
+    // ==================================================
+    // FINAL PAYMENT CHECK
+    // ==================================================
+
+    const latestDoc =
+      await counterRef.get();
+
+
+    if (
+      latestDoc.exists &&
+      latestDoc.data().paymentStatus ===
+      "approved"
+    ) {
+
+      showMessage(`
+
+        <div style="
+          text-align:center;
+          padding:20px;
+        ">
+
+          <h2 style="
+            color:green;
+          ">
+            ✅ Access Granted
+          </h2>
+
+          <p>
+            Opening CBT Exam...
+          </p>
+
+        </div>
+
+      `);
+
+
+      setTimeout(
+        function () {
+
+          window.location.href =
+            CONFIG.EXAM_URL;
+
+        },
+        2000
+      );
+
+
+    } else {
+
+      showMessage(`
+
+        <div style="
+          text-align:center;
+          padding:20px;
+        ">
+
+          <h2>
+            ⏳ Payment Verification Required
+          </h2>
+
+          <p>
+            Please wait for approval.
+          </p>
+
+        </div>
+
+      `);
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "================================"
+    );
+
+    console.error(
+      "QR TRACKER ERROR:",
+      error
+    );
+
+    console.error(
+      "================================"
+    );
+
+
+    if (countElement) {
+
+      countElement.innerHTML = `
+
+        <div style="
+          text-align:center;
+          padding:25px;
+        ">
+
+          <h2 style="
+            color:red;
+          ">
+            ❌ Error
+          </h2>
+
+          <p>
+            ${error.message}
+          </p>
+
+          <button
+            onclick="
+              location.reload()
+            "
+            style="
+              padding:10px 18px;
+              margin-top:10px;
+              cursor:pointer;
+            "
+          >
+            🔄 Retry
+          </button>
+
+        </div>
+
+      `;
+
+    }
+
+  }
+
+}
+
+
+// ======================================================
+// START QR TRACKER
+// ======================================================
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    runMainLogic();
+
+  }
+);window.copyUPI = function () {
 
   navigator.clipboard
     .writeText(CONFIG.UPI_ID)
