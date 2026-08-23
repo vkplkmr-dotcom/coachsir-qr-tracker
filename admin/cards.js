@@ -625,7 +625,7 @@ function renderStudentCards(
 
 
 // ======================================================
-// VIEW STUDENT CARD
+// VIEW STUDENT CARD - ADMIN MODE
 // ======================================================
 
 window.viewStudentCard =
@@ -644,9 +644,8 @@ window.viewStudentCard =
 
         const cardURL =
             "../student-card.html?id=" +
-            encodeURIComponent(
-                studentId
-            );
+            encodeURIComponent(studentId) +
+            "&admin=1";
 
 
         window.open(
