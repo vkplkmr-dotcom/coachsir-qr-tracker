@@ -924,12 +924,13 @@ async function increaseWebsiteClickCount() {
 
 // ======================================================
 // COACHsir DYNAMIC QR
-// QR URL + STUDENT ID CENTER
+// SCANNABLE QR + CENTER STUDENT ID
 // ======================================================
 
 function generateStudentQR(studentIdValue) {
 
-    const qrContainer = document.getElementById("qrcode");
+    const qrContainer =
+        document.getElementById("qrcode");
 
     if (!qrContainer) {
         console.error("❌ QR container not found");
@@ -946,24 +947,42 @@ function generateStudentQR(studentIdValue) {
         return;
     }
 
-    // Clean old QR
+    // --------------------------------------------------
+    // CLEAN
+    // --------------------------------------------------
+
     qrContainer.innerHTML = "";
 
-    // QR container
+    // --------------------------------------------------
+    // IMPORTANT CONTAINER FIX
+    // --------------------------------------------------
+
     qrContainer.style.position = "relative";
     qrContainer.style.width = "150px";
     qrContainer.style.height = "150px";
     qrContainer.style.padding = "0";
+    qrContainer.style.margin = "auto";
     qrContainer.style.background = "#ffffff";
+    qrContainer.style.boxSizing = "border-box";
+    qrContainer.style.overflow = "hidden";
 
-    // Complete tracker URL
+    // --------------------------------------------------
+    // QR URL
+    // --------------------------------------------------
+
     const qrURL =
         COACHSIR_QR_TRACKER_URL +
         encodeURIComponent(studentIdValue);
 
-    console.log("✅ QR URL:", qrURL);
+    console.log(
+        "✅ COACHsir QR URL:",
+        qrURL
+    );
 
-    // Generate QR
+    // --------------------------------------------------
+    // CREATE QR
+    // --------------------------------------------------
+
     new QRCode(qrContainer, {
 
         text: qrURL,
@@ -971,89 +990,138 @@ function generateStudentQR(studentIdValue) {
         width: 150,
         height: 150,
 
-        correctLevel: QRCode.CorrectLevel.H
+        correctLevel:
+            QRCode.CorrectLevel.H
 
     });
 
-    // Wait for QR canvas
+    // --------------------------------------------------
+    // WAIT FOR QR
+    // --------------------------------------------------
+
     let attempts = 0;
 
-    const timer = setInterval(function () {
+    const checkQR =
+        setInterval(function () {
 
-        attempts++;
+            attempts++;
 
-        const canvas =
-            qrContainer.querySelector("canvas");
+            const canvas =
+                qrContainer.querySelector("canvas");
 
-        if (!canvas) {
+            if (!canvas) {
 
-            if (attempts >= 30) {
+                if (attempts >= 30) {
 
-                clearInterval(timer);
+                    clearInterval(checkQR);
 
-                console.error(
-                    "❌ QR canvas not found"
-                );
+                    console.error(
+                        "❌ QR canvas not found"
+                    );
 
+                }
+
+                return;
             }
 
-            return;
-        }
+            clearInterval(checkQR);
 
-        clearInterval(timer);
+            // --------------------------------------------------
+            // FORCE CANVAS POSITION
+            // --------------------------------------------------
 
-        const ctx =
-            canvas.getContext("2d");
+            canvas.style.position = "absolute";
+            canvas.style.left = "0";
+            canvas.style.top = "0";
+            canvas.style.width = "150px";
+            canvas.style.height = "150px";
 
-        if (!ctx) {
-            return;
-        }
+            // --------------------------------------------------
+            // CENTER ID OVERLAY
+            // --------------------------------------------------
 
-        const centerX =
-            canvas.width / 2;
+            const idBox =
+                document.createElement("div");
 
-        const centerY =
-            canvas.height / 2;
+            idBox.innerText =
+                studentIdValue.toUpperCase();
 
-        // Center white box
-        const boxWidth = 58;
-        const boxHeight = 25;
+            idBox.style.position =
+                "absolute";
 
-        ctx.fillStyle = "#ffffff";
+            idBox.style.left =
+                "50%";
 
-        ctx.fillRect(
-            centerX - boxWidth / 2,
-            centerY - boxHeight / 2,
-            boxWidth,
-            boxHeight
-        );
+            idBox.style.top =
+                "50%";
 
-        // Student ID
-        ctx.fillStyle = "#e60000";
+            idBox.style.transform =
+                "translate(-50%, -50%)";
 
-        ctx.font =
-            "bold 17px Arial";
+            // SMALL BOX
+            idBox.style.width =
+                "42px";
 
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
+            idBox.style.height =
+                "17px";
 
-        ctx.fillText(
-            studentIdValue.toUpperCase(),
-            centerX,
-            centerY
-        );
+            idBox.style.background =
+                "#ffffff";
 
-        console.log(
-            "✅ QR GENERATED:",
-            qrURL
-        );
+            idBox.style.border =
+                "1px solid #e60000";
 
-        console.log(
-            "✅ CENTER ID:",
-            studentIdValue
-        );
+            idBox.style.borderRadius =
+                "3px";
 
-    }, 100);
+            idBox.style.display =
+                "flex";
+
+            idBox.style.alignItems =
+                "center";
+
+            idBox.style.justifyContent =
+                "center";
+
+            idBox.style.fontFamily =
+                "Arial, sans-serif";
+
+            idBox.style.fontSize =
+                "10px";
+
+            idBox.style.fontWeight =
+                "800";
+
+            idBox.style.color =
+                "#e60000";
+
+            idBox.style.lineHeight =
+                "1";
+
+            idBox.style.zIndex =
+                "10";
+
+            idBox.style.pointerEvents =
+                "none";
+
+            idBox.style.boxSizing =
+                "border-box";
+
+            // --------------------------------------------------
+            // ADD ID
+            // --------------------------------------------------
+
+            qrContainer.appendChild(
+                idBox
+            );
+
+            console.log(
+                "✅ QR CENTER ID:",
+                studentIdValue
+            );
+
+        }, 100);
+
 }
 // ======================================================
 // LOAD STUDENT
