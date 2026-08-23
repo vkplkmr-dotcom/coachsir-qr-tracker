@@ -18,6 +18,106 @@ const params =
 const studentId =
     params.get("id");
 // ======================================================
+// COACHsir ADMIN VIEW MODE
+// ======================================================
+
+const isAdminMode =
+    params.get("admin") === "1";
+
+
+const COACHSIR_ADMIN_UID =
+    "iYo2MA9sWNcRHNQcdREoQm47AX22";
+// ======================================================
+// VERIFY ADMIN FOR ADMIN CARD VIEW
+// ======================================================
+
+async function verifyAdminCardAccess() {
+
+    // Normal student card
+    if (!isAdminMode) {
+
+        return true;
+
+    }
+
+
+    // Firebase Auth available?
+
+    if (
+        typeof firebase === "undefined" ||
+        !firebase.auth
+    ) {
+
+        alert(
+            "Admin authentication system is not loaded."
+        );
+
+        return false;
+
+    }
+
+
+    try {
+
+        const user =
+            firebase.auth().currentUser;
+
+
+        // Admin session not found
+
+        if (!user) {
+
+            alert(
+                "Please login as Admin."
+            );
+
+            return false;
+
+        }
+
+
+        // Check Admin UID
+
+        if (
+            user.uid !==
+            COACHSIR_ADMIN_UID
+        ) {
+
+            alert(
+                "Unauthorized Admin."
+            );
+
+            return false;
+
+        }
+
+
+        console.log(
+            "✅ Admin Card Access:",
+            user.uid
+        );
+
+
+        return true;
+
+    }
+    catch (error) {
+
+        console.error(
+            "Admin Card Access Error:",
+            error
+        );
+
+        alert(
+            "Admin verification failed."
+        );
+
+        return false;
+
+    }
+
+}
+// ======================================================
 // COACHsir SINGLE DEVICE LOCK SYSTEM
 // ======================================================
 //
