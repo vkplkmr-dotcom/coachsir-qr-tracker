@@ -10,8 +10,21 @@
 // student-card.html?id=S001
 // ======================================================
 
-const params = new URLSearchParams(window.location.search);
-const studentId = params.get("id");
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const studentId =
+    params.get("id");
+
+
+// ======================================================
+// COACHsir DYNAMIC QR CONFIG
+// ======================================================
+
+const COACHSIR_QR_TRACKER_URL =
+    "https://vkplkmr-dotcom.github.io/coachsir-qr-tracker/?id=";
 
 
 // ======================================================
@@ -29,16 +42,6 @@ const programMap = {
 
 // ======================================================
 // PARSE EXPIRY DATE
-//
-// Supports:
-// 2026-08-29
-// 29/08/2026
-// 29-08-2026
-// Aug 29,2026
-// Aug 29, 2026
-// 29 Aug 2026
-// Firestore Timestamp
-// JavaScript Date
 // ======================================================
 
 function parseExpiryDate(expiry) {
@@ -57,7 +60,8 @@ function parseExpiryDate(expiry) {
         typeof expiry.toDate === "function"
     ) {
 
-        const date = expiry.toDate();
+        const date =
+            expiry.toDate();
 
         if (!isNaN(date.getTime())) {
             return date;
@@ -85,7 +89,8 @@ function parseExpiryDate(expiry) {
 
     if (typeof expiry === "string") {
 
-        let cleanDate = expiry.trim();
+        let cleanDate =
+            expiry.trim();
 
         if (!cleanDate) {
             return null;
@@ -112,6 +117,7 @@ function parseExpiryDate(expiry) {
 
             const day =
                 parseInt(match[3], 10);
+
 
             const date =
                 new Date(
@@ -156,6 +162,7 @@ function parseExpiryDate(expiry) {
             const year =
                 parseInt(match[3], 10);
 
+
             const date =
                 new Date(
                     year,
@@ -178,11 +185,7 @@ function parseExpiryDate(expiry) {
 
 
         // --------------------------------------------------
-        // Month name formats
-        //
-        // Aug 29,2026
-        // Aug 29, 2026
-        // 29 Aug 2026
+        // MONTH NAME FORMATS
         // --------------------------------------------------
 
         cleanDate =
@@ -221,6 +224,7 @@ function parseExpiryDate(expiry) {
             let monthName =
                 parts[0]
                     .substring(0, 3);
+
 
             monthName =
                 monthName.charAt(0).toUpperCase() +
@@ -281,6 +285,7 @@ function parseExpiryDate(expiry) {
             let monthName =
                 parts[1]
                     .substring(0, 3);
+
 
             monthName =
                 monthName.charAt(0).toUpperCase() +
@@ -348,8 +353,6 @@ function parseExpiryDate(expiry) {
 
 // ======================================================
 // FORMAT EXPIRY DATE
-// Example:
-// 29 Aug 2026
 // ======================================================
 
 function formatExpiryDate(date) {
@@ -378,11 +381,6 @@ function formatExpiryDate(date) {
 
 // ======================================================
 // CHECK CARD ACTIVE
-//
-// Valid Till = 29 Aug 2026
-//
-// 29 Aug पूरा दिन ACTIVE
-// 30 Aug से EXPIRED
 // ======================================================
 
 function isCardActive(expiryDate) {
@@ -402,7 +400,8 @@ function isCardActive(expiryDate) {
     }
 
 
-    const now = new Date();
+    const now =
+        new Date();
 
 
     const today =
@@ -428,10 +427,6 @@ function isCardActive(expiryDate) {
 
 // ======================================================
 // GET TODAY TIME
-//
-// Supports:
-// 7:30 PM
-// 07:30 PM
 // ======================================================
 
 function getTodayTime(timeString) {
@@ -497,7 +492,8 @@ function getTodayTime(timeString) {
     }
 
 
-    const now = new Date();
+    const now =
+        new Date();
 
 
     return new Date(
@@ -524,8 +520,6 @@ function getFirestoreDate(value) {
     }
 
 
-    // Firestore Timestamp
-
     if (
         value &&
         typeof value.toDate === "function"
@@ -541,8 +535,6 @@ function getFirestoreDate(value) {
     }
 
 
-    // JavaScript Date
-
     if (value instanceof Date) {
 
         if (!isNaN(value.getTime())) {
@@ -551,8 +543,6 @@ function getFirestoreDate(value) {
 
     }
 
-
-    // String
 
     if (typeof value === "string") {
 
@@ -573,10 +563,6 @@ function getFirestoreDate(value) {
 
 // ======================================================
 // GET LIVE START TIME
-//
-// Priority:
-// 1. startAt
-// 2. startTime
 // ======================================================
 
 function getLiveStartTime(liveData) {
@@ -585,8 +571,6 @@ function getLiveStartTime(liveData) {
         return null;
     }
 
-
-    // Firestore Timestamp
 
     if (liveData.startAt) {
 
@@ -602,8 +586,6 @@ function getLiveStartTime(liveData) {
 
     }
 
-
-    // String time
 
     if (liveData.startTime) {
 
@@ -621,10 +603,6 @@ function getLiveStartTime(liveData) {
 
 // ======================================================
 // GET LIVE END TIME
-//
-// Priority:
-// 1. endAt
-// 2. endTime
 // ======================================================
 
 function getLiveEndTime(liveData) {
@@ -633,8 +611,6 @@ function getLiveEndTime(liveData) {
         return null;
     }
 
-
-    // Firestore Timestamp
 
     if (liveData.endAt) {
 
@@ -650,8 +626,6 @@ function getLiveEndTime(liveData) {
 
     }
 
-
-    // String time
 
     if (liveData.endTime) {
 
@@ -669,12 +643,6 @@ function getLiveEndTime(liveData) {
 
 // ======================================================
 // CHECK WHETHER CLASS IS ACTUALLY LIVE
-//
-// Conditions:
-//
-// 1. status === true
-// 2. current time >= start
-// 3. current time < end
 // ======================================================
 
 function isLiveClassNow(liveData) {
@@ -688,8 +656,6 @@ function isLiveClassNow(liveData) {
 
     }
 
-
-    // Admin must enable class
 
     if (liveData.status !== true) {
 
@@ -723,8 +689,6 @@ function isLiveClassNow(liveData) {
         new Date();
 
 
-    // Before class
-
     if (now < startTime) {
 
         return {
@@ -737,8 +701,6 @@ function isLiveClassNow(liveData) {
     }
 
 
-    // After class
-
     if (now >= endTime) {
 
         return {
@@ -750,8 +712,6 @@ function isLiveClassNow(liveData) {
 
     }
 
-
-    // Currently live
 
     return {
         live: true,
@@ -791,10 +751,6 @@ function updateLiveStatusUI(liveData) {
     );
 
 
-    // --------------------------------------------------
-    // LIVE
-    // --------------------------------------------------
-
     if (result.live) {
 
         liveStatus.innerHTML =
@@ -809,10 +765,6 @@ function updateLiveStatusUI(liveData) {
     }
 
 
-    // --------------------------------------------------
-    // BEFORE START
-    // --------------------------------------------------
-
     if (
         result.reason ===
         "before-start"
@@ -826,10 +778,6 @@ function updateLiveStatusUI(liveData) {
     }
 
 
-    // --------------------------------------------------
-    // DEFAULT
-    // --------------------------------------------------
-
     liveStatus.innerHTML =
         "⚫ No Live Class";
 
@@ -838,17 +786,6 @@ function updateLiveStatusUI(liveData) {
 
 // ======================================================
 // ACTIVITY COUNT HELPER
-// ======================================================
-//
-// IMPORTANT:
-//
-// cardOpenCount = Card Open
-// count         = QR Scan
-// cbtClickCount = CBT Click
-// liveClassCount = Live Class Click
-// websiteClickCount = Website Click
-//
-// count is NOT used for card open / website / live.
 // ======================================================
 
 async function increaseActivityCount(
@@ -900,8 +837,6 @@ async function increaseActivityCount(
 
 // ======================================================
 // CARD OPEN COUNT
-//
-// Runs once when card loads.
 // ======================================================
 
 async function increaseCardOpenCount() {
@@ -916,9 +851,6 @@ async function increaseCardOpenCount() {
 
 // ======================================================
 // QR SCAN COUNT
-//
-// This should normally be called by QR tracker.
-// It is NOT called automatically when card loads.
 // ======================================================
 
 async function increaseScanCount() {
@@ -974,6 +906,238 @@ async function increaseWebsiteClickCount() {
 
 
 // ======================================================
+// DYNAMIC QR GENERATOR
+// ======================================================
+//
+// IMPORTANT:
+//
+// QR DATA:
+// https://vkplkmr-dotcom.github.io/coachsir-qr-tracker/?id=S001
+//
+// CENTER TEXT:
+// S001
+//
+// S046 automatically becomes:
+// https://vkplkmr-dotcom.github.io/coachsir-qr-tracker/?id=S046
+//
+// ======================================================
+
+function generateStudentQR(studentIdValue) {
+
+    const qrContainer =
+        document.getElementById(
+            "qrcode"
+        );
+
+
+    if (!qrContainer) {
+
+        console.error(
+            "COACHsir QR container not found."
+        );
+
+        return;
+
+    }
+
+
+    if (!studentIdValue) {
+
+        console.error(
+            "COACHsir QR: Student ID missing."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        typeof QRCode ===
+        "undefined"
+    ) {
+
+        console.error(
+            "COACHsir QR library not loaded."
+        );
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------
+    // Clean previous QR
+    // --------------------------------------------------
+
+    qrContainer.innerHTML =
+        "";
+
+
+    // --------------------------------------------------
+    // CREATE COMPLETE QR URL
+    // --------------------------------------------------
+
+    const qrURL =
+        COACHSIR_QR_TRACKER_URL +
+        encodeURIComponent(
+            studentIdValue
+        );
+
+
+    console.log(
+        "COACHsir Dynamic QR URL:",
+        qrURL
+    );
+
+
+    // --------------------------------------------------
+    // GENERATE QR
+    // --------------------------------------------------
+
+    new QRCode(
+        qrContainer,
+        {
+
+            text:
+                qrURL,
+
+            width:
+                150,
+
+            height:
+                150,
+
+            correctLevel:
+                QRCode.CorrectLevel.H
+
+        }
+    );
+
+
+    // --------------------------------------------------
+    // ADD STUDENT ID TO CENTER
+    // --------------------------------------------------
+
+    setTimeout(
+        function () {
+
+            const canvas =
+                qrContainer.querySelector(
+                    "canvas"
+                );
+
+
+            if (!canvas) {
+
+                console.error(
+                    "COACHsir QR canvas not found."
+                );
+
+                return;
+
+            }
+
+
+            const ctx =
+                canvas.getContext(
+                    "2d"
+                );
+
+
+            if (!ctx) {
+                return;
+            }
+
+
+            const centerX =
+                canvas.width / 2;
+
+            const centerY =
+                canvas.height / 2;
+
+
+            // --------------------------------------------------
+            // CENTER WHITE BOX
+            // --------------------------------------------------
+
+            const boxWidth =
+                62;
+
+            const boxHeight =
+                28;
+
+
+            ctx.save();
+
+
+            ctx.fillStyle =
+                "#ffffff";
+
+
+            ctx.fillRect(
+
+                centerX -
+                boxWidth / 2,
+
+                centerY -
+                boxHeight / 2,
+
+                boxWidth,
+
+                boxHeight
+
+            );
+
+
+            // --------------------------------------------------
+            // CENTER STUDENT ID
+            // --------------------------------------------------
+
+            ctx.fillStyle =
+                "#e60000";
+
+
+            ctx.font =
+                "bold 21px Arial";
+
+
+            ctx.textAlign =
+                "center";
+
+
+            ctx.textBaseline =
+                "middle";
+
+
+            ctx.fillText(
+
+                studentIdValue,
+
+                centerX,
+
+                centerY
+
+            );
+
+
+            ctx.restore();
+
+
+            console.log(
+                "✅ COACHsir Dynamic QR Generated:",
+                studentIdValue
+            );
+
+
+        },
+        200
+    );
+
+}
+
+
+// ======================================================
 // LOAD STUDENT
 // ======================================================
 
@@ -1023,9 +1187,6 @@ else {
 
             // ==================================================
             // CARD OPEN COUNT
-            //
-            // Only cardOpenCount increases.
-            // count remains QR Scan count.
             // ==================================================
 
             increaseCardOpenCount();
@@ -1362,6 +1523,33 @@ else {
 
 
             // ==================================================
+            // DYNAMIC QR
+            // ==================================================
+            //
+            // IMPORTANT:
+            //
+            // OLD:
+            // QR contained only S001
+            //
+            // NEW:
+            // QR contains complete tracker URL
+            //
+            // S001:
+            // https://vkplkmr-dotcom.github.io/
+            // coachsir-qr-tracker/?id=S001
+            //
+            // S046:
+            // https://vkplkmr-dotcom.github.io/
+            // coachsir-qr-tracker/?id=S046
+            //
+            // ==================================================
+
+            generateStudentQR(
+                studentId
+            );
+
+
+            // ==================================================
             // LIVE CLASS DOCUMENT
             // ==================================================
 
@@ -1694,45 +1882,6 @@ else {
 
 
             // ==================================================
-            // QR CODE
-            // ==================================================
-
-            const qr =
-                document.getElementById(
-                    "qrcode"
-                );
-
-
-            if (
-                qr &&
-                typeof QRCode !==
-                "undefined"
-            ) {
-
-                qr.innerHTML =
-                    "";
-
-
-                new QRCode(
-                    qr,
-                    {
-
-                        text:
-                            studentId,
-
-                        width:
-                            150,
-
-                        height:
-                            150
-
-                    }
-                );
-
-            }
-
-
-            // ==================================================
             // INITIAL LIVE STATUS CHECK
             // ==================================================
 
@@ -1814,7 +1963,6 @@ if (websiteBtn) {
         async function () {
 
 
-            // IMPORTANT:
             // Website click does NOT increase QR count.
 
             await increaseWebsiteClickCount();
@@ -1886,6 +2034,7 @@ if (
 
 // ======================================================
 // AUTOMATIC LIVE STATUS REFRESH
+// ======================================================
 //
 // Checks every 10 seconds.
 //
