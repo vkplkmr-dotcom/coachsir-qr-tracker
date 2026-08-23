@@ -923,8 +923,8 @@ async function increaseWebsiteClickCount() {
 // ======================================================
 
 // ======================================================
-// DYNAMIC QR GENERATOR
-// QR URL + STUDENT ID CENTER OVERLAY
+// COACHsir DYNAMIC QR
+// QR URL + STUDENT ID CENTER
 // ======================================================
 
 function generateStudentQR(studentIdValue) {
@@ -933,76 +933,65 @@ function generateStudentQR(studentIdValue) {
         document.getElementById("qrcode");
 
     if (!qrContainer) {
-        console.error(
-            "COACHsir QR container not found."
-        );
+        console.error("COACHsir QR container not found.");
         return;
     }
 
     if (!studentIdValue) {
-        console.error(
-            "COACHsir QR: Student ID missing."
-        );
+        console.error("COACHsir QR: Student ID missing.");
         return;
     }
 
     if (typeof QRCode === "undefined") {
-        console.error(
-            "COACHsir QR library not loaded."
-        );
+        console.error("COACHsir QR library not loaded.");
         return;
     }
 
-    // --------------------------------------------------
-    // CLEAN OLD QR
-    // --------------------------------------------------
+    // -----------------------------------------
+    // REMOVE OLD QR
+    // -----------------------------------------
 
     qrContainer.innerHTML = "";
 
-    // --------------------------------------------------
-    // QR CONTAINER
-    // --------------------------------------------------
-
-    qrContainer.style.position = "relative";
-
-    qrContainer.style.width = "150px";
-
-    qrContainer.style.height = "150px";
-
-    // --------------------------------------------------
+    // -----------------------------------------
     // COMPLETE QR URL
-    // --------------------------------------------------
+    // -----------------------------------------
 
     const qrURL =
         COACHSIR_QR_TRACKER_URL +
         encodeURIComponent(studentIdValue);
 
     console.log(
-        "COACHsir Dynamic QR URL:",
+        "COACHsir QR URL:",
         qrURL
     );
 
-    // --------------------------------------------------
-    // GENERATE QR
-    // --------------------------------------------------
+    // -----------------------------------------
+    // QR CONTAINER
+    // -----------------------------------------
 
-    new QRCode(
-        qrContainer,
-        {
-            text: qrURL,
+    qrContainer.style.position = "relative";
 
-            width: 150,
+    // -----------------------------------------
+    // CREATE QR
+    // -----------------------------------------
 
-            height: 150,
+    new QRCode(qrContainer, {
 
-            correctLevel:
-                QRCode.CorrectLevel.H
-        }
-    );
+        text: qrURL,
 
-    // --------------------------------------------------
-    // CENTER ID
-    // --------------------------------------------------
+        width: 150,
+
+        height: 150,
+
+        correctLevel:
+            QRCode.CorrectLevel.H
+
+    });
+
+    // -----------------------------------------
+    // ADD STUDENT ID IN CENTER
+    // -----------------------------------------
 
     setTimeout(function () {
 
@@ -1010,79 +999,60 @@ function generateStudentQR(studentIdValue) {
             document.createElement("div");
 
         centerBox.innerText =
-            studentIdValue.toUpperCase();
+            String(studentIdValue).toUpperCase();
 
-        centerBox.style.position =
-            "absolute";
+        centerBox.style.position = "absolute";
 
-        centerBox.style.left =
-            "50%";
+        centerBox.style.left = "50%";
 
-        centerBox.style.top =
-            "50%";
+        centerBox.style.top = "50%";
 
         centerBox.style.transform =
             "translate(-50%, -50%)";
 
-        centerBox.style.width =
-            "64px";
+        centerBox.style.width = "64px";
 
-        centerBox.style.height =
-            "30px";
+        centerBox.style.height = "30px";
 
-        centerBox.style.background =
-            "#ffffff";
+        centerBox.style.background = "#ffffff";
 
-        centerBox.style.borderRadius =
-            "4px";
+        centerBox.style.borderRadius = "5px";
 
-        centerBox.style.display =
-            "flex";
+        centerBox.style.display = "flex";
 
-        centerBox.style.alignItems =
-            "center";
+        centerBox.style.alignItems = "center";
 
-        centerBox.style.justifyContent =
-            "center";
+        centerBox.style.justifyContent = "center";
 
         centerBox.style.fontFamily =
             "Arial, sans-serif";
 
-        centerBox.style.fontSize =
-            "20px";
+        centerBox.style.fontSize = "18px";
 
-        centerBox.style.fontWeight =
-            "700";
+        centerBox.style.fontWeight = "700";
 
-        centerBox.style.color =
-            "#e60000";
+        centerBox.style.color = "#e60000";
 
-        centerBox.style.lineHeight =
-            "1";
+        centerBox.style.lineHeight = "1";
 
-        centerBox.style.zIndex =
-            "999";
+        centerBox.style.zIndex = "9999";
 
-        centerBox.style.pointerEvents =
-            "none";
+        centerBox.style.pointerEvents = "none";
 
-        centerBox.style.boxSizing =
-            "border-box";
+        centerBox.style.boxSizing = "border-box";
 
-        // --------------------------------------------------
-        // ADD ID TO QR CENTER
-        // --------------------------------------------------
+        // -----------------------------------------
+        // PUT ID ON QR
+        // -----------------------------------------
 
-        qrContainer.appendChild(
-            centerBox
-        );
+        qrContainer.appendChild(centerBox);
 
         console.log(
             "✅ COACHsir QR CENTER ID:",
             studentIdValue
         );
 
-    }, 300);
+    }, 500);
 
 }
 
