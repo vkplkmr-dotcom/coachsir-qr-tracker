@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>COACHsir Academy | View Cards</title>
+
+<link
+    rel="stylesheet"
+    href="admin.css"
+>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+</head>
+
+
+<body>
+
+
+<div class="dashboard">
+
+
+<!-- ==================================================
+     SIDEBAR
+================================================== -->
+
+<aside class="sidebar">
+
+
+<div class="logo">
+
+<h1>cOACHsir</h1>
+
+<p>Online ACADEMY ERP</p>
+
+</div>
+
+
+<nav>
+
+<a href="dashboard.html">
+📊 Dashboard
+</a>
+
+<a href="students.html">
+👨‍🎓 Students
+</a>
+
+<a href="payments.html">
+💳 Payments
+</a>
+
+<a href="attendance.html">
+📷 Attendance
+</a>
+
+<a href="cbt.html">
+🎓 CBT Access
+</a>
+
+<a
+    class="active"
+    href="cards.html"
+>
+📇 View Cards
+</a>
+
+<a href="settings.html">
+⚙ Settings
+</a>
+
+</nav>
+
+
+<div class="admin-box">
+
+<div class="avatar">
+KS
+</div>
+
+<div>
+
+<b>Kapil Sikarwar</b>
+
+<br>
+
+<span>Administrator</span>
+
+</div>
+
+</div>
+
+
+<div
+    class="logout-btn"
+    onclick="logout()"
+>
+
+<i class="fa-solid fa-right-from-bracket"></i>
+
+Logout
+
+</div>
+
+
+</aside>
+
+
+
+<!-- ==================================================
+     MAIN
+================================================== -->
+
+<main class="main">
+
+
+<!-- HEADER -->
+
+<section class="hero">
+
+
+<div class="hero-text">
+
+<h1>
+📇 Digital Student Cards
+</h1>
+
+<p>
+View and manage COACHsir student digital cards
+</p>
+
+</div>
+
+
+<div class="hero-card">
+
+<div>
+
+<h3>
+Card Management
+</h3>
+
+<p>
+Secure Admin Access
+</p>
+
+</div>
+
+
+<div class="hero-number">
+🔐
+</div>
+
+</div>
+
+
+</section>
+
+
+
+<!-- ==================================================
+     SEARCH
+================================================== -->
+
+<section class="panel">
+
+
+<h2>
+🔍 Search Student
+</h2>
+
+
+<div style="
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:15px;
+">
+
+
+<input
+    type="text"
+    id="studentSearch"
+    placeholder="Search Student ID or Name..."
+    style="
+        flex:1;
+        min-width:220px;
+        padding:12px;
+        border:1px solid #ddd;
+        border-radius:8px;
+        font-size:15px;
+        box-sizing:border-box;
+    "
+>
+
+
+<button
+    onclick="clearStudentSearch()"
+    style="
+        padding:12px 18px;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+        background:#555;
+        color:#fff;
+        font-weight:600;
+    "
+>
+
+<i class="fa-solid fa-xmark"></i>
+
+Clear
+
+</button>
+
+
+</div>
+
+
+</section>
+
+
+
+<!-- ==================================================
+     CARD LIST
+================================================== -->
+
+<section class="panel">
+
+
+<div style="
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+flex-wrap:wrap;
+">
+
+
+<h2>
+👨‍🎓 Student Cards
+</h2>
+
+
+<span
+    id="studentTotal"
+    style="
+        font-weight:600;
+    "
+>
+Loading...
+</span>
+
+
+</div>
+
+
+<div
+    id="cardsContainer"
+    style="
+        margin-top:20px;
+    "
+>
+
+<div style="
+text-align:center;
+padding:30px;
+">
+
+Loading students...
+
+</div>
+
+</div>
+
+
+</section>
+
+
+</main>
+
+
+</div>
+
+
+
+<script src="cards.js"></script>
+
+
+</body>
+
+</html>
