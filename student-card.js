@@ -1671,23 +1671,45 @@ else {
 
 
             const data =
-                doc.data();
+    doc.data();
 
 
-            // ==================================================
-            // STORE PROGRAM GLOBALLY
-            // ==================================================
+// ==================================================
+// SINGLE DEVICE LOCK
+// ==================================================
 
-            window.currentStudentProgram =
-                data.program || "";
+const deviceAccess =
+    await verifyStudentDevice(
+        data
+    );
 
 
-            // ==================================================
-            // CARD OPEN COUNT
-            // ==================================================
+// ==================================================
+// BLOCK OTHER DEVICE
+// ==================================================
 
-            increaseCardOpenCount();
+if (!deviceAccess.allowed) {
 
+    showDeviceBlockedScreen();
+
+    return;
+
+}
+
+
+// ==================================================
+// STORE PROGRAM GLOBALLY
+// ==================================================
+
+window.currentStudentProgram =
+    data.program || "";
+
+
+// ==================================================
+// CARD OPEN COUNT
+// ==================================================
+
+increaseCardOpenCount();
 
             // ==================================================
             // STUDENT NAME
