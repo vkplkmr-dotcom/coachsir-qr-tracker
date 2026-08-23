@@ -922,220 +922,157 @@ async function increaseWebsiteClickCount() {
 //
 // ======================================================
 
+// ======================================================
+// DYNAMIC QR GENERATOR
+// QR URL + STUDENT ID CENTER
+// ======================================================
+
 function generateStudentQR(studentIdValue) {
 
-    const qrContainer =
-        document.getElementById(
-            "qrcode"
-        );
-
+    const qrContainer = document.getElementById("qrcode");
 
     if (!qrContainer) {
-
-        console.error(
-            "COACHsir QR container not found."
-        );
-
+        console.error("COACHsir QR container not found.");
         return;
-
     }
-
 
     if (!studentIdValue) {
-
-        console.error(
-            "COACHsir QR: Student ID missing."
-        );
-
+        console.error("COACHsir QR: Student ID missing.");
         return;
-
     }
 
-
-    if (
-        typeof QRCode ===
-        "undefined"
-    ) {
-
-        console.error(
-            "COACHsir QR library not loaded."
-        );
-
+    if (typeof QRCode === "undefined") {
+        console.error("COACHsir QR library not loaded.");
         return;
-
     }
 
+    // --------------------------------------------------
+    // CLEAN OLD QR
+    // --------------------------------------------------
+
+    qrContainer.innerHTML = "";
 
     // --------------------------------------------------
-    // Clean previous QR
-    // --------------------------------------------------
-
-    qrContainer.innerHTML =
-        "";
-
-
-    // --------------------------------------------------
-    // CREATE COMPLETE QR URL
+    // COMPLETE QR URL
     // --------------------------------------------------
 
     const qrURL =
         COACHSIR_QR_TRACKER_URL +
-        encodeURIComponent(
-            studentIdValue
-        );
-
+        encodeURIComponent(studentIdValue);
 
     console.log(
-        "COACHsir Dynamic QR URL:",
+        "COACHsir QR URL:",
         qrURL
     );
 
-
     // --------------------------------------------------
-    // GENERATE QR
-    // --------------------------------------------------
-
-    new QRCode(
-        qrContainer,
-        {
-
-            text:
-                qrURL,
-
-            width:
-                150,
-
-            height:
-                150,
-
-            correctLevel:
-                QRCode.CorrectLevel.H
-
-        }
-    );
-
-
-    // --------------------------------------------------
-    // ADD STUDENT ID TO CENTER
+    // CREATE QR
     // --------------------------------------------------
 
-    setTimeout(
-        function () {
+    new QRCode(qrContainer, {
 
-            const canvas =
-                qrContainer.querySelector(
-                    "canvas"
-                );
+        text: qrURL,
 
+        width: 150,
 
-            if (!canvas) {
+        height: 150,
+
+        correctLevel: QRCode.CorrectLevel.H
+
+    });
+
+    // --------------------------------------------------
+    // WAIT UNTIL CANVAS IS READY
+    // --------------------------------------------------
+
+    let attempts = 0;
+
+    const addCenterID = setInterval(function () {
+
+        attempts++;
+
+        const canvas =
+            qrContainer.querySelector("canvas");
+
+        if (!canvas) {
+
+            if (attempts >= 30) {
+
+                clearInterval(addCenterID);
 
                 console.error(
                     "COACHsir QR canvas not found."
                 );
 
-                return;
-
             }
 
+            return;
+        }
 
-            const ctx =
-                canvas.getContext(
-                    "2d"
-                );
+        clearInterval(addCenterID);
 
+        const ctx =
+            canvas.getContext("2d");
 
-            if (!ctx) {
-                return;
-            }
+        if (!ctx) {
+            return;
+        }
 
+        const centerX =
+            canvas.width / 2;
 
-            const centerX =
-                canvas.width / 2;
+        const centerY =
+            canvas.height / 2;
 
-            const centerY =
-                canvas.height / 2;
+        // --------------------------------------------------
+        // CENTER WHITE BOX
+        // --------------------------------------------------
 
+        const boxWidth = 64;
+        const boxHeight = 30;
 
-            // --------------------------------------------------
-            // CENTER WHITE BOX
-            // --------------------------------------------------
+        ctx.save();
 
-            const boxWidth =
-                62;
+        ctx.fillStyle = "#ffffff";
 
-            const boxHeight =
-                28;
+        ctx.fillRect(
+            centerX - boxWidth / 2,
+            centerY - boxHeight / 2,
+            boxWidth,
+            boxHeight
+        );
 
+        // --------------------------------------------------
+        // STUDENT ID
+        // --------------------------------------------------
 
-            ctx.save();
+        ctx.fillStyle = "#e60000";
 
+        ctx.font =
+            "bold 20px Arial";
 
-            ctx.fillStyle =
-                "#ffffff";
+        ctx.textAlign =
+            "center";
 
+        ctx.textBaseline =
+            "middle";
 
-            ctx.fillRect(
+        ctx.fillText(
+            studentIdValue.toUpperCase(),
+            centerX,
+            centerY
+        );
 
-                centerX -
-                boxWidth / 2,
+        ctx.restore();
 
-                centerY -
-                boxHeight / 2,
+        console.log(
+            "✅ QR CENTER ID:",
+            studentIdValue
+        );
 
-                boxWidth,
-
-                boxHeight
-
-            );
-
-
-            // --------------------------------------------------
-            // CENTER STUDENT ID
-            // --------------------------------------------------
-
-            ctx.fillStyle =
-                "#e60000";
-
-
-            ctx.font =
-                "bold 21px Arial";
-
-
-            ctx.textAlign =
-                "center";
-
-
-            ctx.textBaseline =
-                "middle";
-
-
-            ctx.fillText(
-
-                studentIdValue,
-
-                centerX,
-
-                centerY
-
-            );
-
-
-            ctx.restore();
-
-
-            console.log(
-                "✅ COACHsir Dynamic QR Generated:",
-                studentIdValue
-            );
-
-
-        },
-        200
-    );
+    }, 100);
 
 }
-
 
 // ======================================================
 // LOAD STUDENT
