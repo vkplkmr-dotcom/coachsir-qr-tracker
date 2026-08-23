@@ -1306,3 +1306,18 @@ gap:15px;
     width: 150px !important;
     height: 150px !important;
 }
+#qrcode {
+    width: 150px !important;
+    height: 150px !important;
+    margin: auto;
+    padding: 0 !important;
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#qrcode canvas {
+    display: block;
+    width: 150px !important;
+    height: 150px !important;
+}
