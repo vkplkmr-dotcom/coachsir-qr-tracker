@@ -17,7 +17,518 @@ const params =
 
 const studentId =
     params.get("id");
+// ======================================================
+// COACHsir SINGLE DEVICE LOCK SYSTEM
+// ======================================================
+//
+// RULE:
+//
+// Student:
+// First device = LOCKED
+// Same device = ALLOWED
+// Other device = BLOCKED
+//
+// Admin:
+// Firebase authenticated admin = ALLOWED
+//
+// Firestore:
+// qrData/{studentId}
+// deviceLock: {
+//     locked: true,
+//     deviceToken: "...",
+//     activatedAt: timestamp,
+//     lastAccess: timestamp
+// }
+//
+// Admin collection:
+// admins/{uid}
+//
+// ======================================================
 
+
+// ======================================================
+// DEVICE TOKEN KEY
+// ======================================================
+
+const DEVICE_TOKEN_PREFIX =
+    "coachsir_device_";
+
+
+// ======================================================
+// GET DEVICE STORAGE KEY
+// ======================================================
+
+function getDeviceStorageKey(id) {
+
+    return (
+        DEVICE_TOKEN_PREFIX +
+        String(id).toUpperCase()
+    );
+
+}
+
+
+// ======================================================
+// GENERATE RANDOM DEVICE TOKEN
+// ======================================================
+
+function generateDeviceToken() {
+
+    if (
+        window.crypto &&
+        window.crypto.getRandomValues
+    ) {
+
+        const array =
+            new Uint32Array(8);
+
+        window.crypto.getRandomValues(
+            array
+        );
+
+        return Array.from(array)
+            .map(
+                value =>
+                    value.toString(16)
+            )
+            .join("-");
+
+    }
+
+
+    return (
+        Date.now().toString(36) +
+        "-" +
+        Math.random()
+            .toString(36)
+            .substring(2) +
+        "-" +
+        Math.random()
+            .toString(36)
+            .substring(2)
+    );
+
+}
+
+
+// ======================================================
+// GET LOCAL DEVICE TOKEN
+// ======================================================
+
+function getLocalDeviceToken() {
+
+    if (!studentId) {
+        return null;
+    }
+
+    const key =
+        getDeviceStorageKey(
+            studentId
+        );
+
+    try {
+
+        let token =
+            localStorage.getItem(
+                key
+            );
+
+        if (!token) {
+
+            token =
+                generateDeviceToken();
+
+            localStorage.setItem(
+                key,
+                token
+            );
+
+        }
+
+        return token;
+
+    }
+    catch (error) {
+
+        console.error(
+            "Device storage error:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+// ======================================================
+// CHECK ADMIN
+// ======================================================
+//
+// Admin dashboard must be logged in with Firebase Auth.
+//
+// Firestore:
+//
+// admins
+//   └── Firebase UID
+//
+// Example:
+//
+// admins
+//   └── abc123xyz
+//
+// ======================================================
+
+async function isCurrentUserAdmin() {
+
+    try {
+
+        if (
+            typeof firebase ===
+            "undefined"
+        ) {
+
+            return false;
+
+        }
+
+
+        if (
+            !firebase.auth
+        ) {
+
+            return false;
+
+        }
+
+
+        const user =
+            firebase.auth()
+                .currentUser;
+
+
+        if (!user) {
+
+            return false;
+
+        }
+
+
+        const adminDoc =
+            await db
+                .collection("admins")
+                .doc(user.uid)
+                .get();
+
+
+        return adminDoc.exists;
+
+    }
+    catch (error) {
+
+        console.error(
+            "Admin verification error:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
+
+
+// ======================================================
+// SHOW DEVICE BLOCK SCREEN
+// ======================================================
+
+function showDeviceBlockedScreen() {
+
+    document.body.innerHTML = `
+
+        <div style="
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+            box-sizing:border-box;
+            background:
+                linear-gradient(
+                    135deg,
+                    #071a33,
+                    #0b3d91
+                );
+            font-family:Arial,sans-serif;
+        ">
+
+            <div style="
+                width:100%;
+                max-width:420px;
+                background:#ffffff;
+                border-radius:20px;
+                padding:30px 24px;
+                text-align:center;
+                box-shadow:
+                    0 20px 60px
+                    rgba(0,0,0,.35);
+                box-sizing:border-box;
+            ">
+
+                <div style="
+                    width:75px;
+                    height:75px;
+                    margin:0 auto 20px;
+                    border-radius:50%;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    background:#ffe8e8;
+                    color:#d60000;
+                    font-size:34px;
+                ">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                </div>
+
+                <h2 style="
+                    margin:0 0 12px;
+                    color:#14213d;
+                ">
+                    Card Locked
+                </h2>
+
+                <p style="
+                    color:#555;
+                    line-height:1.6;
+                    margin:0 0 20px;
+                ">
+                    This digital card is already
+                    activated on another device.
+                </p>
+
+                <div style="
+                    background:#f5f7fa;
+                    border-radius:12px;
+                    padding:14px;
+                    margin-bottom:20px;
+                    color:#333;
+                ">
+
+                    <strong>
+                        Student ID
+                    </strong>
+
+                    <br>
+
+                    <span>
+                        ${studentId || "---"}
+                    </span>
+
+                </div>
+
+                <p style="
+                    font-size:13px;
+                    color:#777;
+                    margin:0;
+                ">
+                    Please contact COACHsir Academy
+                    support or admin to change the
+                    registered device.
+                </p>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+// ======================================================
+// DEVICE LOCK VERIFICATION
+// ======================================================
+
+async function verifyStudentDevice(
+    studentData
+) {
+
+    // --------------------------------------------------
+    // ADMIN BYPASS
+    // --------------------------------------------------
+
+    const admin =
+        await isCurrentUserAdmin();
+
+
+    if (admin) {
+
+        console.log(
+            "✅ Admin access: Device lock bypassed"
+        );
+
+        return {
+            allowed: true,
+            admin: true
+        };
+
+    }
+
+
+    // --------------------------------------------------
+    // GET LOCAL TOKEN
+    // --------------------------------------------------
+
+    const localToken =
+        getLocalDeviceToken();
+
+
+    if (!localToken) {
+
+        return {
+            allowed: false,
+            reason: "device-token-error"
+        };
+
+    }
+
+
+    const lock =
+        studentData.deviceLock;
+
+
+    // --------------------------------------------------
+    // FIRST DEVICE
+    // --------------------------------------------------
+
+    if (
+        !lock ||
+        lock.locked !== true ||
+        !lock.deviceToken
+    ) {
+
+        try {
+
+            await db
+                .collection("qrData")
+                .doc(studentId)
+                .update({
+
+                    deviceLock: {
+
+                        locked: true,
+
+                        deviceToken:
+                            localToken,
+
+                        activatedAt:
+                            firebase.firestore
+                                .FieldValue
+                                .serverTimestamp(),
+
+                        lastAccess:
+                            firebase.firestore
+                                .FieldValue
+                                .serverTimestamp()
+
+                    }
+
+                });
+
+
+            console.log(
+                "✅ Device registered:",
+                studentId
+            );
+
+
+            return {
+                allowed: true,
+                admin: false,
+                firstDevice: true
+            };
+
+        }
+        catch (error) {
+
+            console.error(
+                "Device registration error:",
+                error
+            );
+
+
+            return {
+                allowed: false,
+                reason: "registration-error"
+            };
+
+        }
+
+    }
+
+
+    // --------------------------------------------------
+    // SAME DEVICE
+    // --------------------------------------------------
+
+    if (
+        lock.deviceToken ===
+        localToken
+    ) {
+
+        try {
+
+            await db
+                .collection("qrData")
+                .doc(studentId)
+                .update({
+
+                    "deviceLock.lastAccess":
+                        firebase.firestore
+                            .FieldValue
+                            .serverTimestamp()
+
+                });
+
+        }
+        catch (error) {
+
+            console.warn(
+                "Last access update failed:",
+                error
+            );
+
+        }
+
+
+        return {
+            allowed: true,
+            admin: false,
+            sameDevice: true
+        };
+
+    }
+
+
+    // --------------------------------------------------
+    // DIFFERENT DEVICE
+    // --------------------------------------------------
+
+    console.warn(
+        "❌ Different device detected:",
+        studentId
+    );
+
+
+    return {
+        allowed: false,
+        reason: "different-device"
+    };
+
+}
 
 // ======================================================
 // COACHsir DYNAMIC QR CONFIG
