@@ -1269,3 +1269,40 @@ gap:15px;
     50%{opacity:.5;}
     100%{opacity:1;}
 }
+/* ======================================================
+   COACHsir QR FINAL
+   ====================================================== */
+
+#qrcode {
+    position: relative !important;
+
+    width: 190px !important;
+    height: 190px !important;
+
+    margin: auto !important;
+
+    background: #ffffff !important;
+
+    padding: 10px !important;
+
+    border-radius: 18px;
+
+    border: 4px solid #19d7ff;
+
+    display: flex !important;
+
+    justify-content: center !important;
+
+    align-items: center !important;
+
+    box-sizing: border-box !important;
+
+    overflow: hidden;
+}
+
+#qrcode canvas {
+    display: block !important;
+
+    width: 150px !important;
+    height: 150px !important;
+}
