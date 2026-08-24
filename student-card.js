@@ -29,11 +29,15 @@ const COACHSIR_ADMIN_UID =
     "iYo2MA9sWNcRHNQcdREoQm47AX22";
 // ======================================================
 // VERIFY ADMIN FOR ADMIN CARD VIEW
+// WAITS FOR FIREBASE AUTH SESSION
 // ======================================================
 
 async function verifyAdminCardAccess() {
 
-    // Normal student card
+    // --------------------------------------------------
+    // Normal Student Card
+    // --------------------------------------------------
+
     if (!isAdminMode) {
 
         return true;
@@ -41,7 +45,9 @@ async function verifyAdminCardAccess() {
     }
 
 
-    // Firebase Auth available?
+    // --------------------------------------------------
+    // Firebase Auth Check
+    // --------------------------------------------------
 
     if (
         typeof firebase === "undefined" ||
@@ -59,11 +65,36 @@ async function verifyAdminCardAccess() {
 
     try {
 
+        const auth =
+            firebase.auth();
+
+
+        // ------------------------------------------------
+        // WAIT FOR FIREBASE AUTH SESSION
+        // ------------------------------------------------
+
         const user =
-            firebase.auth().currentUser;
+            await new Promise(
+                (resolve) => {
+
+                    const unsubscribe =
+                        auth.onAuthStateChanged(
+                            function(user) {
+
+                                unsubscribe();
+
+                                resolve(user);
+
+                            }
+                        );
+
+                }
+            );
 
 
-        // Admin session not found
+        // ------------------------------------------------
+        // ADMIN SESSION NOT FOUND
+        // ------------------------------------------------
 
         if (!user) {
 
@@ -76,7 +107,9 @@ async function verifyAdminCardAccess() {
         }
 
 
-        // Check Admin UID
+        // ------------------------------------------------
+        // CHECK ADMIN UID
+        // ------------------------------------------------
 
         if (
             user.uid !==
@@ -93,7 +126,7 @@ async function verifyAdminCardAccess() {
 
 
         console.log(
-            "✅ Admin Card Access:",
+            "✅ COACHsir Admin Verified:",
             user.uid
         );
 
@@ -108,9 +141,11 @@ async function verifyAdminCardAccess() {
             error
         );
 
+
         alert(
             "Admin verification failed."
         );
+
 
         return false;
 
