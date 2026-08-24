@@ -1752,6 +1752,26 @@ else {
         .get()
 
         .then(async (doc) => {
+            // ==================================================
+// ADMIN CARD ACCESS VERIFICATION
+// ==================================================
+
+if (isAdminMode) {
+
+    const adminAllowed =
+        await verifyAdminCardAccess();
+
+    if (!adminAllowed) {
+
+        console.warn(
+            "❌ Admin card access denied"
+        );
+
+        return;
+
+    }
+
+}
 
 
             // ==================================================
