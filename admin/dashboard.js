@@ -359,3 +359,32 @@ window.logout = function(){
     });
 
 };
+// ======================================================
+// COACHsir ADMIN - VIEW STUDENT CARD
+// ======================================================
+
+window.viewStudentCard = function(studentId) {
+
+    if (!studentId) {
+
+        alert("Student ID is missing.");
+
+        return;
+
+    }
+
+
+    // Admin View Mode
+    const cardURL =
+        "../student-card.html?id=" +
+        encodeURIComponent(studentId) +
+        "&admin=1";
+
+
+    // Open card in new tab
+    window.open(
+        cardURL,
+        "_blank"
+    );
+
+};
