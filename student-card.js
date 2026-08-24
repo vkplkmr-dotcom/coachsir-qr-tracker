@@ -28,6 +28,284 @@ const isAdminMode =
 const COACHSIR_ADMIN_UID =
     "iYo2MA9sWNcRHNQcdREoQm47AX22";
 // ======================================================
+// COACHsir DEVICE LOCK SYSTEM
+// ======================================================
+
+const DEVICE_STORAGE_KEY =
+    "COACHSIR_DEVICE_ID";
+
+
+// ======================================================
+// GET / CREATE DEVICE ID
+// ======================================================
+
+function getDeviceId() {
+
+    let deviceId =
+        localStorage.getItem(
+            DEVICE_STORAGE_KEY
+        );
+
+
+    // Existing device ID
+    if (deviceId) {
+
+        return deviceId;
+
+    }
+
+
+    // Create new device ID
+
+    deviceId =
+        "DEV-" +
+        crypto.randomUUID();
+
+
+    localStorage.setItem(
+        DEVICE_STORAGE_KEY,
+        deviceId
+    );
+
+
+    return deviceId;
+
+}
+
+
+// ======================================================
+// CHECK DEVICE ACCESS
+// ======================================================
+
+async function verifyDeviceAccess(
+    studentData
+) {
+
+    // --------------------------------------------------
+    // ADMIN BYPASS
+    // --------------------------------------------------
+
+    if (isAdminMode) {
+
+        console.log(
+            "🔐 Admin Mode - Device Lock Bypassed"
+        );
+
+        return true;
+
+    }
+
+
+    // --------------------------------------------------
+    // GET CURRENT DEVICE
+    // --------------------------------------------------
+
+    const currentDeviceId =
+        getDeviceId();
+
+
+    console.log(
+        "Current Device:",
+        currentDeviceId
+    );
+
+
+    // --------------------------------------------------
+    // EXISTING DEVICE LOCK
+    // --------------------------------------------------
+
+    const deviceLock =
+        studentData.deviceLock;
+
+
+    // --------------------------------------------------
+    // FIRST DEVICE
+    // --------------------------------------------------
+
+    if (
+        !deviceLock ||
+        deviceLock.locked !== true
+    ) {
+
+        try {
+
+            await db
+                .collection("qrData")
+                .doc(studentId)
+                .update({
+
+                    deviceLock: {
+
+                        locked: true,
+
+                        deviceId:
+                            currentDeviceId,
+
+                        registeredAt:
+                            firebase.firestore
+                                .FieldValue
+                                .serverTimestamp()
+
+                    }
+
+                });
+
+
+            console.log(
+                "✅ First device registered"
+            );
+
+
+            return true;
+
+        }
+        catch (error) {
+
+            console.error(
+                "Device Registration Error:",
+                error
+            );
+
+
+            alert(
+                "Unable to register this device."
+            );
+
+
+            return false;
+
+        }
+
+    }
+
+
+    // --------------------------------------------------
+    // SAME DEVICE
+    // --------------------------------------------------
+
+    if (
+        deviceLock.deviceId ===
+        currentDeviceId
+    ) {
+
+        console.log(
+            "✅ Registered device matched"
+        );
+
+
+        return true;
+
+    }
+
+
+    // --------------------------------------------------
+    // DIFFERENT DEVICE
+    // --------------------------------------------------
+
+    console.warn(
+        "❌ Different device detected"
+    );
+
+
+    showDeviceBlockedScreen();
+
+
+    return false;
+
+}
+
+
+// ======================================================
+// DEVICE BLOCK SCREEN
+// ======================================================
+
+function showDeviceBlockedScreen() {
+
+    document.body.innerHTML = `
+
+        <div style="
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+            box-sizing:border-box;
+            background:#f4f7fb;
+            font-family:Arial,sans-serif;
+        ">
+
+            <div style="
+                width:100%;
+                max-width:420px;
+                background:#fff;
+                border-radius:18px;
+                padding:30px;
+                text-align:center;
+                box-shadow:
+                    0 10px 35px rgba(0,0,0,.12);
+            ">
+
+                <div style="
+                    font-size:55px;
+                    margin-bottom:15px;
+                ">
+                    🔒
+                </div>
+
+
+                <h2 style="
+                    margin:0 0 12px;
+                    color:#c62828;
+                ">
+                    Device Locked
+                </h2>
+
+
+                <p style="
+                    color:#555;
+                    line-height:1.6;
+                ">
+                    This digital card is already
+                    registered on another device.
+                </p>
+
+
+                <p style="
+                    color:#777;
+                    font-size:14px;
+                    line-height:1.5;
+                ">
+                    Please contact COACHsir Academy
+                    administrator to reset your device.
+                </p>
+
+
+                <a
+                    href="https://wa.me/917017483588"
+                    target="_blank"
+                    style="
+                        display:inline-block;
+                        margin-top:15px;
+                        padding:12px 20px;
+                        border-radius:8px;
+                        background:#25D366;
+                        color:#fff;
+                        text-decoration:none;
+                        font-weight:700;
+                    "
+                >
+                    <i class="fa-brands fa-whatsapp"></i>
+                    Contact Support
+                </a>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+// ======================================================
 // VERIFY ADMIN FOR ADMIN CARD VIEW
 // WAITS FOR FIREBASE AUTH SESSION
 // ======================================================
