@@ -67,13 +67,41 @@ let allStudents = [];
 // CHECK ADMIN
 // ======================================================
 
+// ======================================================
+// VERIFY ADMIN
+// WAITS FOR FIREBASE AUTH SESSION
+// ======================================================
+
 async function verifyAdmin() {
 
     try {
 
-        const user =
-            firebase.auth().currentUser;
+        const auth =
+            firebase.auth();
 
+
+        const user =
+            await new Promise(
+                (resolve) => {
+
+                    const unsubscribe =
+                        auth.onAuthStateChanged(
+                            function(user) {
+
+                                unsubscribe();
+
+                                resolve(user);
+
+                            }
+                        );
+
+                }
+            );
+
+
+        // ==============================================
+        // ADMIN LOGIN NOT FOUND
+        // ==============================================
 
         if (!user) {
 
@@ -89,6 +117,10 @@ async function verifyAdmin() {
         }
 
 
+        // ==============================================
+        // CHECK ADMIN UID
+        // ==============================================
+
         if (
             user.uid !==
             COACHSIR_ADMIN_UID
@@ -98,16 +130,19 @@ async function verifyAdmin() {
                 "Unauthorized Admin."
             );
 
-            await firebase
-                .auth()
-                .signOut();
-
-            window.location.href =
-                "login.html";
+            // IMPORTANT:
+            // Do NOT signOut here.
+            // This prevents unwanted logout.
 
             return false;
 
         }
+
+
+        console.log(
+            "✅ Admin Verified:",
+            user.uid
+        );
 
 
         return true;
@@ -120,12 +155,17 @@ async function verifyAdmin() {
             error
         );
 
+
+        alert(
+            "Admin verification failed."
+        );
+
+
         return false;
 
     }
 
 }
-
 
 // ======================================================
 // LOAD STUDENTS
