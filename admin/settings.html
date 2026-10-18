@@ -1,22 +1,19 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Settings | COACHsir Academy</title>
+    <title>Settings | COACHsir Academy</title>
 
-<link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="admin.css">
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-<script src="../firebase/config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="../firebase/config.js"></script>
 </head>
 
 <body>
-
 <div class="main-content">
 
     <div class="page-header">
@@ -24,53 +21,49 @@
         <p>Manage Academy Configuration</p>
     </div>
 
+    <!-- Payment Settings -->
     <div class="card">
-
         <h2>💰 Payment Settings</h2>
 
         <div class="form-group">
-            <label>Monthly CBT Fee (₹)</label>
-            <input
-                type="number"
-                id="paymentAmount"
-                placeholder="Enter Payment Amount">
+            <label for="paymentAmount">Monthly CBT Fee (₹)</label>
+            <input type="number" id="paymentAmount"
+                   min="0" step="1"
+                   placeholder="Enter Payment Amount">
         </div>
 
         <button class="save-btn" onclick="savePaymentSettings()">
-            💾 Save Settings
+            💾 Save Payment Settings
         </button>
 
-        <div id="statusMsg"></div>
-
+        <div id="statusMsg" role="status"></div>
     </div>
 
+    <!-- Academy Information -->
     <div class="card">
-
         <h2>🏫 Academy Information</h2>
 
         <div class="form-group">
-            <label>Academy Name</label>
-            <input
-                type="text"
-                id="academyName"
-                value="COACHsir Online Academy">
+            <label for="academyName">Academy Name</label>
+            <input type="text" id="academyName"
+                   placeholder="Enter Academy Name">
         </div>
 
         <div class="form-group">
-            <label>Session</label>
-            <input
-                type="text"
-                id="session"
-                value="2026-2027">
+            <label for="session">Session</label>
+            <input type="text" id="session"
+                   placeholder="Example: 2026-2027">
         </div>
 
+        <button class="save-btn" onclick="saveAcademySettings()">
+            💾 Save Academy Information
+        </button>
+
+        <div id="academyStatusMsg" role="status"></div>
     </div>
 
 </div>
 
 <script src="settings.js"></script>
-
 </body>
 </html>
-```
-
