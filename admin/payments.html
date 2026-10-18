@@ -1,1 +1,184 @@
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payments | COACHsir Academy</title>
+
+<link rel="stylesheet" href="admin.css">
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="../firebase/config.js"></script>
+
+<style>
+.payment-wrap{padding:20px;overflow-x:auto}
+.payment-table{width:100%;border-collapse:collapse;min-width:750px}
+.payment-table th,.payment-table td{
+  padding:12px;border-bottom:1px solid #ddd;text-align:left
+}
+.payment-table select,.payment-table button{padding:8px;margin:3px}
+.payment-table th{background:#eaf4ff}
+.payment-summary{padding:15px;margin:10px 0;background:#eef7ff;border-radius:8px}
+</style>
+</head>
+
+<body>
+<div class="main-content payment-wrap">
+  <h1>💳 Payment Management</h1>
+  <p>COACHsir Academy — Student Payments</p>
+
+  <div class="payment-summary">
+    Total Students: <strong id="total">0</strong>
+    &nbsp; | &nbsp;
+    Pending: <strong id="pending">0</strong>
+    &nbsp; | &nbsp;
+    Approved: <strong id="approved">0</strong>
+  </div>
+
+  <button onclick="loadPayments()">🔄 Refresh</button>
+
+  <div style="overflow-x:auto">
+    <table class="payment-table">
+      <thead>
+        <tr>
+          <th>Student ID</th>
+          <th>Name</th>
+          <th>Mobile</th>
+          <th>Amount (₹)</th>
+          <th>Payment Status</th>
+          <th>Validity</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="paymentRows">
+        <tr><td colspan="7">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const statuses = [
+  "pending",
+  "verification_pending",
+  "approved",
+  "rejected"
+];
+
+function safe(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",
+    '"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
+async function loadPayments() {
+  const tbody = document.getElementById("paymentRows");
+  tbody.innerHTML = "<tr><td colspan='7'>Loading...</td></tr>";
+
+  try {
+    const snapshot = await db.collection("qrData").get();
+    let pending = 0;
+    let approved = 0;
+
+    if (snapshot.empty) {
+      tbody.innerHTML =
+        "<tr><td colspan='7'>No student records found.</td></tr>";
+    } else {
+      tbody.innerHTML = snapshot.docs.map(doc => {
+        const d = doc.data();
+        const status = statuses.includes(d.paymentStatus)
+          ? d.paymentStatus : "pending";
+
+        if (status === "approved") approved++;
+        else pending++;
+
+        const options = statuses.map(s =>
+          `<option value="${s}" ${s === status ? "selected" : ""}>${
+            s === "verification_pending" ? "Verification Pending" :
+            s.charAt(0).toUpperCase() + s.slice(1)
+          }</option>`
+        ).join("");
+
+        return `<tr data-id="${safe(doc.id)}">
+          <td>${safe(doc.id)}</td>
+          <td>${safe(d.studentName || d.name || "-")}</td>
+          <td>${safe(d.mobile || "-")}</td>
+          <td>₹${safe(d.paymentAmount ?? 30)}</td>
+          <td><select class="status">${options}</select></td>
+          <td>${safe(d.expiryDate || "Not set")}</td>
+          <td><button type="button" class="save">Save</button>
+          <span class="message"></span></td>
+        </tr>`;
+      }).join("");
+    }
+
+    document.getElementById("total").textContent = snapshot.size;
+    document.getElementById("pending").textContent = pending;
+    document.getElementById("approved").textContent = approved;
+
+  } catch (e) {
+    console.error(e);
+    tbody.innerHTML =
+      "<tr><td colspan='7'>Unable to load payments. Check Firebase configuration and permissions.</td></tr>";
+  }
+}
+
+document.getElementById("paymentRows").addEventListener("click", async e => {
+  const btn = e.target.closest(".save");
+  if (!btn) return;
+
+  const row = btn.closest("tr");
+  const id = row.dataset.id;
+  const newStatus = row.querySelector(".status").value;
+  const message = row.querySelector(".message");
+
+  btn.disabled = true;
+  message.textContent = " Saving...";
+
+  try {
+    const ref = db.collection("qrData").doc(id);
+    const snap = await ref.get();
+
+    if (!snap.exists) throw new Error("Student not found");
+
+    const oldStatus = snap.data().paymentStatus || "pending";
+
+    const updates = {
+      paymentStatus: newStatus,
+      paymentStatusUpdatedAt:
+        firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    // Start 30-day validity only on a new approval.
+    if (newStatus === "approved" && oldStatus !== "approved") {
+      const expiry = new Date();
+      expiry.setDate(expiry.getDate() + 30);
+
+      updates.expiryDate = expiry.toLocaleDateString("en-US", {
+        month: "short", day: "2-digit", year: "numeric"
+      });
+      updates.approvedAt =
+        firebase.firestore.FieldValue.serverTimestamp();
+      updates.active = true;
+    }
+
+    await ref.update(updates);
+    message.textContent = " Saved!";
+    await loadPayments();
+
+  } catch (err) {
+    console.error(err);
+    message.textContent = " Failed: " + err.message;
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+loadPayments();
+</script>
+</body>
+</html>
