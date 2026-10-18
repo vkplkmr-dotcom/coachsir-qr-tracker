@@ -1,390 +1,454 @@
-// ===============================
-// STUDENT MANAGEMENT JS
-// ===============================
+
+/* ==========================================
+   COACHsir Academy - Student Management
+   Payment Status + 30-Day Validity
+   Firebase SDK 8.10.1
+========================================== */
+
+let allStudents = [];
+let editingStudentId = null;
+
+const PAYMENT_STATUSES = [
+    "pending",
+    "verification_pending",
+    "approved",
+    "rejected"
+];
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+function displayStatus(status) {
+    const labels = {
+        pending: "⏳ Pending",
+        verification_pending: "🔍 Verification Pending",
+        approved: "✅ Approved",
+        rejected: "❌ Rejected"
+    };
+    return labels[status] || escapeHTML(status || "pending");
+}
+
+function formatExpiry(date) {
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "2-digit",
+        year: "numeric"
+    }).replace(",", ",");
+}
 
 
+// ==========================================
 // ADD STUDENT
+// ==========================================
 
-async function addStudent(){
+async function addStudent() {
+    const studentId = document.getElementById("studentId").value.trim();
+    const studentName = document.getElementById("studentName").value.trim();
+    const mobile = document.getElementById("studentMobile").value.trim();
+    const studentClass = document.getElementById("studentClass").value.trim();
+    const program = document.getElementById("studentProgram").value;
+    const scanLimit = Number(document.getElementById("scanLimit").value) || 100;
 
-const studentId =
-document.getElementById("studentId").value.trim();
+    if (!studentId || !studentName) {
+        alert("Please enter Student ID and Name");
+        return;
+    }
 
-const studentName =
-document.getElementById("studentName").value.trim();
+    try {
+        const ref = db.collection("qrData").doc(studentId);
+        const existing = await ref.get();
 
-const mobile =
-document.getElementById("studentMobile").value.trim();
+        if (existing.exists) {
+            alert("This Student ID already exists.");
+            return;
+        }
 
-const studentClass =
-document.getElementById("studentClass").value.trim();
+        await ref.set({
+            studentId,
+            studentName,
+            mobile,
+            studentClass,
+            program,
+            count: 0,
+            cardOpenCount: 0,
+            cbtClickCount: 0,
+            liveClassCount: 0,
+            websiteClickCount: 0,
+            active: true,
+            scanLimit,
+            unlimited: false,
+            paymentStatus: "pending",
+            paymentAmount: 30,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
-const program =
-document.getElementById("studentProgram").value;
+        alert("✅ Student Added Successfully");
+        clearForm();
+        await loadStudents();
 
-const scanLimit =
-Number(document.getElementById("scanLimit").value) || 100;
-
-
-
-if(!studentId || !studentName){
-
-alert("Please enter Student ID and Name");
-return;
-
+    } catch (error) {
+        console.error(error);
+        alert("Unable to add student: " + error.message);
+    }
 }
 
 
-try{
+// ==========================================
+// LOAD STUDENTS + COUNTERS
+// ==========================================
+
+async function loadStudents() {
+    const list = document.getElementById("studentList");
+    list.innerHTML = "<tr><td colspan='8'>Loading students...</td></tr>";
+
+    try {
+        const snapshot = await db.collection("qrData").get();
+
+        allStudents = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        renderStudents();
+        updateCounters();
+
+    } catch (error) {
+        console.error(error);
+        list.innerHTML =
+            "<tr><td colspan='8'>Error Loading Students. Check Firebase permissions.</td></tr>";
+    }
+}
+
+function updateCounters() {
+    const total = allStudents.length;
+    const active = allStudents.filter(s => s.active === true).length;
+    const pending = allStudents.filter(s =>
+        (s.paymentStatus || "pending") !== "approved"
+    ).length;
+
+    document.getElementById("totalStudents").textContent = total;
+    document.getElementById("activeStudents").textContent = active;
+    document.getElementById("pendingStudents").textContent = pending;
+}
 
 
-await db.collection("qrData")
-.doc(studentId)
-.set({
+// ==========================================
+// RENDER STUDENT TABLE
+// ==========================================
 
-studentId:studentId,
+function renderStudents() {
+    const list = document.getElementById("studentList");
 
-studentName:studentName,
+    if (!allStudents.length) {
+        list.innerHTML = "<tr><td colspan='8'>No students found.</td></tr>";
+        return;
+    }
 
-mobile:mobile,
+    list.innerHTML = allStudents.map(student => {
+        const id = escapeHTML(student.id);
+        const status = PAYMENT_STATUSES.includes(student.paymentStatus)
+            ? student.paymentStatus
+            : "pending";
 
-studentClass:studentClass,
+        const options = PAYMENT_STATUSES.map(value => `
+            <option value="${value}" ${status === value ? "selected" : ""}>
+                ${value === "pending" ? "Pending" :
+                  value === "verification_pending" ? "Verification Pending" :
+                  value === "approved" ? "Approved" : "Rejected"}
+            </option>
+        `).join("");
 
-program:program,
+        return `
+        <tr data-student-id="${id}">
+            <td>${id}</td>
+            <td>${escapeHTML(student.studentName || student.name || "-")}</td>
+            <td>${escapeHTML(student.studentClass || "-")}</td>
+            <td>${escapeHTML(student.program || "-")}</td>
+            <td>${escapeHTML(student.mobile || "-")}</td>
 
-count: 0,
+            <td>${student.active ? "🟢 Active" : "🔴 Inactive"}</td>
 
-cardOpenCount: 0,
+            <td>
+                <select class="payment-select" aria-label="Payment status for ${id}">
+                    ${options}
+                </select>
+                <button class="btn-primary save-payment"
+                        type="button" data-id="${id}">
+                    Save
+                </button>
+                <div class="payment-message" aria-live="polite"></div>
+            </td>
 
-cbtClickCount: 0,
+            <td>
+                <button class="view-btn" type="button" data-action="view" data-id="${id}">
+                    👁 View
+                </button>
+                <button class="edit-btn" type="button" data-action="edit" data-id="${id}">
+                    ✏️ Edit
+                </button>
+                <button class="delete-btn" type="button" data-action="delete" data-id="${id}">
+                    🗑 Delete
+                </button>
+            </td>
+        </tr>`;
+    }).join("");
+}
 
-liveClassCount: 0,
 
-websiteClickCount: 0,
+// ==========================================
+// SAVE PAYMENT STATUS
+// ==========================================
 
-active: true,
+async function savePaymentStatus(id, newStatus, button) {
+    if (!PAYMENT_STATUSES.includes(newStatus)) {
+        alert("Invalid payment status.");
+        return;
+    }
 
-scanLimit: scanLimit,
+    const message = button.closest("td").querySelector(".payment-message");
+    const oldText = button.textContent;
 
-unlimited: false,
+    button.disabled = true;
+    button.textContent = "Saving...";
+    message.textContent = "";
 
-paymentStatus: "pending",
+    try {
+        const ref = db.collection("qrData").doc(id);
+        const doc = await ref.get();
 
-paymentAmount: 30,
+        if (!doc.exists) {
+            throw new Error("Student record not found.");
+        }
 
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
+        const updates = {
+            paymentStatus: newStatus,
+            paymentStatusUpdatedAt:
+                firebase.firestore.FieldValue.serverTimestamp()
+        };
 
+        // Approval starts a fresh 30-day validity period.
+        if (newStatus === "approved") {
+            const now = new Date();
+            const expiry = new Date(now);
+            expiry.setDate(expiry.getDate() + 30);
+
+            updates.active = true;
+            updates.approvedAt =
+                firebase.firestore.FieldValue.serverTimestamp();
+            updates.expiryDate = formatExpiry(expiry);
+        }
+
+        await ref.update(updates);
+
+        message.textContent = "✅ Saved";
+        await loadStudents();
+
+        alert(
+            newStatus === "approved"
+                ? "Payment approved. Validity set for 30 days."
+                : "Payment status updated to " + newStatus + "."
+        );
+
+    } catch (error) {
+        console.error(error);
+        message.textContent = "❌ Save failed";
+        alert("Payment update failed: " + error.message);
+    } finally {
+        button.disabled = false;
+        button.textContent = oldText;
+    }
+}
+
+
+// ==========================================
+// TABLE BUTTON HANDLERS
+// ==========================================
+
+document.getElementById("studentList").addEventListener("click", event => {
+    const paymentButton = event.target.closest(".save-payment");
+
+    if (paymentButton) {
+        const row = paymentButton.closest("tr");
+        const select = row.querySelector(".payment-select");
+
+        savePaymentStatus(
+            paymentButton.dataset.id,
+            select.value,
+            paymentButton
+        );
+        return;
+    }
+
+    const actionButton = event.target.closest("button[data-action]");
+    if (!actionButton) return;
+
+    const id = actionButton.dataset.id;
+
+    if (actionButton.dataset.action === "view") {
+        viewStudent(id);
+    } else if (actionButton.dataset.action === "edit") {
+        editStudent(id);
+    } else if (actionButton.dataset.action === "delete") {
+        deleteStudent(id);
+    }
 });
 
 
+// ==========================================
+// SEARCH STUDENTS
+// ==========================================
 
-alert("✅ Student Added Successfully");
+function searchStudents() {
+    const value = document.getElementById("searchBox").value.toLowerCase();
 
-
-// Clear Form Fields
-
-document.getElementById("studentId").value = "";
-
-document.getElementById("studentName").value = "";
-
-document.getElementById("studentMobile").value = "";
-
-document.getElementById("studentClass").value = "";
-
-document.getElementById("scanLimit").value = "100";
-
-
-// Reload List
-
-loadStudents();
-
-
-}
-
-catch(error){
-
-console.error(error);
-
-alert(error.message);
-
+    document.querySelectorAll("#studentList tr").forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(value)
+            ? ""
+            : "none";
+    });
 }
 
 
-}
-
-
-
-
-
-// LOAD STUDENTS
-
-
-async function loadStudents(){
-
-
-const list =
-document.getElementById("studentList");
-
-
-list.innerHTML="";
-
-
-try{
-
-
-const snapshot =
-await db.collection("qrData").get();
-
-
-
-snapshot.forEach(doc=>{
-
-
-const data = doc.data();
-
-
-
-list.innerHTML += `
-
-<tr>
-
-<td>${doc.id}</td>
-
-<td>${data.studentName || "-"}</td>
-
-<td>${data.studentClass || "-"}</td>
-
-<td>${data.program || "-"}</td>
-
-<td>${data.mobile || "-"}</td>
-
-
-<td>
-
-${data.active ? "🟢 Active":"🔴 Inactive"}
-
-</td>
-
-
-<td>
-
-${data.paymentStatus || "pending"}
-
-</td>
-
-
-<td>
-
-
-<button class="view-btn"
-onclick="viewStudent('${doc.id}')">
-
-👁 View
-
-</button>
-
-
-<button class="edit-btn"
-onclick="editStudent('${doc.id}')">
-
-✏️ Edit
-
-</button>
-
-
-<button class="delete-btn"
-onclick="deleteStudent('${doc.id}')">
-
-🗑 Delete
-
-</button>
-
-
-</td>
-
-
-</tr>
-
-
-`;
-
-
-});
-
-
-
-}
-
-catch(error){
-
-console.error(error);
-
-
-list.innerHTML=`
-
-<tr>
-<td colspan="8">
-Error Loading Students
-</td>
-</tr>
-
-`;
-
-
-}
-
-
-}
-
-
-
-
-
-// SEARCH STUDENT
-
-
-function searchStudents(){
-
-
-let value =
-document.getElementById("searchBox")
-.value.toLowerCase();
-
-
-
-document.querySelectorAll("#studentList tr")
-.forEach(row=>{
-
-
-row.style.display =
-row.innerText.toLowerCase()
-.includes(value)
-?
-""
-:
-"none";
-
-
-});
-
-
-}
-
-
-
-
-
+// ==========================================
 // VIEW STUDENT
+// ==========================================
 
+function viewStudent(id) {
+    const student = allStudents.find(s => s.id === id);
 
-function viewStudent(id){
+    if (!student) {
+        alert("Student not found.");
+        return;
+    }
 
-alert("Student ID : "+id);
-
+    alert(
+        "Student ID: " + student.id +
+        "\nName: " + (student.studentName || student.name || "-") +
+        "\nClass: " + (student.studentClass || "-") +
+        "\nProgram: " + (student.program || "-") +
+        "\nPayment: " + displayStatus(student.paymentStatus) +
+        "\nExpiry: " + (student.expiryDate || "Not set")
+    );
 }
 
 
-
-
-
+// ==========================================
 // EDIT STUDENT
+// ==========================================
 
+function editStudent(id) {
+    const student = allStudents.find(s => s.id === id);
 
-async function updateStudent(){
+    if (!student) {
+        alert("Student not found.");
+        return;
+    }
 
-const id =
-document.getElementById("studentId").value;
+    editingStudentId = id;
 
+    document.getElementById("studentId").value = id;
+    document.getElementById("studentId").readOnly = true;
+    document.getElementById("studentName").value =
+        student.studentName || student.name || "";
+    document.getElementById("studentMobile").value = student.mobile || "";
+    document.getElementById("studentClass").value = student.studentClass || "";
+    document.getElementById("studentProgram").value = student.program || "NEET Biology";
+    document.getElementById("scanLimit").value = student.scanLimit ?? 100;
 
-await db.collection("qrData")
-.doc(id)
-.update({
-
-studentName:
-document.getElementById("studentName").value,
-
-
-mobile:
-document.getElementById("studentMobile").value,
-
-
-studentClass:
-document.getElementById("studentClass").value,
-
-
-program:
-document.getElementById("studentProgram").value,
-
-
-scanLimit:
-Number(document.getElementById("scanLimit").value)
-
-});
-
-
-alert("✅ Student Updated Successfully");
-
-
-// Hide Update Button
-
-document.getElementById("updateBtn").style.display="none";
-
-
-// Clear Fields
-
-document.getElementById("studentId").value="";
-
-document.getElementById("studentName").value="";
-
-document.getElementById("studentMobile").value="";
-
-document.getElementById("studentClass").value="";
-
-document.getElementById("scanLimit").value="100";
-
-
-loadStudents();
-
+    document.getElementById("updateBtn").style.display = "inline-block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 
+// ==========================================
+// UPDATE STUDENT
+// ==========================================
+
+async function updateStudent() {
+    const id = editingStudentId;
+
+    if (!id) {
+        alert("Please select a student using Edit first.");
+        return;
+    }
+
+    const studentName = document.getElementById("studentName").value.trim();
+
+    if (!studentName) {
+        alert("Please enter Student Name.");
+        return;
+    }
+
+    try {
+        await db.collection("qrData").doc(id).update({
+            studentName,
+            mobile: document.getElementById("studentMobile").value.trim(),
+            studentClass: document.getElementById("studentClass").value.trim(),
+            program: document.getElementById("studentProgram").value,
+            scanLimit: Number(document.getElementById("scanLimit").value) || 100
+        });
+
+        alert("✅ Student Updated Successfully");
+        clearForm();
+        await loadStudents();
+
+    } catch (error) {
+        console.error(error);
+        alert("Update failed: " + error.message);
+    }
+}
 
 
+// ==========================================
+// CLEAR FORM
+// ==========================================
+
+function clearForm() {
+    editingStudentId = null;
+
+    document.getElementById("studentId").value = "";
+    document.getElementById("studentId").readOnly = false;
+    document.getElementById("studentName").value = "";
+    document.getElementById("studentMobile").value = "";
+    document.getElementById("studentClass").value = "";
+    document.getElementById("scanLimit").value = "100";
+    document.getElementById("updateBtn").style.display = "none";
+}
+
+
+// ==========================================
 // DELETE STUDENT
+// ==========================================
 
+async function deleteStudent(id) {
+    if (!confirm("Delete Student " + id + "? This cannot be undone.")) {
+        return;
+    }
 
-async function deleteStudent(id){
+    try {
+        await db.collection("qrData").doc(id).delete();
 
+        if (editingStudentId === id) clearForm();
 
-if(confirm("Delete Student?")){
+        alert("🗑 Student Deleted");
+        await loadStudents();
 
-
-await db.collection("qrData")
-.doc(id)
-.delete();
-
-
-alert("🗑 Deleted");
-
-
-loadStudents();
-
-
+    } catch (error) {
+        console.error(error);
+        alert("Delete failed: " + error.message);
+    }
 }
 
 
-}
-
-
-
-
-
+// ==========================================
 // AUTO LOAD
+// ==========================================
 
-
-window.onload=function(){
-
-loadStudents();
-
-};
+window.addEventListener("load", loadStudents);
