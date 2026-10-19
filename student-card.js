@@ -951,16 +951,20 @@ const COACHSIR_QR_TRACKER_URL =
     "https://vkplkmr-dotcom.github.io/coachsir-qr-tracker/?id=";
 
 
-// ======================================================
-// PROGRAM MAP
-// ======================================================
+// ==========================================
+// COACHsir ACADEMY - LIVE CLASS PROGRAM MAP
+// Add more classes here whenever required
+// ==========================================
 
 const programMap = {
-
     "NEET Biology": "neet_biology",
     "NEET Physics": "neet_physics",
-    "NEET Chemistry": "neet_chemistry"
+    "NEET Chemistry": "neet_chemistry",
 
+    "Class 9 Science": "class9_science",
+    "Class 10 Board Math": "class10_board_math",
+    "Class 11": "class11",
+    "Class 12 Board": "class12_board"
 };
 
 
