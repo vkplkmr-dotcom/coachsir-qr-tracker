@@ -961,12 +961,11 @@ const programMap = {
     "NEET Physics": "neet_physics",
     "NEET Chemistry": "neet_chemistry",
 
-    "Class 9 Science": "class9_science",
-    "Class 10 Board Math": "class10_board_math",
-    "Class 11": "class11",
-    "Class 12 Board": "class12_board"
+    "class9": "class9",
+    "class10": "class10",
+    "Class 11th": "Class 11th",
+    "12th": "12th"
 };
-
 
 // ======================================================
 // PARSE EXPIRY DATE
