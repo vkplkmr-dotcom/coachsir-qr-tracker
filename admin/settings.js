@@ -1,146 +1,161 @@
 
-const db = firebase.firestore();
+(function () {
+    // Use a separate name to avoid conflicts with firebase/config.js
+    const settingsDb = firebase.firestore();
 
-// Load all academy settings
-async function loadSettings() {
-    try {
-        // Existing payment settings document
-        const paymentDoc = await db
-            .collection("settings")
-            .doc("payment")
-            .get();
-
-        if (paymentDoc.exists) {
-            const data = paymentDoc.data();
+    // Load saved settings
+    async function loadSettings() {
+        try {
+            const paymentDoc = await settingsDb
+                .collection("settings")
+                .doc("payment")
+                .get();
 
             document.getElementById("paymentAmount").value =
-                data.amount ?? 30;
+                paymentDoc.exists && paymentDoc.data().amount != null
+                    ? paymentDoc.data().amount
+                    : 30;
 
-            // Load academy details if stored in this document
-            if (data.academyName) {
-                document.getElementById("academyName").value =
-                    data.academyName;
-            }
+            const academyDoc = await settingsDb
+                .collection("settings")
+                .doc("academy")
+                .get();
 
-            if (data.session) {
-                document.getElementById("session").value =
-                    data.session;
-            }
-        } else {
-            document.getElementById("paymentAmount").value = 30;
-        }
+            const academyData = academyDoc.exists
+                ? academyDoc.data()
+                : {};
 
-        // Academy information document
-        const academyDoc = await db
-            .collection("settings")
-            .doc("academy")
-            .get();
-
-        if (academyDoc.exists) {
-            const data = academyDoc.data();
+            const paymentData = paymentDoc.exists
+                ? paymentDoc.data()
+                : {};
 
             document.getElementById("academyName").value =
-                data.academyName || "COACHsir Online Academy";
-
-            document.getElementById("session").value =
-                data.session || "2026-2027";
-        } else {
-            document.getElementById("academyName").value =
+                academyData.academyName ||
+                paymentData.academyName ||
                 "COACHsir Online Academy";
 
             document.getElementById("session").value =
+                academyData.session ||
+                paymentData.session ||
                 "2026-2027";
+
+        } catch (error) {
+            console.error("Settings load error:", error);
+            showMessage(
+                "statusMsg",
+                "❌ Load failed: " + error.message,
+                true
+            );
+        }
+    }
+
+    function showMessage(id, message, isError) {
+        const element = document.getElementById(id);
+        if (!element) return;
+
+        element.textContent = message;
+        element.style.color = isError ? "#c62828" : "#188038";
+    }
+
+    // Save monthly CBT fee
+    async function savePaymentSettings() {
+        const input = document.getElementById("paymentAmount");
+        const amount = Number(input.value);
+
+        if (input.value.trim() === "" ||
+            !Number.isFinite(amount) || amount < 0) {
+            showMessage(
+                "statusMsg",
+                "❌ Enter a valid fee amount.",
+                true
+            );
+            return;
         }
 
-    } catch (error) {
-        console.error("Load settings error:", error);
-        showMessage("statusMsg", "❌ Settings load नहीं हुईं। Firebase Rules जाँचें।", true);
-    }
-}
+        try {
+            await settingsDb
+                .collection("settings")
+                .doc("payment")
+                .set({
+                    amount: amount,
+                    updatedAt:
+                        firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
 
-
-// Save payment settings
-async function savePaymentSettings() {
-    const amountInput = document.getElementById("paymentAmount");
-    const amount = Number(amountInput.value);
-
-    if (amountInput.value.trim() === "" ||
-        !Number.isFinite(amount) || amount < 0) {
-        showMessage("statusMsg", "❌ सही Payment Amount दर्ज करें।", true);
-        return;
-    }
-
-    try {
-        await db
-            .collection("settings")
-            .doc("payment")
-            .set({
-                amount: amount,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-
-        showMessage("statusMsg", "✅ Payment Settings Saved Successfully", false);
-
-    } catch (error) {
-        console.error("Save payment error:", error);
-        showMessage("statusMsg", "❌ Payment Settings सेव नहीं हुईं।", true);
-    }
-}
-
-
-// Save academy information
-async function saveAcademySettings() {
-    const academyName = document
-        .getElementById("academyName").value.trim();
-
-    const session = document
-        .getElementById("session").value.trim();
-
-    if (!academyName || !session) {
-        showMessage("academyStatusMsg", "❌ Academy Name और Session दोनों भरें।", true);
-        return;
+            showMessage(
+                "statusMsg",
+                "✅ Payment Settings Saved Successfully",
+                false
+            );
+        } catch (error) {
+            console.error("Payment save error:", error);
+            showMessage(
+                "statusMsg",
+                "❌ Save failed: " + error.message,
+                true
+            );
+        }
     }
 
-    try {
-        // Store academy details separately
-        await db
-            .collection("settings")
-            .doc("academy")
-            .set({
+    // Save academy name and session
+    async function saveAcademySettings() {
+        const academyName =
+            document.getElementById("academyName").value.trim();
+
+        const session =
+            document.getElementById("session").value.trim();
+
+        if (!academyName || !session) {
+            showMessage(
+                "academyStatusMsg",
+                "❌ Enter Academy Name and Session.",
+                true
+            );
+            return;
+        }
+
+        try {
+            const settings = {
                 academyName: academyName,
                 session: session,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
+                updatedAt:
+                    firebase.firestore.FieldValue.serverTimestamp()
+            };
 
-        // Also retain details in payment document for compatibility
-        await db
-            .collection("settings")
-            .doc("payment")
-            .set({
-                academyName: academyName,
-                session: session,
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
+            await settingsDb
+                .collection("settings")
+                .doc("academy")
+                .set(settings, { merge: true });
 
-        showMessage("academyStatusMsg", "✅ Academy Information Saved Successfully", false);
+            // Keep the same details in the existing payment document
+            await settingsDb
+                .collection("settings")
+                .doc("payment")
+                .set(settings, { merge: true });
 
-    } catch (error) {
-        console.error("Save academy error:", error);
-        showMessage("academyStatusMsg", "❌ Academy Information सेव नहीं हुई। Firebase Rules जाँचें।", true);
+            showMessage(
+                "academyStatusMsg",
+                "✅ Academy Information Saved Successfully",
+                false
+            );
+        } catch (error) {
+            console.error("Academy save error:", error);
+            showMessage(
+                "academyStatusMsg",
+                "❌ Save failed: " + error.message,
+                true
+            );
+        }
     }
-}
 
+    // Make functions available to the HTML onclick buttons
+    window.savePaymentSettings = savePaymentSettings;
+    window.saveAcademySettings = saveAcademySettings;
 
-// Display status messages safely
-function showMessage(elementId, message, isError) {
-    const element = document.getElementById(elementId);
-
-    if (!element) return;
-
-    element.textContent = message;
-    element.style.color = isError ? "#c62828" : "#188038";
-}
-
-
-// Load settings when page opens
-loadSettings();
+    // Load settings after the page is ready
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", loadSettings);
+    } else {
+        loadSettings();
+    }
+})();
