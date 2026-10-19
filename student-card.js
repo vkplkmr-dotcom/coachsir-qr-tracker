@@ -3097,3 +3097,73 @@ setInterval(
     automaticLiveCheck,
     10000
 );
+
+/* ==========================================
+   COACHsir DYNAMIC MONTHLY CBT FEE
+   Source: Firestore settings/payment
+   ========================================== */
+
+(function loadDynamicMonthlyFee() {
+
+    const feeElement =
+        document.getElementById("monthlyCbtFee");
+
+    if (!feeElement) {
+        console.warn(
+            "Monthly fee element missing in student-card.html"
+        );
+        return;
+    }
+
+    // Initial fallback while Firestore loads
+    feeElement.textContent = "Loading...";
+
+    db.collection("settings")
+        .doc("payment")
+        .onSnapshot(
+            function (doc) {
+
+                let amount = 30;
+
+                if (doc.exists) {
+                    const settings = doc.data();
+
+                    if (
+                        settings.amount !== undefined &&
+                        settings.amount !== null &&
+                        settings.amount !== ""
+                    ) {
+                        const savedAmount =
+                            Number(settings.amount);
+
+                        if (
+                            Number.isFinite(savedAmount) &&
+                            savedAmount >= 0
+                        ) {
+                            amount = savedAmount;
+                        }
+                    }
+                }
+
+                feeElement.textContent =
+                    new Intl.NumberFormat("en-IN", {
+                        style: "currency",
+                        currency: "INR",
+                        maximumFractionDigits: 2
+                    }).format(amount) + " / month";
+
+            },
+            function (error) {
+
+                console.error(
+                    "Monthly fee loading error:",
+                    error
+                );
+
+                feeElement.textContent =
+                    "Fee unavailable";
+
+            }
+        );
+
+})();
