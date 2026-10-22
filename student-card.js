@@ -2710,16 +2710,26 @@ increaseCardOpenCount();
                             return;
                         }
 
-                        // OPEN MEET
-                        meetTab.location.href = meetingURL.href;
+                      
+                        // OPEN GOOGLE MEET
+                        const finalMeetURL = meetingURL.href;
 
-                        // UPDATE LIVE CLASS CLICK COUNT
+                        console.log(
+                            "Opening Google Meet:",
+                            finalMeetURL
+                        );
+
+                        // Navigate the tab opened during the click
+                        meetTab.location.replace(finalMeetURL);
+
+                        // Update click count without waiting
                         increaseLiveClassCount().catch((error) => {
                             console.error(
                                 "Live Class Count Error:",
                                 error
                             );
                         });
+
 
                     } catch (error) {
 
