@@ -2632,6 +2632,7 @@ increaseCardOpenCount();
 
 
            
+           
             // ==================================================
             // LIVE CLASS BUTTON
             // ==================================================
@@ -2665,11 +2666,8 @@ increaseCardOpenCount();
                         return;
                     }
 
-                    // Open tab immediately during the click
-                    const meetTab = window.open(
-                        "about:blank",
-                        "_blank"
-                    );
+                    // Open tab immediately to avoid popup blocking
+                    const meetTab = window.open("about:blank", "_blank");
 
                     if (!meetTab) {
                         alert(
@@ -2693,27 +2691,36 @@ increaseCardOpenCount();
 
                         const liveData = liveDoc.data();
 
+                        // SUPPORT BOTH FIRESTORE FIELD-NAME FORMATS
+                        const normalizedLiveData = {
+                            ...liveData,
+                            startTime:
+                                liveData.startTime ||
+                                liveData.StartTime,
+                            endTime:
+                                liveData.endTime ||
+                                liveData.EndTime,
+                            status:
+                                liveData.status ??
+                                liveData.Status,
+                            meetingLink: liveData.meetingLink
+                        };
+
                         // REAL LIVE CHECK
                         const liveResult =
-                            isLiveClassNow(liveData);
+                            isLiveClassNow(normalizedLiveData);
 
                         if (!liveResult.live) {
 
                             meetTab.close();
 
-                            if (
-                                liveResult.reason === "before-start"
-                            ) {
+                            if (liveResult.reason === "before-start") {
                                 alert(
                                     "Live class has not started yet."
                                 );
-                            } else if (
-                                liveResult.reason === "ended"
-                            ) {
+                            } else if (liveResult.reason === "ended") {
                                 alert("Live class has ended.");
-                            } else if (
-                                liveResult.reason === "disabled"
-                            ) {
+                            } else if (liveResult.reason === "disabled") {
                                 alert(
                                     "No Live Class is running right now."
                                 );
@@ -2728,17 +2735,15 @@ increaseCardOpenCount();
 
                         // MEETING LINK
                         const meetingLink =
-                            liveData.meetingLink;
+                            normalizedLiveData.meetingLink;
 
                         if (!meetingLink) {
                             meetTab.close();
-                            alert(
-                                "Meeting link is not available."
-                            );
+                            alert("Meeting link is not available.");
                             return;
                         }
 
-                        // Validate Google Meet URL
+                        // VALIDATE GOOGLE MEET URL
                         let meetingURL;
 
                         try {
@@ -2760,26 +2765,22 @@ increaseCardOpenCount();
                             return;
                         }
 
-                        // COUNT CLICK WITHOUT BLOCKING MEET
+                        // OPEN MEET
                         meetTab.location.href = meetingURL.href;
 
-                        increaseLiveClassCount().catch(
-                            (error) => {
-                                console.error(
-                                    "Live Class Count Error:",
-                                    error
-                                );
-                            }
-                        );
+                        // UPDATE LIVE CLASS CLICK COUNT
+                        increaseLiveClassCount().catch((error) => {
+                            console.error(
+                                "Live Class Count Error:",
+                                error
+                            );
+                        });
 
                     } catch (error) {
 
                         meetTab.close();
 
-                        console.error(
-                            "Live Class Error:",
-                            error
-                        );
+                        console.error("Live Class Error:", error);
 
                         alert(
                             error.message ||
@@ -2788,6 +2789,7 @@ increaseCardOpenCount();
                     }
                 };
             }
+
 
 
             // ==================================================
