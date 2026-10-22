@@ -1498,33 +1498,24 @@ function getLiveStartTime(liveData) {
         return null;
     }
 
-
     if (liveData.startAt) {
-
         const timestampDate =
-            getFirestoreDate(
-                liveData.startAt
-            );
-
+            getFirestoreDate(liveData.startAt);
 
         if (timestampDate) {
             return timestampDate;
         }
-
     }
 
+    const time =
+        liveData.startTime ||
+        liveData.StartTime;
 
-    if (liveData.startTime) {
-
-        return getTodayTime(
-            liveData.startTime
-        );
-
+    if (time) {
+        return getTodayTime(time);
     }
-
 
     return null;
-
 }
 
 
@@ -1538,33 +1529,24 @@ function getLiveEndTime(liveData) {
         return null;
     }
 
-
     if (liveData.endAt) {
-
         const timestampDate =
-            getFirestoreDate(
-                liveData.endAt
-            );
-
+            getFirestoreDate(liveData.endAt);
 
         if (timestampDate) {
             return timestampDate;
         }
-
     }
 
+    const time =
+        liveData.endTime ||
+        liveData.EndTime;
 
-    if (liveData.endTime) {
-
-        return getTodayTime(
-            liveData.endTime
-        );
-
+    if (time) {
+        return getTodayTime(time);
     }
-
 
     return null;
-
 }
 
 
@@ -1575,70 +1557,60 @@ function getLiveEndTime(liveData) {
 function isLiveClassNow(liveData) {
 
     if (!liveData) {
-
         return {
             live: false,
             reason: "not-found"
         };
-
     }
 
+    const status =
+        liveData.status ??
+        liveData.Status;
 
-    if (liveData.status !== true) {
-
+    if (status !== true) {
         return {
             live: false,
             reason: "disabled"
         };
-
     }
-
 
     const startTime =
         getLiveStartTime(liveData);
 
-
     const endTime =
         getLiveEndTime(liveData);
 
-
-    if (!startTime || !endTime) {
-
+    if (
+        !(startTime instanceof Date) ||
+        !(endTime instanceof Date) ||
+        isNaN(startTime.getTime()) ||
+        isNaN(endTime.getTime())
+    ) {
         return {
             live: false,
             reason: "timing-missing"
         };
-
     }
 
-
-    const now =
-        new Date();
-
+    const now = new Date();
 
     if (now < startTime) {
-
         return {
             live: false,
             reason: "before-start",
             startTime,
             endTime
         };
-
     }
 
-
     if (now >= endTime) {
-
         return {
             live: false,
             reason: "ended",
             startTime,
             endTime
         };
-
     }
-
 
     return {
         live: true,
@@ -1646,9 +1618,7 @@ function isLiveClassNow(liveData) {
         startTime,
         endTime
     };
-
 }
-
 
 // ======================================================
 // UPDATE LIVE STATUS UI
