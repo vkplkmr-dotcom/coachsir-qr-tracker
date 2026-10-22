@@ -1356,72 +1356,48 @@ function isCardActive(expiryDate) {
 // GET TODAY TIME
 // ======================================================
 
+
 function getTodayTime(timeString) {
 
     if (!timeString) {
         return null;
     }
 
-
-    const match =
-        timeString
-            .toString()
-            .trim()
-            .match(
-                /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i
-            );
-
+    const match = timeString
+        .toString()
+        .trim()
+        .match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
 
     if (!match) {
         return null;
     }
 
-
-    let hour =
-        parseInt(match[1], 10);
-
-    const minute =
-        parseInt(match[2], 10);
-
-    const ampm =
-        match[3].toUpperCase();
-
+    let hour = parseInt(match[1], 10);
+    const minute = parseInt(match[2], 10);
+    const ampm = match[3]
+        ? match[3].toUpperCase()
+        : null;
 
     if (
-        hour < 1 ||
-        hour > 12 ||
         minute < 0 ||
-        minute > 59
+        minute > 59 ||
+        hour < 0 ||
+        hour > (ampm ? 12 : 23) ||
+        (ampm && hour === 0)
     ) {
-
         return null;
-
     }
 
-
-    if (
-        ampm === "PM" &&
-        hour !== 12
-    ) {
-
+    // Convert AM/PM to 24-hour format
+    if (ampm === "PM" && hour !== 12) {
         hour += 12;
-
     }
 
-
-    if (
-        ampm === "AM" &&
-        hour === 12
-    ) {
-
+    if (ampm === "AM" && hour === 12) {
         hour = 0;
-
     }
 
-
-    const now =
-        new Date();
-
+    const now = new Date();
 
     return new Date(
         now.getFullYear(),
@@ -1432,7 +1408,6 @@ function getTodayTime(timeString) {
         0,
         0
     );
-
 }
 
 
