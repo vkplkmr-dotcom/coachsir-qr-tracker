@@ -2631,208 +2631,162 @@ increaseCardOpenCount();
             }
 
 
+           
             // ==================================================
             // LIVE CLASS BUTTON
             // ==================================================
 
             const liveBtn =
-                document.getElementById(
-                    "liveClassBtn"
-                );
-
+                document.getElementById("liveClassBtn");
 
             if (liveBtn) {
 
-                liveBtn.onclick =
-                    async function () {
+                liveBtn.onclick = async function () {
 
+                    // PAYMENT CHECK
+                    if (payment !== "approved") {
+                        alert("Payment approval pending.");
+                        return;
+                    }
 
-                        // --------------------------------------
-                        // PAYMENT CHECK
-                        // --------------------------------------
+                    // EXPIRY CHECK
+                    if (!cardActive) {
+                        alert("This card has expired.");
+                        return;
+                    }
 
-                        if (
-                            payment !==
-                            "approved"
-                        ) {
+                    // PROGRAM CHECK
+                    const docId = programMap[data.program];
 
-                            alert(
-                                "Payment approval pending."
-                            );
+                    if (!docId) {
+                        alert(
+                            "Live class is not configured for this program."
+                        );
+                        return;
+                    }
 
+                    // Open tab immediately during the click
+                    const meetTab = window.open(
+                        "about:blank",
+                        "_blank"
+                    );
+
+                    if (!meetTab) {
+                        alert(
+                            "Popup blocked. Please allow pop-ups for COACHsir Academy."
+                        );
+                        return;
+                    }
+
+                    try {
+
+                        const liveDoc = await db
+                            .collection("liveClasses")
+                            .doc(docId)
+                            .get();
+
+                        if (!liveDoc.exists) {
+                            meetTab.close();
+                            alert("Live class not found.");
                             return;
-
                         }
 
+                        const liveData = liveDoc.data();
 
-                        // --------------------------------------
-                        // EXPIRY CHECK
-                        // --------------------------------------
+                        // REAL LIVE CHECK
+                        const liveResult =
+                            isLiveClassNow(liveData);
 
-                        if (!cardActive) {
+                        if (!liveResult.live) {
 
-                            alert(
-                                "This card has expired."
-                            );
-
-                            return;
-
-                        }
-
-
-                        // --------------------------------------
-                        // PROGRAM CHECK
-                        // --------------------------------------
-
-                        const docId =
-                            programMap[
-                                data.program
-                            ];
-
-
-                        if (!docId) {
-
-                            alert(
-                                "Live class is not configured for this program."
-                            );
-
-                            return;
-
-                        }
-
-
-                        try {
-
-                            const liveDoc =
-                                await db
-                                    .collection(
-                                        "liveClasses"
-                                    )
-                                    .doc(docId)
-                                    .get();
-
-
-                            if (!liveDoc.exists) {
-
-                                alert(
-                                    "Live class not found."
-                                );
-
-                                return;
-
-                            }
-
-
-                            const liveData =
-                                liveDoc.data();
-
-
-                            // ----------------------------------
-                            // REAL LIVE CHECK
-                            // ----------------------------------
-
-                            const liveResult =
-                                isLiveClassNow(
-                                    liveData
-                                );
-
-
-                            if (!liveResult.live) {
-
-                                if (
-                                    liveResult.reason ===
-                                    "before-start"
-                                ) {
-
-                                    alert(
-                                        "Live class has not started yet."
-                                    );
-
-                                }
-                                else if (
-                                    liveResult.reason ===
-                                    "ended"
-                                ) {
-
-                                    alert(
-                                        "Live class has ended."
-                                    );
-
-                                }
-                                else if (
-                                    liveResult.reason ===
-                                    "disabled"
-                                ) {
-
-                                    alert(
-                                        "No Live Class is running right now."
-                                    );
-
-                                }
-                                else {
-
-                                    alert(
-                                        "Live class timing is not configured."
-                                    );
-
-                                }
-
-                                return;
-
-                            }
-
-
-                            // ----------------------------------
-                            // MEETING LINK
-                            // ----------------------------------
+                            meetTab.close();
 
                             if (
-                                !liveData.meetingLink
+                                liveResult.reason === "before-start"
                             ) {
-
                                 alert(
-                                    "Meeting link is not available."
+                                    "Live class has not started yet."
                                 );
-
-                                return;
-
+                            } else if (
+                                liveResult.reason === "ended"
+                            ) {
+                                alert("Live class has ended.");
+                            } else if (
+                                liveResult.reason === "disabled"
+                            ) {
+                                alert(
+                                    "No Live Class is running right now."
+                                );
+                            } else {
+                                alert(
+                                    "Live class timing is not configured."
+                                );
                             }
 
-
-                            // ----------------------------------
-                            // LIVE CLASS CLICK COUNT
-                            // ----------------------------------
-
-                            await increaseLiveClassCount();
-
-
-                            // ----------------------------------
-                            // OPEN MEETING
-                            // ----------------------------------
-
-                            window.open(
-                                liveData.meetingLink,
-                                "_blank"
-                            );
-
+                            return;
                         }
-                        catch (error) {
 
-                            console.error(
-                                "Live Class Error:",
-                                error
-                            );
+                        // MEETING LINK
+                        const meetingLink =
+                            liveData.meetingLink;
 
-
+                        if (!meetingLink) {
+                            meetTab.close();
                             alert(
-                                error.message ||
-                                "Unable to open live class."
+                                "Meeting link is not available."
                             );
-
+                            return;
                         }
 
-                    };
+                        // Validate Google Meet URL
+                        let meetingURL;
 
+                        try {
+                            meetingURL = new URL(meetingLink);
+                        } catch (error) {
+                            meetTab.close();
+                            alert("Meeting link is invalid.");
+                            return;
+                        }
+
+                        if (
+                            meetingURL.protocol !== "https:" ||
+                            meetingURL.hostname !== "meet.google.com"
+                        ) {
+                            meetTab.close();
+                            alert(
+                                "Invalid Google Meet link. Please check Firebase."
+                            );
+                            return;
+                        }
+
+                        // COUNT CLICK WITHOUT BLOCKING MEET
+                        meetTab.location.href = meetingURL.href;
+
+                        increaseLiveClassCount().catch(
+                            (error) => {
+                                console.error(
+                                    "Live Class Count Error:",
+                                    error
+                                );
+                            }
+                        );
+
+                    } catch (error) {
+
+                        meetTab.close();
+
+                        console.error(
+                            "Live Class Error:",
+                            error
+                        );
+
+                        alert(
+                            error.message ||
+                            "Unable to open live class."
+                        );
+                    }
+                };
             }
 
 
