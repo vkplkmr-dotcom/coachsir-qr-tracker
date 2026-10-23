@@ -2660,9 +2660,17 @@ increaseCardOpenCount();
                             return;
                         }
 
-                        const meetingLink = String(
-                            liveData.meetingLink || ""
-                        ).trim();
+                       const meetingLink = String(
+    liveData.meetingLink ||
+    liveData.MeetingLink ||
+    liveData.meetLink ||
+    liveData.MeetLink ||
+    ""
+).trim();
+
+console.log("Live class document ID:", docId);
+console.log("Live class data:", liveData);
+console.log("Meeting link:", meetingLink);
 
                         let meetingURL;
 
