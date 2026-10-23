@@ -1357,45 +1357,31 @@ function isCardActive(expiryDate) {
 // ======================================================
 
 
+
 function getTodayTime(timeString) {
+    if (!timeString) return null;
 
-    if (!timeString) {
-        return null;
-    }
-
-    const match = timeString
-        .toString()
+    const match = String(timeString)
         .trim()
         .match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
 
-    if (!match) {
-        return null;
-    }
+    if (!match) return null;
 
     let hour = parseInt(match[1], 10);
     const minute = parseInt(match[2], 10);
-    const ampm = match[3]
-        ? match[3].toUpperCase()
-        : null;
+    const ampm = match[3]?.toUpperCase();
 
     if (
-        minute < 0 ||
         minute > 59 ||
-        hour < 0 ||
-        hour > (ampm ? 12 : 23) ||
-        (ampm && hour === 0)
+        minute < 0 ||
+        (ampm && (hour < 1 || hour > 12)) ||
+        (!ampm && (hour < 0 || hour > 23))
     ) {
         return null;
     }
 
-    // Convert AM/PM to 24-hour format
-    if (ampm === "PM" && hour !== 12) {
-        hour += 12;
-    }
-
-    if (ampm === "AM" && hour === 12) {
-        hour = 0;
-    }
+    if (ampm === "PM" && hour !== 12) hour += 12;
+    if (ampm === "AM" && hour === 12) hour = 0;
 
     const now = new Date();
 
@@ -2582,32 +2568,31 @@ increaseCardOpenCount();
             // LIVE CLASS BUTTON
             // ==================================================
 
+          
+            // ==================================================
+            // LIVE CLASS BUTTON
+            // ==================================================
+
             const liveBtn =
                 document.getElementById("liveClassBtn");
 
             if (liveBtn) {
-
                 liveBtn.onclick = async function () {
 
-                    // PAYMENT CHECK
                     if (payment !== "approved") {
                         alert("Payment approval pending.");
                         return;
                     }
 
-                    // EXPIRY CHECK
                     if (!cardActive) {
                         alert("This card has expired.");
                         return;
                     }
 
-                    // PROGRAM CHECK
                     const docId = programMap[data.program];
 
                     if (!docId) {
-                        alert(
-                            "Live class is not configured for this program."
-                        );
+                        alert("Live class is not configured for this program.");
                         return;
                     }
 
@@ -2615,14 +2600,11 @@ increaseCardOpenCount();
                     const meetTab = window.open("about:blank", "_blank");
 
                     if (!meetTab) {
-                        alert(
-                            "Popup blocked. Please allow pop-ups for COACHsir Academy."
-                        );
+                        alert("Popup blocked. Please allow pop-ups for COACHsir Academy.");
                         return;
                     }
 
                     try {
-
                         const liveDoc = await db
                             .collection("liveClasses")
                             .doc(docId)
@@ -2630,72 +2612,65 @@ increaseCardOpenCount();
 
                         if (!liveDoc.exists) {
                             meetTab.close();
-                            alert("Live class not found.");
+                            alert("Live class not found: " + docId);
                             return;
                         }
 
-                        const liveData = liveDoc.data();
+                        const raw = liveDoc.data();
 
-                        // SUPPORT BOTH FIRESTORE FIELD-NAME FORMATS
-                        const normalizedLiveData = {
-                            ...liveData,
-                            startTime:
-                                liveData.startTime ||
-                                liveData.StartTime,
-                            endTime:
-                                liveData.endTime ||
-                                liveData.EndTime,
-                            status:
-                                liveData.status ??
-                                liveData.Status,
-                            meetingLink: liveData.meetingLink
+                        // Support both uppercase and lowercase field names
+                        const liveData = {
+                            ...raw,
+                            startTime: raw.startTime ?? raw.StartTime,
+                            endTime: raw.endTime ?? raw.EndTime,
+                            status: raw.status ?? raw.Status
                         };
 
-                        // REAL LIVE CHECK
-                        const liveResult =
-                            isLiveClassNow(normalizedLiveData);
-
-                        if (!liveResult.live) {
-
+                        if (liveData.status !== true) {
                             meetTab.close();
-
-                            if (liveResult.reason === "before-start") {
-                                alert(
-                                    "Live class has not started yet."
-                                );
-                            } else if (liveResult.reason === "ended") {
-                                alert("Live class has ended.");
-                            } else if (liveResult.reason === "disabled") {
-                                alert(
-                                    "No Live Class is running right now."
-                                );
-                            } else {
-                                alert(
-                                    "Live class timing is not configured."
-                                );
-                            }
-
+                            alert("Live class is disabled. Check Status: true in Firebase.");
                             return;
                         }
 
-                        // MEETING LINK
-                        const meetingLink =
-                            normalizedLiveData.meetingLink;
+                        const start = getLiveStartTime(liveData);
+                        const end = getLiveEndTime(liveData);
 
-                        if (!meetingLink) {
+                        if (
+                            !(start instanceof Date) ||
+                            !(end instanceof Date) ||
+                            isNaN(start.getTime()) ||
+                            isNaN(end.getTime())
+                        ) {
                             meetTab.close();
-                            alert("Meeting link is not available.");
+                            alert("Invalid class timing. Use 24-hour format, e.g. 18:30 and 21:30.");
                             return;
                         }
 
-                        // VALIDATE GOOGLE MEET URL
+                        const now = new Date();
+
+                        if (now < start) {
+                            meetTab.close();
+                            alert("Live class has not started yet.");
+                            return;
+                        }
+
+                        if (now >= end) {
+                            meetTab.close();
+                            alert("Live class has ended.");
+                            return;
+                        }
+
+                        const meetingLink = String(
+                            liveData.meetingLink || ""
+                        ).trim();
+
                         let meetingURL;
 
                         try {
                             meetingURL = new URL(meetingLink);
                         } catch (error) {
                             meetTab.close();
-                            alert("Meeting link is invalid.");
+                            alert("Meeting link is missing or invalid.");
                             return;
                         }
 
@@ -2704,46 +2679,33 @@ increaseCardOpenCount();
                             meetingURL.hostname !== "meet.google.com"
                         ) {
                             meetTab.close();
-                            alert(
-                                "Invalid Google Meet link. Please check Firebase."
-                            );
+                            alert("Invalid Google Meet URL in Firebase.");
                             return;
                         }
 
-                      
-                        // OPEN GOOGLE MEET
-                        const finalMeetURL = meetingURL.href;
+                        // Navigate directly to the validated Meet URL
+                        meetTab.location.replace(meetingURL.href);
 
-                        console.log(
-                            "Opening Google Meet:",
-                            finalMeetURL
-                        );
-
-                        // Navigate the tab opened during the click
-                        meetTab.location.replace(finalMeetURL);
-
-                        // Update click count without waiting
+                        // Count click independently
                         increaseLiveClassCount().catch((error) => {
-                            console.error(
-                                "Live Class Count Error:",
-                                error
-                            );
+                            console.error("Live Class Count Error:", error);
                         });
 
-
                     } catch (error) {
-
-                        meetTab.close();
-
                         console.error("Live Class Error:", error);
+
+                        try {
+                            meetTab.close();
+                        } catch (_) {}
 
                         alert(
                             error.message ||
-                            "Unable to open live class."
+                            "Unable to open live class. Check browser Console."
                         );
                     }
                 };
             }
+
 
 
 
