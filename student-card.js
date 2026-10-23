@@ -2600,7 +2600,7 @@ increaseCardOpenCount();
                     const meetTab = window.open("about:blank", "_blank");
 
                     if (!meetTab) {
-                        alert("Popup blocked. Please allow pop-ups for COACHsir Academy.");
+                        alert("Please allow pop-ups and redirects for COACHsir Academy.");
                         return;
                     }
 
@@ -2684,8 +2684,7 @@ increaseCardOpenCount();
                         }
 
                         // Navigate directly to the validated Meet URL
-                        meetTab.location.replace(meetingURL.href);
-
+                       meetTab.location.href = meetingURL.href;
                         // Count click independently
                         increaseLiveClassCount().catch((error) => {
                             console.error("Live Class Count Error:", error);
