@@ -2523,7 +2523,7 @@ increaseCardOpenCount();
 
 
                             window.location.href =
-                                "https://coachsiracademy.onlinetestpanel.com";
+                                "https://coachsiracademy.onlinetestpanel.com/";
 
                         };
 
