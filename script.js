@@ -15,7 +15,7 @@ const CONFIG = {
   UPI_ID: "vkplkmr-1@oksbi",
 
   // CBT Exam URL
-  EXAM_URL: "https://coachsiracademy.onlinetestpanel.com/",
+  EXAM_URL: "https://cbtexam.onlinetestpanel.com/",
 
   // Fallback expiry date
   // Student document ki expiryDate ko priority milegi.
